@@ -141,6 +141,10 @@ Style/ArrayCoercion:
 Style/BisectedAttrAccessor:
   Enabled: true
 
+Style/CaseEquality:
+  Exclude:
+    - lib/business_logic/matchers/**/*
+
 Style/CaseLikeIf:
   Enabled: true
 
