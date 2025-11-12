@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "lib/business_logic/version"
+begin
+  require_relative "lib/business_logic/version"
+  version = BusinessLogic::VERSION
+rescue LoadError
+  version = "0.0.1"
+end
 
 Gem::Specification.new do |spec|
   spec.name = "business_logic"
-  spec.version = BusinessLogic::VERSION
+  spec.version = version
   spec.authors = ["Hallelujah"]
   spec.email = ["hery@rails-royce.org"]
 
@@ -13,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/propitech/business_logic"
   spec.license = "MIT"
 
-  spec.required_ruby_version = ">= 3.4"
+  spec.required_ruby_version = ">= 3.3"
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/propitech/business_logic"
@@ -34,7 +39,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
+  spec.add_dependency "ammeter", "~> 1.1"
   spec.add_dependency "rails", ">= 8.0"
+  spec.add_dependency "rspec", "~> 3.0"
+  spec.add_dependency "rspec-rails", "~> 8.0"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

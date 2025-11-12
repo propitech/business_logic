@@ -1,11 +1,19 @@
 name: Ruby
+permissions:
+  contents: read
+  pull-requests: write
+  actions: write
 
-on:
-  push:
-    branches:
-      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+"on":
   pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: 0 4 * * *
 
 jobs:
   build:
@@ -14,7 +22,8 @@ jobs:
     strategy:
       matrix:
         ruby:
-          - '3.4.5'
+          - 3.4.5
+          - 3.3.7
 
     steps:
       - uses: actions/checkout@v4
@@ -27,3 +36,9 @@ jobs:
           bundler-cache: true
       - name: Run the default task
         run: bundle exec rake
+
+      - name: Upload result to Quality.sh
+        uses: qltysh/qlty-action/coverage@v2
+        with:
+          token: ${{secrets.QLTY_COVERAGE_TOKEN}}
+          files: coverage/.resultset.json
