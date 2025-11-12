@@ -1,1 +1,1 @@
---require spec_helper <%= ENV["CI"] ? "--format progress --format RspecJunitFormatter --out junit.xml --format FailureDocumentationFormatter" : "" %>
+--require spec_helper <%= ENV["CI"] ? "--format progress --format RspecJunitFormatter --out junit.xml" : "" %>
