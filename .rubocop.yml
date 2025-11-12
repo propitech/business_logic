@@ -1,0 +1,223 @@
+---
+plugins:
+  - rubocop-rake
+  - rubocop-rspec
+  - rubocop-thread_safety
+
+inherit_from:
+  - .rubocop_todo.yml
+
+inherit_mode:
+  merge:
+    - Exclude
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - bin/*
+    - db/**/*
+    - out/**/*
+
+Layout/ArgumentAlignment:
+  Enabled: true
+  EnforcedStyle: with_fixed_indentation
+
+Layout/CaseIndentation:
+  Enabled: true
+  EnforcedStyle: end
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: variable
+  Severity: warning
+
+Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/LineLength:
+  AllowedPatterns:
+    - !ruby/regexp /\A *# /
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: true
+  EnforcedStyle: indented
+  IndentationWidth: ~
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true
+  EnforcedStyle: no_space
+
+Lint/BinaryOperatorWithIdenticalOperands:
+  Enabled: true
+
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/DuplicateElsifCondition:
+  Enabled: true
+
+Lint/DuplicateRescueException:
+  Enabled: true
+
+Lint/EmptyConditionalBody:
+  Enabled: true
+
+Lint/FloatComparison:
+  Enabled: true
+
+Lint/MissingSuper:
+  Enabled: true
+  Exclude:
+    - app/components/**/*.rb
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Lint/OutOfRangeRegexpRef:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/SelfAssignment:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Lint/TopLevelReturnWithArgument:
+  Enabled: true
+
+Lint/UnreachableLoop:
+  Enabled: true
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - spec/**/*
+    - config/**/*
+    - app/misc/forms/**/*
+
+Naming/RescuedExceptionsVariableName:
+  PreferredName: exception
+
+RSpec:
+  Language:
+    Expectations:
+      - will_expect
+
+RSpec/ContextWording:
+  Enabled: true
+  Prefixes:
+    - when
+    - with
+    - without
+    - if
+    - unless
+    - for
+    - "on"
+
+RSpec/ExampleLength:
+  Max: 7
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Style/AccessorGrouping:
+  Enabled: true
+
+Style/ArrayCoercion:
+  Enabled: true
+
+Style/BisectedAttrAccessor:
+  Enabled: true
+
+Style/CaseLikeIf:
+  Enabled: true
+
+Style/Documentation:
+  Exclude:
+    - db/**/*
+
+Style/ExplicitBlockArgument:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: true
+
+Style/GlobalStdStream:
+  Enabled: true
+
+Style/HashAsLastArrayItem:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashLikeCase:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/OptionalBooleanParameter:
+  Enabled: true
+
+Style/RedundantAssignment:
+  Enabled: true
+
+Style/RedundantFetchBlock:
+  Enabled: true
+
+Style/RedundantFileExtensionInRequire:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/SafeNavigationChainLength:
+  Enabled: true
+  Max: 3
+
+Style/SingleArgumentDig:
+  Enabled: true
+
+Style/SlicingWithRange:
+  Enabled: true
+
+Style/StringConcatenation:
+  Enabled: true
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+Style/TrailingCommaInArguments:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInBlockArgs:
+  Enabled: true
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
