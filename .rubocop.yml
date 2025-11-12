@@ -18,6 +18,8 @@ AllCops:
     - bin/*
     - db/**/*
     - out/**/*
+  SuggestExtensions:
+    rubocop-rails: false
 
 Layout/ArgumentAlignment:
   Enabled: true

@@ -1,9 +1,16 @@
 Description:
-   Installs the boilerplate files to get you started with Operation
+   Installs the boilerplate files to get you started with Operations and Contracts
 
 Example:
     bin/rails generate business_logic:install
 
     This will install the files:
-        app/operations/application_operation.rb
-        spec/support/operation.rb
+        app/business_logic/application_operation.rb
+        app/business_logic/application_contract.rb
+        spec/generators_helper.rb
+
+    And adds gems to your Gemfile:
+        gem "ammeter", "~> 1.1", group: :test
+        gem "dry-initializer", "~> 3.1"
+        gem "dry-operation", "~> 1.0"
+        gem "dry-validation", "~> 1.10"

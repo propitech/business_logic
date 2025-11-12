@@ -1,11 +1,19 @@
 name: Ruby
+permissions:
+  contents: read
+  pull-requests: write
+  actions: write
 
-on:
-  push:
-    branches:
-      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+"on":
   pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 4 * * *"
 
 jobs:
   build:
@@ -14,7 +22,8 @@ jobs:
     strategy:
       matrix:
         ruby:
-          - '3.4.5'
+          - 3.3.7
+          - 3.4.5
 
     steps:
       - uses: actions/checkout@v4
@@ -26,4 +35,13 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Run the default task
+        env:
+          CI: true
         run: bundle exec rake
+
+      - name: Upload result to Quality.sh
+        uses: qltysh/qlty-action/coverage@v2
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository && matrix.ruby == '3.4.5'
+        with:
+          token: ${{secrets.QLTY_COVERAGE_TOKEN}}
+          files: coverage/.resultset.json
