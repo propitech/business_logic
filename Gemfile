@@ -17,3 +17,6 @@ gem "rubocop-rake", "~> 0.7"
 gem "rubocop-rspec", "~> 3.7"
 gem "rubocop-rspec_rails"
 gem "rubocop-thread_safety", "~> 0.7.3"
+gem "simplecov", require: false
+gem "simplecov-cobertura", require: false
+gem "simplecov_json_formatter", require: false

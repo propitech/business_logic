@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="rspec" tests="5" skipped="0" failures="0" errors="0" time="0.007786" timestamp="2025-11-12T14:42:27+01:00" hostname="Mac.dev.local">
+<properties>
+<property name="seed" value="932"/>
+</properties>
+<testcase classname="spec.business_logic_spec" name="BusinessLogic has a version number" file="./spec/business_logic_spec.rb" time="0.000072"></testcase>
+<testcase classname="spec.generators.business_logic.operation_generator_spec" name="BusinessLogic::OperationGenerator spec file is expected to contain /describe Operations::CreateUser/" file="./spec/generators/business_logic/operation_generator_spec.rb" time="0.002330"></testcase>
+<testcase classname="spec.generators.business_logic.operation_generator_spec" name="BusinessLogic::OperationGenerator operation file is expected to contain /class Operations::CreateUser &lt; ApplicationOperation/" file="./spec/generators/business_logic/operation_generator_spec.rb" time="0.001464"></testcase>
+<testcase classname="spec.generators.business_logic.contract_generator_spec" name="BusinessLogic::ContractGenerator spec file is expected to contain /describe Contracts::CreateUser/" file="./spec/generators/business_logic/contract_generator_spec.rb" time="0.001548"></testcase>
+<testcase classname="spec.generators.business_logic.contract_generator_spec" name="BusinessLogic::ContractGenerator operation file is expected to contain /class Contracts::CreateUser &lt; ApplicationContract/" file="./spec/generators/business_logic/contract_generator_spec.rb" time="0.001416"></testcase>
+</testsuite>

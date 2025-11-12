@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "ci_helper"
 require "business_logic"
 require "rails"
 # Pick the frameworks you want:
