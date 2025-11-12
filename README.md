@@ -1,28 +1,63 @@
 # BusinessLogic
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/business_logic`. To experiment with that code, run `bin/console` for an interactive prompt.
+Set of generators to help you build your Rails application business logic.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+This gem only works with Rails 7+ and RSpec.
 
-Install the gem and add to the application's Gemfile by executing:
+### Add to your `Gemfile`
 
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```
+group :development, :test do
+  gem "business_logic", github: "propitech/business_logic"
+end
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+### Configure paths
 
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+In your `config/application.rb` file, add the following lines:
+
+```
+  config.business_logic.install_dir = "app/business_logic" # default if not set
+  config.business_logic.test_dir = "spec/business_logic" # default if not set
 ```
 
+### Install boilerplates
+
+```
+$  bin/rails generate business_logic:install
+```
 ## Usage
 
-TODO: Write usage instructions here
+### Operations
+
+```
+Description:
+    Generates a new operation and its spec file.
+
+Example:
+    bin/rails generate business_logic:contract ValidateStudent
+
+    This will create:
+        app/business_logic/contracts/validate_student.rb
+        spec/business_logic/contracts/validate_student_spec.rb
+```
+
+### Contracts
+
+```
+
+Description:
+    Generates a new operation and its spec file.
+
+Example:
+    bin/rails generate business_logic:contract ValidateStudent
+
+    This will create:
+        app/business_logic/contracts/validate_student.rb
+        spec/business_logic/contracts/validate_student_spec.rb
+```
 
 ## Development
 
@@ -32,7 +67,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/hallelujah/business_logic. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/hallelujah/business_logic/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/propitech/business_logic. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/propitech/business_logic/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -40,4 +75,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the BusinessLogic project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/hallelujah/business_logic/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the BusinessLogic project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/propitech/business_logic/blob/main/CODE_OF_CONDUCT.md).
