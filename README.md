@@ -53,7 +53,7 @@ Example:
 
 ```text
 Description:
-    Generates a new operation and its spec file.
+    Generates a new contract and its spec file.
 
 Example:
     bin/rails generate business_logic:contract ValidateStudent
