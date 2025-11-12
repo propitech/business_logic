@@ -10,7 +10,7 @@ if ENV["CI"]
     SimpleCov::Formatter::HTMLFormatter,
     SimpleCov::Formatter::CoberturaFormatter
   ]
-  SimpleCov.start "rails" do
+  SimpleCov.start do
     formatter SimpleCov::Formatter::MultiFormatter.new formatters
     add_filter "/spec/"
   end
