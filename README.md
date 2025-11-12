@@ -12,10 +12,6 @@ This gem only works with Rails 7+ and RSpec.
 ### Add to your `Gemfile`
 
 ```ruby
-gem "dry-initializer", "~> 3.1"
-gem "dry-operation", "~> 1.0"
-gem "dry-validation", "~> 1.10"
-
 group :development, :test do
   gem "business_logic", github: "propitech/business_logic"
 end
