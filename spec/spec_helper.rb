@@ -14,8 +14,14 @@ require "action_controller"
 # require "action_text/engine"
 require "action_view"
 # require "action_cable/engine"
+require "dry/monads"
+require "dry/operation"
+require "dry/validation"
 require "rspec/rails"
 require "ammeter/init"
+
+Dry::Validation.load_extensions(:monads)
+
 dir = File.dirname(__FILE__)
 Dir["#{dir}/support/**/*.rb"].sort_by(&:to_s).each { |f| require f }
 
