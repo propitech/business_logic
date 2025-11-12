@@ -2,6 +2,7 @@
 plugins:
   - rubocop-rake
   - rubocop-rspec
+  - rubocop-rspec_rails
   - rubocop-thread_safety
 
 inherit_from:

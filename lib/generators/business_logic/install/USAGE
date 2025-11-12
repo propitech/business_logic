@@ -1,0 +1,9 @@
+Description:
+   Installs the boilerplate files to get you started with Operation
+
+Example:
+    bin/rails generate business_logic:install
+
+    This will install the files:
+        app/operations/application_operation.rb
+        spec/support/operation.rb

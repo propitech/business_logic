@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+class <%= class_name %> < ApplicationContract
+  # params do
+  #   required(:email).value(:string)
+  #   required(:age).value(:integer)
+  # end
+end

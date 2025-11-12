@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+
+class <%= class_name %> < ApplicationOperation
+
+  # def call(input)
+  #   attrs = step validate(input)
+  #   user = step persist(attrs)
+  #   step notify(user)
+  #   user
+  # end
+
+  # private
+
+  # def validate(input)
+  #   # Return Success(attrs) or Failure(error)
+  # end
+
+  # def persist(attrs)
+  #   # Return Success(user) or Failure(error)
+  # end
+
+  # def notify(user)
+  #   # Return Success(true) or Failure(error)
+  # end
+end

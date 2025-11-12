@@ -1,0 +1,9 @@
+Description:
+    Generates a new operation and its spec file.
+
+Example:
+    bin/rails generate business_logic:contract ValidateStudent
+
+    This will create:
+        app/business_logic/contracts/validate_student.rb
+        spec/business_logic/contracts/validate_student_spec.rb

@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+RSpec.describe <%= class_name %> do
+  subject(:operation) { described_class.new.call }
+
+  pending "add some scenarios (or delete) #{__FILE__}"
+end
