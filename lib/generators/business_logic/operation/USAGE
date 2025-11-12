@@ -5,5 +5,5 @@ Example:
     bin/rails generate business_logic:operation CreateUser
 
     This will create:
-        app/operations/create_user.rb
-        spec/operations.create_user_spec.rb
+        app/business_logic/operations/create_user.rb
+        spec/business_logic/operations/create_user_spec.rb
