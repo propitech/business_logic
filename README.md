@@ -4,6 +4,7 @@ Set of generators to help you build your Rails application business logic.
 
 [![Ruby CI](https://github.com/propitech/business_logic/actions/workflows/main.yml/badge.svg)](https://github.com/propitech/business_logic/actions/workflows/main.yml)
 [![CodeQL](https://github.com/propitech/business_logic/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/propitech/business_logic/actions/workflows/github-code-scanning/codeql)
+[![Maintainability](https://qlty.sh/gh/propitech/projects/business_logic/maintainability.svg)](https://qlty.sh/gh/propitech/projects/business_logic)
 
 ## Installation
 
