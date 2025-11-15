@@ -5,6 +5,8 @@ require "dry-validation"
 require "business_logic/matchers/success_matcher"
 require "business_logic/matchers/failure_matcher"
 
+Dry::Validation.load_extensions(:monads)
+
 module BusinessLogic
   module Matchers # :nodoc:
     def succeed_contract
