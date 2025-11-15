@@ -20,8 +20,6 @@ require "dry/validation"
 require "rspec/rails"
 require "ammeter/init"
 
-Dry::Validation.load_extensions(:monads)
-
 dir = File.dirname(__FILE__)
 Dir["#{dir}/support/**/*.rb"].sort_by(&:to_s).each { |f| require f }
 
