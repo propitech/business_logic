@@ -17,7 +17,7 @@ gem "rspec_junit_formatter"
 gem "rspec-rails", "~> 8.0"
 gem "rubocop", "~> 1.84"
 gem "rubocop-rake", "~> 0.7"
-gem "rubocop-rspec", "~> 3.7"
+gem "rubocop-rspec", "~> 3.9"
 gem "rubocop-rspec_rails"
 gem "rubocop-thread_safety", "~> 0.7.3"
 gem "simplecov", require: false
