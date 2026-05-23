@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-23
+
+- Extract `ApplicationForm` logic into a shipped base class:
+  `BusinessLogic::Form`. Install template now scaffolds a one-line
+  `class ApplicationForm < BusinessLogic::Form; end` — bug fixes and
+  feature additions to the bridge logic propagate via `bundle update`
+  instead of requiring a re-install in every consumer app.
+  Existing 0.2.0 consumers must replace their generated
+  `application_form.rb` body with the new one-liner.
+
 ## [0.2.0] - 2026-05-23
 
 - Add `ApplicationForm` install template — `ActiveModel::Model` +

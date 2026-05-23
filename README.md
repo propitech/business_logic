@@ -10,14 +10,15 @@ controllers** and **in one canonical place**: `app/business_logic/`.
 
 ## What you get
 
-Three base classes, each a thin wrapper around a `dry-rb` primitive,
-each generated into your app so you can edit them freely:
+Three app-side base classes generated into your project so you can
+add project-wide concerns freely. The form bridge logic ships in the
+gem so bug fixes propagate via `bundle update`.
 
-| File                                          | Inherits from                       | Use for                                                                                                                                       |
-| --------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app/business_logic/application_operation.rb` | `Dry::Operation`                    | Multi-step use cases. Steps return `Success` / `Failure`.                                                                                     |
-| `app/business_logic/application_contract.rb`  | `Dry::Validation::Contract`         | Input validation rules — what is allowed to enter the operation.                                                                              |
-| `app/business_logic/application_form.rb`      | `ActiveModel::Model` + `Attributes` | Bridge between Rails form helpers (`simple_form_for @form`) and operation results. Holds submitted attributes; carries `ActiveModel::Errors`. |
+| File                                          | Inherits from                                                        | Use for                                                                                                                                       |
+| --------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/business_logic/application_operation.rb` | `Dry::Operation`                                                     | Multi-step use cases. Steps return `Success` / `Failure`.                                                                                     |
+| `app/business_logic/application_contract.rb`  | `Dry::Validation::Contract`                                          | Input validation rules — what is allowed to enter the operation.                                                                              |
+| `app/business_logic/application_form.rb`      | `BusinessLogic::Form` (an `ActiveModel::Model` + `Attributes` mixin) | Bridge between Rails form helpers (`simple_form_for @form`) and operation results. Holds submitted attributes; carries `ActiveModel::Errors`. |
 
 Plus three matching generators (`business_logic:operation`,
 `business_logic:contract`, `business_logic:form`) that scaffold a
@@ -172,7 +173,8 @@ module Forms
 end
 ```
 
-`ApplicationForm` ships with two helpers:
+`BusinessLogic::Form` (inherited via `ApplicationForm`) ships with
+two helpers:
 
 - **`.from_params(params, key: model_name.param_key)`** — strong-params
   extraction. Permits only declared attributes.
@@ -180,6 +182,17 @@ end
   (from a contract, an Active Record model, anything shaped like
   `{attr => [msgs]}` / `{attr => {nested => [msgs]}}`) into
   `ActiveModel::Errors`. Unknown keys land on `:base`.
+
+`ApplicationForm` itself is one line:
+
+```ruby
+class ApplicationForm < BusinessLogic::Form
+end
+```
+
+Add project-wide hooks (i18n, custom param extraction, shared
+validations) there. Bridge logic stays in the gem so a `bundle
+update` is the only step needed to pick up fixes.
 
 ## End-to-end pattern
 
