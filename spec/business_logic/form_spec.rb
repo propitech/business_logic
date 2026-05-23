@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "business_logic/form"
 
-# Behavioral spec for the ApplicationForm install template.
-# `spec/support/application_form.rb` mirrors the install template
-# verbatim so we can exercise it without rendering the .tt.
-RSpec.describe ApplicationForm do
+RSpec.describe BusinessLogic::Form do
   let(:form_class) do
     Class.new(described_class) do
       def self.name = "TestForm"
