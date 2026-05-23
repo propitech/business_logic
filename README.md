@@ -13,11 +13,11 @@ controllers** and **in one canonical place**: `app/business_logic/`.
 Three base classes, each a thin wrapper around a `dry-rb` primitive,
 each generated into your app so you can edit them freely:
 
-| File | Inherits from | Use for |
-| ---- | ------------- | ------- |
-| `app/business_logic/application_operation.rb` | `Dry::Operation` | Multi-step use cases. Steps return `Success` / `Failure`. |
-| `app/business_logic/application_contract.rb` | `Dry::Validation::Contract` | Input validation rules — what is allowed to enter the operation. |
-| `app/business_logic/application_form.rb` | `ActiveModel::Model` + `Attributes` | Bridge between Rails form helpers (`simple_form_for @form`) and operation results. Holds submitted attributes; carries `ActiveModel::Errors`. |
+| File                                          | Inherits from                       | Use for                                                                                                                                       |
+| --------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/business_logic/application_operation.rb` | `Dry::Operation`                    | Multi-step use cases. Steps return `Success` / `Failure`.                                                                                     |
+| `app/business_logic/application_contract.rb`  | `Dry::Validation::Contract`         | Input validation rules — what is allowed to enter the operation.                                                                              |
+| `app/business_logic/application_form.rb`      | `ActiveModel::Model` + `Attributes` | Bridge between Rails form helpers (`simple_form_for @form`) and operation results. Holds submitted attributes; carries `ActiveModel::Errors`. |
 
 Plus three matching generators (`business_logic:operation`,
 `business_logic:contract`, `business_logic:form`) that scaffold a

@@ -12,10 +12,15 @@ class ApplicationForm
   include ActiveModel::Validations
 
   def self.from_params(params, key: model_name.param_key)
-    raw = params.fetch(key, {})
-    permitted = raw.respond_to?(:permit) ? raw.permit(attribute_names) : raw
-    new(permitted.to_h.symbolize_keys)
+    new(extract_attributes(params, key))
   end
+
+  def self.extract_attributes(params, key)
+    raw = params.fetch(key, {})
+    permitted = raw.is_a?(ActionController::Parameters) ? raw.permit(attribute_names) : raw
+    permitted.to_h.symbolize_keys
+  end
+  private_class_method :extract_attributes
 
   # Translate a nested errors hash (dry-validation, AR, or anything
   # shaped like `{attr => [msgs]}` / `{attr => {nested => [msgs]}}`)
@@ -23,23 +28,29 @@ class ApplicationForm
   # nested keys are joined with dots and added under :base when no
   # matching attribute exists.
   def assign_errors(source)
-    flatten(source).each do |attr, messages|
-      Array(messages).each { |msg| errors.add(attr, msg) }
-    end
+    flatten(source).each { |attr, messages| add_messages(attr, messages) }
     self
   end
 
   private
 
+  def add_messages(attr, messages)
+    Array(messages).each { |msg| errors.add(attr, msg) }
+  end
+
   def flatten(hash, prefix = nil)
     hash.each_with_object({}) do |(key, value), acc|
       path = prefix ? :"#{prefix}.#{key}" : key.to_sym
-      if value.is_a?(Hash)
-        acc.merge!(flatten(value, path))
-      else
-        target = known_attribute?(path) ? path : :base
-        (acc[target] ||= []).concat(Array(value))
-      end
+      merge_entry(acc, path, value)
+    end
+  end
+
+  def merge_entry(acc, path, value)
+    if value.is_a?(Hash)
+      acc.merge!(flatten(value, path))
+    else
+      target = known_attribute?(path) ? path : :base
+      (acc[target] ||= []).concat(Array(value))
     end
   end
 

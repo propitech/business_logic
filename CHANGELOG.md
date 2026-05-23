@@ -12,7 +12,7 @@
 - Add `business_logic:form` generator. Scaffolds a form under
   `app/business_logic/forms/<name>.rb` + matching spec.
 - Expand README with end-to-end usage (operation + contract + form
-  + controller + view, including the Turbo 422 caveat).
+  - controller + view, including the Turbo 422 caveat).
 
 ## [0.1.0] - 2025-11-12
 
