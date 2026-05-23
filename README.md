@@ -1,89 +1,255 @@
 # BusinessLogic
 
-Set of generators to help you build your Rails application business logic.
+A Rails railtie that installs a small set of base classes and
+generators for keeping domain orchestration **out of your models and
+controllers** and **in one canonical place**: `app/business_logic/`.
 
 [![Ruby CI](https://github.com/propitech/business_logic/actions/workflows/main.yml/badge.svg)](https://github.com/propitech/business_logic/actions/workflows/main.yml)
 [![CodeQL](https://github.com/propitech/business_logic/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/propitech/business_logic/actions/workflows/github-code-scanning/codeql)
 [![Maintainability](https://qlty.sh/gh/propitech/projects/business_logic/maintainability.svg)](https://qlty.sh/gh/propitech/projects/business_logic)
 
+## What you get
+
+Three base classes, each a thin wrapper around a `dry-rb` primitive,
+each generated into your app so you can edit them freely:
+
+| File                                          | Inherits from                       | Use for                                                                                                                                       |
+| --------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/business_logic/application_operation.rb` | `Dry::Operation`                    | Multi-step use cases. Steps return `Success` / `Failure`.                                                                                     |
+| `app/business_logic/application_contract.rb`  | `Dry::Validation::Contract`         | Input validation rules — what is allowed to enter the operation.                                                                              |
+| `app/business_logic/application_form.rb`      | `ActiveModel::Model` + `Attributes` | Bridge between Rails form helpers (`simple_form_for @form`) and operation results. Holds submitted attributes; carries `ActiveModel::Errors`. |
+
+Plus three matching generators (`business_logic:operation`,
+`business_logic:contract`, `business_logic:form`) that scaffold a
+class + its RSpec file in the right directory.
+
 ## Installation
 
-This gem only works with Rails 7+ and RSpec.
+Rails 7+ and RSpec required.
 
-### Add to your `Gemfile`
-
-```ruby
-group :development, :test do
-  gem "business_logic", github: "propitech/business_logic"
-end
-```
-
-### Configure paths
-
-In your `config/application.rb` file, add the following lines:
+### 1. Add the gem to your `Gemfile`
 
 ```ruby
-  config.business_logic.install_dir = "app/business_logic" # default if not set
-  config.business_logic.test_dir = "spec/business_logic" # default if not set
+gem "business_logic", github: "propitech/business_logic"
 ```
 
-### Install boilerplates
+### 2. (Optional) Configure paths
+
+Defaults shown — only set these if you want non-standard locations.
+
+```ruby
+# config/application.rb
+config.business_logic.install_dir = "app/business_logic"
+config.business_logic.test_dir    = "spec/business_logic"
+```
+
+### 3. Run the installer
 
 ```shell
 bin/rails generate business_logic:install
 ```
 
+This copies:
+
+- `app/business_logic/application_operation.rb`
+- `app/business_logic/application_contract.rb`
+- `app/business_logic/application_form.rb`
+- `spec/generators_helper.rb`
+
+…and adds these gems to your `Gemfile`:
+
+```ruby
+gem "ammeter", "~> 1.1", group: :test
+gem "dry-initializer", "~> 3.1"
+gem "dry-operation", "~> 1.0"
+gem "dry-validation", "~> 1.10"
+```
+
+Run `bundle install` to pull them in.
+
 ## Usage
 
-### Operations
+### `business_logic:operation` — a domain verb
 
-```text
-Description:
-    Generates a new operation and its spec file.
-
-Example:
-    bin/rails generate business_logic:contract ValidateStudent
-
-    This will create:
-        app/business_logic/contracts/validate_student.rb
-        spec/business_logic/contracts/validate_student_spec.rb
+```shell
+bin/rails generate business_logic:operation CreateUser
 ```
 
-### Contracts
+Creates:
 
-```text
-Description:
-    Generates a new contract and its spec file.
+- `app/business_logic/operations/create_user.rb`
+- `spec/business_logic/operations/create_user_spec.rb`
 
-Example:
-    bin/rails generate business_logic:contract ValidateStudent
+A typical operation pipelines steps and returns a monad. Inject the
+form, contract, and any side-effect adapters via `option`:
 
-    This will create:
-        app/business_logic/contracts/validate_student.rb
-        spec/business_logic/contracts/validate_student_spec.rb
+```ruby
+module Operations
+  class CreateUser < ApplicationOperation
+    option :contract, default: -> { Contracts::CreateUser.new }
+    option :mailer,   default: -> { UserMailer }
+
+    def call(form:)
+      attrs = step validate(form)
+      user  = step persist(form, attrs)
+      step notify(user)
+      Success(user)
+    end
+
+    private
+
+    def validate(form)
+      result = contract.call(form.attributes.symbolize_keys)
+      return Success(result.to_h) if result.success?
+
+      form.assign_errors(result.errors.to_h)
+      Failure(form)
+    end
+
+    def persist(form, attrs)
+      user = User.new(attrs)
+      return Success(user) if user.save
+
+      form.assign_errors(user.errors.to_hash)
+      Failure(form)
+    end
+
+    def notify(user)
+      mailer.welcome(user).deliver_later
+      Success(user)
+    end
+  end
+end
 ```
+
+### `business_logic:contract` — input validation rules
+
+```shell
+bin/rails generate business_logic:contract CreateUser
+```
+
+Creates:
+
+- `app/business_logic/contracts/create_user.rb`
+- `spec/business_logic/contracts/create_user_spec.rb`
+
+```ruby
+module Contracts
+  class CreateUser < ApplicationContract
+    params do
+      required(:email).filled(:string, format?: URI::MailTo::EMAIL_REGEXP)
+      required(:age).filled(:integer, gteq?: 18)
+    end
+  end
+end
+```
+
+`contract.call(attrs).errors.to_h` returns the nested hash
+`ApplicationForm#assign_errors` consumes.
+
+### `business_logic:form` — the view-facing surface
+
+```shell
+bin/rails generate business_logic:form CreateUser
+```
+
+Creates:
+
+- `app/business_logic/forms/create_user.rb`
+- `spec/business_logic/forms/create_user_spec.rb`
+
+```ruby
+module Forms
+  class CreateUser < ApplicationForm
+    # Optional: override only when the form binds to a non-self
+    # param key, e.g. when the form maps to an existing AR model's
+    # form scope.
+    # def self.model_name = ActiveModel::Name.new(self, nil, "user")
+
+    attribute :email, :string
+    attribute :age, :integer
+  end
+end
+```
+
+`ApplicationForm` ships with two helpers:
+
+- **`.from_params(params, key: model_name.param_key)`** — strong-params
+  extraction. Permits only declared attributes.
+- **`#assign_errors(source)`** — translates a nested errors hash
+  (from a contract, an Active Record model, anything shaped like
+  `{attr => [msgs]}` / `{attr => {nested => [msgs]}}`) into
+  `ActiveModel::Errors`. Unknown keys land on `:base`.
+
+## End-to-end pattern
+
+Controllers stay dispatchers. Build the form, call the operation,
+branch on the monad, re-render with the form on failure.
+
+```ruby
+class UsersController < ApplicationController
+  def create
+    form   = Forms::CreateUser.from_params(params)
+    result = Operations::CreateUser.new.call(form: form)
+
+    if result.success?
+      redirect_to result.value!, notice: t(".created")
+    else
+      @form = result.failure
+      render :new, status: :unprocessable_content
+    end
+  end
+end
+```
+
+```erb
+<%# app/views/users/new.html.erb %>
+<%= simple_form_for @form, url: users_path do |f| %>
+  <%= f.input :email %>
+  <%= f.input :age %>
+  <%= f.submit %>
+<% end %>
+```
+
+`simple_form` reads `@form.errors[:email]` natively, so per-field
+error messages and `aria-invalid` markup show up without any custom
+view logic.
+
+**Turbo note:** Turbo Drive discards HTML responses to non-GET
+requests unless the status is in the 4xx/5xx range. Always render
+the error page with `status: :unprocessable_content` (HTTP 422) — a
+default 200 will leave the user staring at the unchanged page.
+
+## RSpec matchers
+
+`require "business_logic/matchers"` in your `spec_helper.rb` to get
+three composable matchers for monadic results:
+
+```ruby
+expect(Contracts::CreateUser.new.call(email: "bad")).to fail_contract.with_messages(email: ["invalid"])
+expect(Operations::CreateUser.new.call(form: form)).to succeed_operation
+```
+
+Aliases: `succeed_contract` / `succeed_validation` / `succeed_operation`;
+`fail_contract` / `fail_validation` / `fail_operation`.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies.
-Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you
-to experiment.
+```shell
+bin/setup       # install gem deps
+rake spec       # run the tests
+bin/console     # IRB with the gem preloaded
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`.
-To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`,
-which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Release a new version: bump `lib/business_logic/version.rb`, then
+`bundle exec rake release` (tags, pushes, publishes to RubyGems).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at <https://github.com/propitech/business_logic>.
-This project is intended to be a safe, welcoming space for collaboration,
-and contributors are expected to adhere to the [code of conduct](https://github.com/propitech/business_logic/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests welcome on GitHub at
+<https://github.com/propitech/business_logic>. Contributors are
+expected to follow the [code of conduct](https://github.com/propitech/business_logic/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the BusinessLogic project's codebases, issue trackers, chat rooms and mailing lists
-is expected to follow the [code of conduct](https://github.com/propitech/business_logic/blob/main/CODE_OF_CONDUCT.md).
+[MIT](https://opensource.org/licenses/MIT).

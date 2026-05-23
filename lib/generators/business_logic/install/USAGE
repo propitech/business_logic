@@ -7,6 +7,7 @@ Example:
     This will install the files:
         app/business_logic/application_operation.rb
         app/business_logic/application_contract.rb
+        app/business_logic/application_form.rb
         spec/generators_helper.rb
 
     And adds gems to your Gemfile:

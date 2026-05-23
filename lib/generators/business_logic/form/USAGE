@@ -1,0 +1,9 @@
+Description:
+    Generates a new form object and its spec file.
+
+Example:
+    bin/rails generate business_logic:form RegisterUser
+
+    This will create:
+        app/business_logic/forms/register_user.rb
+        spec/business_logic/forms/register_user_spec.rb
