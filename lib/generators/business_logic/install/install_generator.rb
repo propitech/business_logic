@@ -17,6 +17,7 @@ module BusinessLogic
     def copy_files
       copy_file "application_operation.rb.tt", "#{install_path}/application_operation.rb"
       copy_file "application_contract.rb.tt", "#{install_path}/application_contract.rb"
+      copy_file "application_form.rb.tt", "#{install_path}/application_form.rb"
       copy_file "spec_generators_helper.rb.tt", "#{tests_path}/generators_helper.rb"
     end
 
