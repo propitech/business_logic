@@ -75,6 +75,16 @@ RSpec.describe BusinessLogic::Form do
     it "returns an empty set when no contract is resolvable" do
       expect(ContractConventionSpec::Forms::Users::OrphanForm.required_attributes).to be_empty
     end
+
+    it "returns an empty set when probing the contract raises ArgumentError or NoMethodError" do
+      uninstantiable = Class.new do
+        def self.new(*) = raise ArgumentError, "contract takes arguments"
+      end
+      form = Class.new(BusinessLogic::Form) do
+        validates_with_contract uninstantiable
+      end
+      expect(form.required_attributes).to be_empty
+    end
   end
 
   describe ".attribute_required?" do
