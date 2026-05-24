@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+- Infer required form fields from the bound dry-validation
+  Contract. `BusinessLogic::Form` resolves its Contract by the
+  `Forms::Foo -> Contracts::Foo` naming convention (or by an
+  explicit `validates_with_contract Contracts::Foo` declaration)
+  and exposes `.contract_class`, `.required_attributes`,
+  `.attribute_required?`, and instance `#required?` so any form
+  builder can read the contract-driven required state. Forms stay
+  pure `ActiveModel` objects — no validators are mutated under the
+  hood, and `Form#valid?` is unaffected. Falls back to ActiveModel
+  presence-validator detection when no Contract resolves, so
+  existing forms keep working unchanged.
+  See README §"Convention-driven architecture".
+- Add an opt-in `simple_form` integration:
+  `BusinessLogic::SimpleForm::Required`. Prepending it onto
+  `SimpleForm::Inputs::Base` from an initializer makes
+  `simple_form_for @form` render the required marker (and
+  `aria-required="true"`) for every contract-required attribute,
+  while honouring per-input `required: true | false` overrides as
+  presentation-only knobs. `simple_form` is not a runtime
+  dependency of the gem. See README §"simple_form integration".
+
 ## [0.3.0] - 2026-05-23
 
 - Extract `ApplicationForm` logic into a shipped base class:

@@ -226,12 +226,136 @@ end
 
 `simple_form` reads `@form.errors[:email]` natively, so per-field
 error messages and `aria-invalid` markup show up without any custom
-view logic.
+view logic. With the optional [simple_form
+integration](#simple_form-integration) installed, it also renders
+the **required marker** (and `aria-required="true"`) for every
+attribute the bound Contract declares as `required(...)` — without
+you repeating that on the Form. `optional(...)` keys render as
+optional.
 
 **Turbo note:** Turbo Drive discards HTML responses to non-GET
 requests unless the status is in the 4xx/5xx range. Always render
 the error page with `status: :unprocessable_content` (HTTP 422) — a
 default 200 will leave the user staring at the unchanged page.
+
+## Convention-driven architecture
+
+This gem prefers **convention over configuration**. The three
+generators (`operation`, `contract`, `form`) drop classes into
+matching namespaces so that any two of the three can find the third
+by name alone:
+
+```text
+Operations::CreateUser   ── orchestrates ─▶  Contracts::CreateUser
+                                                   │
+Forms::CreateUser        ── validated by ─────────┘
+```
+
+The Form ↔ Contract naming rule:
+
+```text
+Forms::Users::Profile::BasicInfoForm
+        │                  │
+        │                  └── strip trailing "Form" ⇒ "BasicInfo"
+        └── swap `Forms` segment for `Contracts`
+                                  ↓
+Contracts::Users::Profile::BasicInfoContract
+```
+
+Two payoffs:
+
+1. **Less duplication.** The Contract is the only place that knows
+   what is required. Forms stop drifting from it. The
+   [simple_form integration](#simple_form-integration) reads the
+   inferred required state for every input automatically.
+2. **Predictable navigation for humans _and_ AI agents.** Given any
+   Form, both can locate the Contract by name. No registry to
+   grep, no DSL to memorise.
+
+### Sharing a Form/Contract across operations
+
+When two operations need the same fields, lean on ordinary Ruby
+inheritance — no special multi-contract dispatch is needed:
+
+```ruby
+class Contracts::User < ApplicationContract
+  params { required(:email).filled(:string) }
+end
+
+class Contracts::CreateUser < Contracts::User
+  params { required(:password).filled(:string) }
+end
+
+class Forms::User < ApplicationForm
+  attribute :email, :string
+end
+
+class Forms::CreateUser < Forms::User
+  attribute :password, :string
+end
+```
+
+Or extract the shared fields into a module and `include` it into
+both Forms — same pattern, same convention applies to the
+subclasses.
+
+### Opting out
+
+If a Form's namespace cannot follow the convention (renamed
+namespaces, shared Contract across unrelated Forms, etc.) declare
+the binding explicitly inside the Form class:
+
+```ruby
+class Forms::Onboarding::Step1 < ApplicationForm
+  validates_with_contract Contracts::Users::CreateUser
+
+  attribute :email, :string
+end
+```
+
+Or opt out of the inferred required marker on a per-input basis the
+usual simple_form way:
+
+```erb
+<%= f.input :email, required: false %>
+```
+
+The view-level override only controls the rendered marker (asterisk
+
+- `aria-required` + the HTML5 `required` attribute). Server-side
+  validation still runs through the Contract — passing
+  `required: false` does not loosen what the Contract enforces. Apply
+  it where presentation and validation legitimately differ:
+  multi-step wizards rendering a partial field set, JS-populated
+  fields, controller-prefilled inputs, etc.
+
+## simple_form integration
+
+Opt in from a Rails initializer:
+
+```ruby
+# config/initializers/simple_form.rb
+require "business_logic/simple_form/required"
+
+SimpleForm::Inputs::Base.prepend(BusinessLogic::SimpleForm::Required)
+```
+
+That single prepend teaches every input to consult the bound
+Contract when computing the required state. The gem does not pull
+`simple_form` as a runtime dependency, and Forms remain pure
+`ActiveModel` objects (no fake validators are installed). Apps that
+use formtastic or `form_with` are unaffected.
+
+Behaviour:
+
+- Object **is** a `BusinessLogic::Form` **and** a Contract resolves
+  (via convention or `validates_with_contract`) → required state
+  comes from the Contract's `required(...)` keys.
+- `f.input :foo, required: true | false` is always honoured —
+  presentation override wins.
+- Object is anything else (plain models, AR, formtastic-style
+  decorators) → control falls through to simple_form's stock
+  `calculate_required`, so existing behaviour is unchanged.
 
 ## RSpec matchers
 

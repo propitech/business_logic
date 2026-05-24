@@ -12,6 +12,14 @@ detectors:
       - BusinessLogic
       - BusinessLogic::Helper::ClassMethods
       - Contracts::CreateUser
+      - ContractConventionSpec::Contracts::Users::BasicInfoContract
+      - ContractConventionSpec::Forms::Users::BasicInfoForm
+      - ContractConventionSpec::Forms::Users::OrphanForm
+      - ContractConventionSpec::Forms::Users::ExplicitForm
+      - SimpleFormRequiredSpec::Contracts::Users::ProfileContract
+      - SimpleFormRequiredSpec::Forms::Users::ProfileForm
+      - SimpleFormRequiredSpec::PlainModel
+      - StubInput
   TooManyStatements:
     exclude:
       - initialize
