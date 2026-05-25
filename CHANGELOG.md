@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+- Split `BusinessLogic::Command` into a bare base
+  (`BusinessLogic::Command::Base`, aliased from `BaseCommand`) and
+  a batteries-included default. `BusinessLogic::Command` now
+  inherits from `Base` and pre-extends
+  `BusinessLogic::Command::DependencyInjection`, a new class-level
+  mixin that owns the `.dependency` / `.with` DSL extracted from
+  the old monolithic class. Existing apps see no change:
+  `class ApplicationCommand < BusinessLogic::Command` still gets
+  the same DSL out of the box. Apps that want a stripped-down
+  base — no DI — may subclass `BusinessLogic::Command::Base` and
+  `extend BusinessLogic::Command::DependencyInjection` per command.
+- Add `BusinessLogic::Command::FormBinding`, a class-level mixin
+  pre-extended on `BusinessLogic::Command` that exposes
+  `.bind_form(form:, **mappings)`. The wrapped command must
+  declare `dependency :form`; on call, the form is injected as
+  that dependency, each `command_option => form_method` mapping
+  is resolved by reading `form.public_send(method)` and passed as
+  a keyword, and any `Failure` whose value is a Hash is
+  side-routed through `form.assign_errors(failure.to_h)`. The
+  returned `Result` is unchanged. Composes with `.with` in either
+  order.
 - Infer required form fields from the bound dry-validation
   Contract. `BusinessLogic::Form` resolves its Contract by the
   `Forms::Foo -> Contracts::Foo` naming convention (or by an
