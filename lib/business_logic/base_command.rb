@@ -38,6 +38,16 @@ module BusinessLogic
       new(*params, **keyword_params).call
     end
 
+    # Initialise the single-shot guard. Forwards to
+    # `Dry::Initializer`'s constructor for `param` / `option` /
+    # `dependency` wiring, then sets `@__called = false` so reek's
+    # InstanceVariableAssumption check is satisfied without a
+    # `nil`-vs-`false` quirk in {#call}.
+    def initialize(...)
+      super
+      @__called = false
+    end
+
     # Run the command. Raises {AlreadyCalled} on the second
     # invocation. Delegates to the subclass's {#execute}.
     #

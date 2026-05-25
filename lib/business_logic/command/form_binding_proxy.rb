@@ -28,23 +28,26 @@ module BusinessLogic
       end
 
       def call(*params, **keyword_params)
-        injected = resolve_attribute_mappings
-        result = @callable.call(*params, **keyword_params, **injected, form: @form)
-        forward_failure_to_form(result)
-        result
+        invoke(*params, **keyword_params).tap { |result| forward_failure(result) }
       end
 
       private
 
-      def resolve_attribute_mappings
+      def invoke(*params, **keyword_params)
+        @callable.call(*params, **keyword_params, **resolved_attributes, form: @form)
+      end
+
+      def resolved_attributes
         @attribute_mappings.transform_values { |method_name| @form.public_send(method_name) }
       end
 
-      def forward_failure_to_form(result)
-        return if result.success?
-        return unless result.failure.is_a?(Hash)
-
-        @form.assign_errors(result.failure.to_h)
+      def forward_failure(result)
+        case result
+        in Dry::Monads::Failure(Hash => errors)
+          @form.assign_errors(errors)
+        else
+          nil
+        end
       end
     end
     private_constant :FormBindingProxy
