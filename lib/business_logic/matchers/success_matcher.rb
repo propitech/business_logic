@@ -10,15 +10,17 @@ module BusinessLogic
       include RSpec::Matchers::Composable
       include Dry::Monads::Result::Mixin
 
+      def initialize
+        super
+        @actual = nil
+        @monad = nil
+        @failed_reason = nil
+        @value = nil
+      end
+
       def matches?(actual)
-        @actual = actual
-        @monad = actual.is_a?(Dry::Validation::Result) ? actual.to_monad : actual
-
-        @failed_reason = catch(:failed) do
-          match_success?
-          match_the_value?
-        end
-
+        capture(actual)
+        @failed_reason = detect_failure
         !@failed_reason
       end
 
@@ -39,6 +41,18 @@ module BusinessLogic
       private
 
       attr_reader :actual, :value, :failed_reason, :monad
+
+      def capture(actual)
+        @actual = actual
+        @monad = actual.is_a?(Dry::Validation::Result) ? actual.to_monad : actual
+      end
+
+      def detect_failure
+        catch :failed do
+          match_success?
+          match_the_value?
+        end
+      end
 
       def match_success?
         throw(:failed, :not_a_success) unless monad.is_a?(Success)

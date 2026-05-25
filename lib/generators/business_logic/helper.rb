@@ -20,18 +20,12 @@ module BusinessLogic
       end
     end
 
-    private
-
     def tests_path
-      generators_options.fetch(:tests_dir, "spec/business_logic")
+      Helper.options.fetch(:tests_dir, "spec/business_logic")
     end
 
     def install_path
-      generators_options.fetch(:install_dir, "app/business_logic")
-    end
-
-    def generators_options
-      BusinessLogic::Railtie.config.business_logic
+      Helper.options.fetch(:install_dir, "app/business_logic")
     end
 
     def component_name
@@ -41,5 +35,12 @@ module BusinessLogic
     def regular_class_path
       [component_name] + super
     end
+
+    def self.options
+      BusinessLogic::Railtie.config.business_logic
+    end
+
+    module_function :tests_path, :install_path
+    private_class_method :tests_path, :install_path
   end
 end
