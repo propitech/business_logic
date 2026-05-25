@@ -16,13 +16,15 @@ gem so bug fixes propagate via `bundle update`.
 
 | File                                          | Inherits from                                                        | Use for                                                                                                                                       |
 | --------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app/business_logic/application_operation.rb` | `Dry::Operation`                                                     | Multi-step use cases. Steps return `Success` / `Failure`.                                                                                     |
+| `app/business_logic/application_operation.rb` | `Dry::Operation`                                                     | Multi-step pipelines. Step methods return `Success` / `Failure`, with shared data flowing through arguments.                                  |
+| `app/business_logic/application_command.rb`   | `BusinessLogic::Command`                                             | OOP service objects for the same use cases. Collaborators/input captured in `#initialize`; `#call` is no-arg and single-shot.                 |
 | `app/business_logic/application_contract.rb`  | `Dry::Validation::Contract`                                          | Input validation rules — what is allowed to enter the operation.                                                                              |
 | `app/business_logic/application_form.rb`      | `BusinessLogic::Form` (an `ActiveModel::Model` + `Attributes` mixin) | Bridge between Rails form helpers (`simple_form_for @form`) and operation results. Holds submitted attributes; carries `ActiveModel::Errors`. |
 
-Plus three matching generators (`business_logic:operation`,
-`business_logic:contract`, `business_logic:form`) that scaffold a
-class + its RSpec file in the right directory.
+Plus four matching generators (`business_logic:operation`,
+`business_logic:command`, `business_logic:contract`,
+`business_logic:form`) that scaffold a class + its RSpec file in
+the right directory.
 
 ## Installation
 
@@ -53,6 +55,7 @@ bin/rails generate business_logic:install
 This copies:
 
 - `app/business_logic/application_operation.rb`
+- `app/business_logic/application_command.rb`
 - `app/business_logic/application_contract.rb`
 - `app/business_logic/application_form.rb`
 - `spec/generators_helper.rb`
@@ -122,6 +125,111 @@ module Operations
   end
 end
 ```
+
+### `business_logic:command` — an OOP service object
+
+```shell
+bin/rails generate business_logic:command CreateUser
+```
+
+Creates:
+
+- `app/business_logic/commands/create_user.rb`
+- `spec/business_logic/commands/create_user_spec.rb`
+
+A Command is the OOP sibling of Operation: same public interface
+(`#call` returns a `Dry::Monads::Result`), different internal
+shape. Collaborators and input live on the instance, set in
+`#initialize` via `Dry::Initializer`. Three DSLs:
+
+- `param :name` — positional input data.
+- `option :name` — keyword input data.
+- `dependency :name, default: -> { ... }` — keyword injected
+  collaborator. `option` plus registration as overridable via
+  `.with(...)`.
+
+`#call` takes no arguments and is single-shot — a second
+invocation raises `BusinessLogic::Command::AlreadyCalled`.
+Subclasses override `#execute`, not `#call`; the base wraps the
+override with the guard.
+
+```ruby
+module Commands
+  class CreateUser < ApplicationCommand
+    option     :user
+    option     :form
+    dependency :contract, default: -> { Contracts::CreateUserContract.new }
+    dependency :mailer,   default: -> { UserMailer }
+
+    def execute
+      attrs   = yield validate
+      record  = yield persist(attrs)
+      notify(record)
+      Success(record)
+    end
+
+    private
+
+    def validate
+      result = contract.call(form.attributes.symbolize_keys)
+      return Success(result.to_h) if result.success?
+
+      form.assign_errors(result.errors.to_h)
+      Failure(form)
+    end
+
+    def persist(attrs)
+      user.assign_attributes(attrs)
+      return Success(user) if user.save
+
+      form.assign_errors(user.errors.to_hash)
+      Failure(form)
+    end
+
+    def notify(record)
+      mailer.welcome(record).deliver_later
+    end
+  end
+end
+```
+
+Call sites:
+
+```ruby
+# default dependencies
+Commands::CreateUser.call(user:, form:)
+
+# explicit construction
+Commands::CreateUser.new(user:, form:).call
+
+# override one dependency for this call only
+Commands::CreateUser
+  .with(contract: Contracts::AdminCreateUserContract.new)
+  .call(user:, form:)
+
+# overriding a non-dependency (input data) raises
+Commands::CreateUser.with(user: other_user)
+# => BusinessLogic::Command::UnknownDependency: ... [:user] not in
+#    declared dependencies [:contract, :mailer]
+```
+
+The `.with(...)` guard prevents accidental input clobbering when
+input data is declared via `option` rather than `param`.
+
+#### Command vs Operation — when to pick which
+
+Both return `Dry::Monads::Result` and can call each other as
+steps. Pick on shape:
+
+- **Operation** when the use case is a linear pipeline of pure
+  transforms with data flowing through method arguments.
+  Stateless across calls.
+- **Command** when there are several collaborators (mailer,
+  contract, repository, policy) or several helper methods
+  sharing the same input. Keeping those as instance state
+  reads better and avoids the `FeatureEnvy` /
+  `UtilityFunction` smells that plain step methods attract
+  when they keep receiving the same arguments.
 
 ### `business_logic:contract` — input validation rules
 
@@ -365,10 +473,11 @@ three composable matchers for monadic results:
 ```ruby
 expect(Contracts::CreateUser.new.call(email: "bad")).to fail_contract.with_messages(email: ["invalid"])
 expect(Operations::CreateUser.new.call(form: form)).to succeed_operation
+expect(Commands::CreateUser.call(user, form)).to succeed_command
 ```
 
-Aliases: `succeed_contract` / `succeed_validation` / `succeed_operation`;
-`fail_contract` / `fail_validation` / `fail_operation`.
+Aliases: `succeed_contract` / `succeed_validation` / `succeed_operation` / `succeed_command`;
+`fail_contract` / `fail_validation` / `fail_operation` / `fail_command`.
 
 ## Development
 
