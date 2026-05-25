@@ -5,7 +5,7 @@ detectors:
     exclude:
       - BusinessLogic::Matchers::FailureMatcher
       - BusinessLogic::Matchers::SuccessMatcher
-      - BusinessLogic::Command
+      - BusinessLogic::BaseCommand
   IrresponsibleModule:
     exclude:
       - Generators::Macros

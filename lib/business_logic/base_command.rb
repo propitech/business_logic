@@ -9,7 +9,7 @@ module BusinessLogic
   # `#call`, plus the `AlreadyCalled` / `UnknownDependency` error
   # classes. No dependency-injection or form-binding DSL.
   #
-  # Defined under the top-level name `BusinessLogic::CommandBase`
+  # Defined under the top-level name `BusinessLogic::BaseCommand`
   # so that `BusinessLogic::Command` can inherit from it in
   # `command.rb`; the public alias `BusinessLogic::Command::Base`
   # is wired up there. Apps that want a stricter base — no `.with`,
@@ -17,7 +17,7 @@ module BusinessLogic
   # `BusinessLogic::Command::Base` directly.
   #
   # @abstract Subclass and implement {#execute}.
-  class CommandBase
+  class BaseCommand
     extend Dry::Initializer
     include Dry::Monads[:result, :do]
 

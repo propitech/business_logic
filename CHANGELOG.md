@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 - Split `BusinessLogic::Command` into a bare base
-  (`BusinessLogic::Command::Base`, aliased from `CommandBase`) and
+  (`BusinessLogic::Command::Base`, aliased from `BaseCommand`) and
   a batteries-included default. `BusinessLogic::Command` now
   inherits from `Base` and pre-extends
   `BusinessLogic::Command::DependencyInjection`, a new class-level

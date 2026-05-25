@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "command/base"
+require_relative "base_command"
 
 module BusinessLogic
   # Batteries-included Command base class. Inherits from
-  # {CommandBase} (the bare class) and extends both
+  # {BaseCommand} (the bare class) and extends both
   # {Command::DependencyInjection} and {Command::FormBinding} so
   # every subclass gets `.dependency`, `.with`, and `.bind_form`
   # out of the box. The install template's `ApplicationCommand`
@@ -14,14 +14,14 @@ module BusinessLogic
   #   end
   #
   # Apps that want a stricter base — no DI, no form binding —
-  # subclass {Command::Base} (alias for {CommandBase}) instead and
+  # subclass {Command::Base} (alias for {BaseCommand}) instead and
   # `extend` the mixins per command.
-  class Command < CommandBase
+  class Command < BaseCommand
   end
 
-  # Public alias for {CommandBase}. Reach for it when you need the
+  # Public alias for {BaseCommand}. Reach for it when you need the
   # stripped-down base (no DI, no form binding).
-  Command::Base = CommandBase
+  Command::Base = BaseCommand
 end
 
 require_relative "command/chainable"
