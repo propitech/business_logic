@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+class <%= class_name %> < ApplicationCommand
+  # option     :user
+  # option     :form
+  # dependency :contract, default: -> { Contracts::<%= class_name.sub(/^Commands::/, "") %>Contract.new }
+
+  # def execute
+  #   attrs   = yield validate
+  #   record  = yield persist(attrs)
+  #   Success(record)
+  # end
+
+  # private
+
+  # def validate
+  #   # Return Success(attrs) or Failure(form)
+  # end
+
+  # def persist(attrs)
+  #   # Return Success(record) or Failure(form)
+  # end
+end

@@ -1,0 +1,9 @@
+Description:
+    Generates a new command and its spec file.
+
+Example:
+    bin/rails generate business_logic:command CreateUser
+
+    This will create:
+        app/business_logic/commands/create_user.rb
+        spec/business_logic/commands/create_user_spec.rb
