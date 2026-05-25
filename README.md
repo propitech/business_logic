@@ -140,13 +140,25 @@ Creates:
 A Command is the OOP sibling of Operation: same public interface
 (`#call` returns a `Dry::Monads::Result`), different internal
 shape. Collaborators and input live on the instance, set in
-`#initialize` via `Dry::Initializer`. Three DSLs:
+`#initialize` via `Dry::Initializer`. Two DSLs are always
+available:
 
 - `param :name` — positional input data.
 - `option :name` — keyword input data.
-- `dependency :name, default: -> { ... }` — keyword injected
-  collaborator. `option` plus registration as overridable via
-  `.with(...)`.
+
+`BusinessLogic::Command` is the batteries-included base —
+`ApplicationCommand` inherits from it directly. It pre-extends
+one class-level mixin so every subclass also gets:
+
+- **`BusinessLogic::Command::DependencyInjection`** —
+  `dependency :name, default: -> { ... }` (sugar for `option`
+  plus registration in the per-class dependency set) and
+  `.with(**overrides)` (per-call collaborator overrides,
+  validated against the declarations).
+
+Apps that want a stricter base — no DI — may subclass
+`BusinessLogic::Command::Base` directly and `extend` the mixin
+per command.
 
 `#call` takes no arguments and is single-shot — a second
 invocation raises `BusinessLogic::Command::AlreadyCalled`.
