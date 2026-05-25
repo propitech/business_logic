@@ -65,5 +65,9 @@ RSpec.describe BusinessLogic::Command::Base do
     it "does not expose .dependency without DependencyInjection" do
       expect(subclass).not_to respond_to(:dependency)
     end
+
+    it "does not expose .bind_form without FormBinding" do
+      expect(subclass).not_to respond_to(:bind_form)
+    end
   end
 end

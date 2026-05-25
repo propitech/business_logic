@@ -26,6 +26,12 @@ detectors:
       - initialize
       - BusinessLogic::Matchers::FailureMatcher#matches?
       - BusinessLogic::Matchers::SuccessMatcher#matches?
+  FeatureEnvy:
+    exclude:
+      - BusinessLogic::Command::FormBindingProxy#forward_failure_to_form
+  DuplicateMethodCall:
+    exclude:
+      - BusinessLogic::Command::FormBindingProxy#forward_failure_to_form
   UtilityFunction:
     exclude:
       - BusinessLogic::Matchers#fail_contract

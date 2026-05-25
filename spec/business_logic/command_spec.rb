@@ -19,6 +19,10 @@ RSpec.describe BusinessLogic::Command do
     it "exposes .dependency from DependencyInjection" do
       expect(subclass).to respond_to(:dependency)
     end
+
+    it "exposes .bind_form from FormBinding" do
+      expect(subclass).to respond_to(:bind_form)
+    end
   end
 
   describe ".call" do

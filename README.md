@@ -148,17 +148,21 @@ available:
 
 `BusinessLogic::Command` is the batteries-included base —
 `ApplicationCommand` inherits from it directly. It pre-extends
-one class-level mixin so every subclass also gets:
+two class-level mixins so every subclass also gets:
 
 - **`BusinessLogic::Command::DependencyInjection`** —
   `dependency :name, default: -> { ... }` (sugar for `option`
   plus registration in the per-class dependency set) and
   `.with(**overrides)` (per-call collaborator overrides,
   validated against the declarations).
+- **`BusinessLogic::Command::FormBinding`** —
+  `.bind_form(form:, **mappings)` for wiring a
+  `BusinessLogic::Form` into a call. See
+  [Binding a Form to a Command](#binding-a-form-to-a-command) below.
 
-Apps that want a stricter base — no DI — may subclass
-`BusinessLogic::Command::Base` directly and `extend` the mixin
-per command.
+Apps that want a stricter base — no DI, no form binding — may
+subclass `BusinessLogic::Command::Base` directly and `extend`
+either mixin per command.
 
 `#call` takes no arguments and is single-shot — a second
 invocation raises `BusinessLogic::Command::AlreadyCalled`.
@@ -227,6 +231,85 @@ Commands::CreateUser.with(user: other_user)
 
 The `.with(...)` guard prevents accidental input clobbering when
 input data is declared via `option` rather than `param`.
+
+#### Binding a Form to a Command
+
+When a controller already has a `BusinessLogic::Form` holding
+submitted attributes, the `FormBinding` mixin lets you wire it
+into the Command call without the command knowing about Forms.
+The Command declares `dependency :form` and accepts the
+attributes via a plain `option`:
+
+```ruby
+module Commands
+  class UpdateUser < ApplicationCommand
+    dependency :form
+    dependency :contract, default: -> { Contracts::UpdateUserContract.new }
+    option     :user
+    option     :user_attributes
+
+    def execute
+      attrs = yield validate(user_attributes)
+      save(attrs)
+    end
+
+    private
+
+    def validate(attrs)
+      result = contract.call(attrs.symbolize_keys)
+      result.success? ? Success(result.to_h) : Failure(result.errors.to_h)
+    end
+
+    def save(attrs)
+      user.update(attrs) ? Success(user) : Failure(user.errors.to_hash)
+    end
+  end
+end
+```
+
+Controllers call it through `.bind_form(form:, **mappings)`,
+where each `command_option => form_method` mapping is resolved
+lazily by reading `form.public_send(method)` at call time:
+
+```ruby
+result = Commands::UpdateUser
+  .bind_form(form: @form, user_attributes: :attributes)
+  .call(user: @user)
+
+if result.success?
+  redirect_to result.value!, notice: t(".updated")
+else
+  render :edit, status: :unprocessable_content
+end
+```
+
+The proxy:
+
+1. Injects the form as the `:form` dependency.
+2. Calls `form.public_send(:attributes)` and passes it as
+   `user_attributes:`.
+3. On `Failure` whose value is a Hash, calls
+   `@form.assign_errors(failure.to_h)` as a side effect — `simple_form_for @form`
+   then renders the per-field error markup. The returned `Result`
+   is unchanged, so callers can still inspect `result.failure`
+   directly.
+4. On `Failure` whose value is anything other than a Hash, the
+   form is left untouched and the result is returned as-is.
+
+Composes with `.with` in either order:
+
+```ruby
+Commands::UpdateUser
+  .with(contract: Contracts::AdminUpdateUserContract.new)
+  .bind_form(form: @form, user_attributes: :attributes)
+  .call(user: @user)
+
+# equivalent
+Commands::UpdateUser
+  .bind_form(form: @form, user_attributes: :attributes)
+  .with(contract: Contracts::AdminUpdateUserContract.new)
+  .call(user: @user)
+```
 
 #### Command vs Operation — when to pick which
 

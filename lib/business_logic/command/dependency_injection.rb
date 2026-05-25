@@ -62,11 +62,12 @@ module BusinessLogic
       # @return [Proxy]
       def with(**dependency_overrides)
         validate_dependency_overrides(dependency_overrides)
-        Proxy.new(self, dependency_overrides)
+        Proxy.new(self, dependency_overrides, root_class: self)
       end
 
-      private
-
+      # Public so chained proxies can re-validate further overrides
+      # against the original Command class. Not part of the docs-
+      # facing API — callers should reach for `.with` instead.
       def validate_dependency_overrides(dependency_overrides)
         declared = dependencies.to_a
         unknown = dependency_overrides.keys - declared
