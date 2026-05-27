@@ -11,4 +11,4 @@ permissions:
 
 jobs:
   stale:
-    uses: propitech/medusa/.github/workflows/stale.yml@v1
+    uses: propitech/medusa/.github/workflows/stale.yml@v3
