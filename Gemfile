@@ -8,7 +8,7 @@ gemspec
 gem "rake", "~> 13.0"
 
 gem "ammeter", "~> 1.1"
-gem "dry-monads", "~> 1.9"
+gem "dry-monads", "~> 1.10"
 gem "dry-operation", "~> 1.1"
 gem "dry-validation", "~> 1.11"
 gem "rails", ">= 7.0"
