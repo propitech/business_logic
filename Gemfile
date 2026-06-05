@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in business_logic.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+gem "rake", "~> 13.4"
 
 gem "ammeter", "~> 1.1"
 gem "dry-monads", "~> 1.10"
