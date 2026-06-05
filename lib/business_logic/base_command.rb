@@ -111,37 +111,28 @@ module BusinessLogic
 
     # Wraps `block` in a database transaction that rolls back when a
     # helper auto-yields a `Failure` (or the block returns one). Returns
-    # the block's `Result`. Requires ActiveRecord at call time. Pass
-    # `requires_new: true` (or use {#new_transaction}) for a nested
-    # savepoint that rolls back independently of the enclosing one.
+    # the block's `Result`. Requires ActiveRecord at call time.
     #
     #   transaction do
     #     user = yield_model(User.new(attrs)) { save }
     #     Success(user)
     #   end
     #
+    # TODO: a `new_transaction` helper (`requires_new: true` savepoint)
+    # for nested transactions that roll back independently of this one
+    # on Failure. Postponed; ship it with an app integration test (proven
+    # against a real DB in property_management
+    # spec/business_logic/new_transaction_spec.rb).
+    #
     # @return [Dry::Monads::Result]
-    def transaction(requires_new: false, &block)
+    def transaction(&block)
       result = nil
-      ActiveRecord::Base.transaction(requires_new:) do
+      ActiveRecord::Base.transaction do
         result = catch(HALT) { block.call }
         raise ActiveRecord::Rollback if result.respond_to?(:failure?) && result.failure?
       end
       result
     end
-
-    # Nested savepoint transaction (`requires_new: true`): a `Failure`
-    # rolls back only this block, leaving the enclosing {#transaction}
-    # intact. Returns the block's `Result`.
-    #
-    #   transaction do
-    #     yield_model(order) { save }
-    #     new_transaction { yield_model(receipt) { save } } # may fail alone
-    #     Success(order)
-    #   end
-    #
-    # @return [Dry::Monads::Result]
-    def new_transaction(&) = transaction(requires_new: true, &)
 
     # Abstract entry point. Subclasses override this and return a
     # `Dry::Monads::Result`. The base's {#call} wraps it with the
