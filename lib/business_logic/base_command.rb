@@ -48,18 +48,73 @@ module BusinessLogic
       @__called = false
     end
 
+    # Throw tag used by the auto-yielding helpers ({#yield_result},
+    # {#yield_model}) to short-circuit a command without an explicit
+    # `yield` at the call site. Caught in {#call} and {#transaction}.
+    HALT = :business_logic_halt
+
     # Run the command. Raises {AlreadyCalled} on the second
-    # invocation. Delegates to the subclass's {#execute}.
+    # invocation. Delegates to the subclass's {#execute}, catching any
+    # auto-yield ({HALT}) so a failing helper returns its `Failure`.
     #
     # @return [Dry::Monads::Result]
     def call
       raise AlreadyCalled, "#{self.class} already called" if @__called
 
       @__called = true
-      execute
+      catch(HALT) { execute }
     end
 
     private
+
+    # Auto-yields a `Result`: returns its value on `Success`, or
+    # short-circuits the whole command with the `Failure` (no explicit
+    # `yield` needed at the call site). `yield` itself is reserved by Do
+    # notation, hence the throw/catch.
+    #
+    #   organization = yield_result(Organizations::Create.call(attrs:))
+    #
+    # @param result [Dry::Monads::Result]
+    def yield_result(result)
+      return result.value! if result.success?
+
+      throw HALT, result
+    end
+
+    # Runs an ActiveModel-style write on `record` (in its own context,
+    # since `yield` is taken), then auto-yields: continues with the
+    # record on a truthy return, or short-circuits with
+    # `Failure(record.errors.to_hash)`. Treats records as first-class in
+    # commands — no bang methods, no `save`/`errors` branching, no
+    # single-write sub-commands.
+    #
+    #   user = yield_model(User.new(attrs)) { save }
+    #   yield_model(organization.memberships.build(user:)) { save }
+    #   yield_model(invitation) { update(accepted_at: Time.current) }
+    #
+    # @param record [#errors] an ActiveModel-style record
+    def yield_model(record, &)
+      yield_result(record.instance_exec(&) ? Success(record) : Failure(record.errors.to_hash))
+    end
+
+    # Wraps `block` in a database transaction that rolls back when a
+    # helper auto-yields a `Failure` (or the block returns one). Returns
+    # the block's `Result`. Requires ActiveRecord at call time.
+    #
+    #   transaction do
+    #     user = yield_model(User.new(attrs)) { save }
+    #     Success(user)
+    #   end
+    #
+    # @return [Dry::Monads::Result]
+    def transaction(&block)
+      result = nil
+      ActiveRecord::Base.transaction do
+        result = catch(HALT) { block.call }
+        raise ActiveRecord::Rollback if result.respond_to?(:failure?) && result.failure?
+      end
+      result
+    end
 
     # Abstract entry point. Subclasses override this and return a
     # `Dry::Monads::Result`. The base's {#call} wraps it with the
