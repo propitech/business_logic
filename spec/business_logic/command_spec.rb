@@ -80,4 +80,83 @@ RSpec.describe BusinessLogic::Command do
       expect(operation_class.new.call(3).value!).to eq(7)
     end
   end
+
+  describe "#yield_model" do
+    let(:record_class) do
+      Class.new do
+        def initialize(saved) = (@saved = saved)
+        def save = @saved
+        def errors = self
+        def to_hash = {field: ["is invalid"]}
+      end
+    end
+    let(:command_class) do
+      Class.new(described_class) do
+        param :record
+        def execute
+          saved = yield_model(record) { save }
+          Success(saved)
+        end
+      end
+    end
+
+    it "continues with the record on a truthy write" do
+      record = record_class.new(true)
+      expect(command_class.call(record)).to succeed_command.with_value(record)
+    end
+
+    it "short-circuits with Failure on a falsy write — no explicit yield" do
+      expect(command_class.call(record_class.new(false))).to fail_command
+    end
+
+    it "runs the write block in the record's context" do
+      record = record_class.new(true)
+      expect { command_class.call(record) }.not_to raise_error
+    end
+  end
+
+  describe "#with_model" do
+    let(:record_class) do
+      Class.new do
+        def initialize(saved) = (@saved = saved)
+        def save = @saved
+        def errors = self
+        def to_hash = {field: ["is invalid"]}
+      end
+    end
+    let(:command_class) do
+      Class.new(described_class) do
+        param :record
+        def execute = with_model(record) { save }
+      end
+    end
+
+    it "returns Success(record) on a truthy write — no re-wrap" do
+      record = record_class.new(true)
+      expect(command_class.call(record)).to succeed_command.with_value(record)
+    end
+
+    it "returns Failure(errors) on a falsy write without short-circuiting" do
+      expect(command_class.call(record_class.new(false))).to fail_command
+    end
+  end
+
+  describe "#yield_result" do
+    include Dry::Monads[:result]
+
+    let(:command_class) do
+      Class.new(described_class) do
+        param :inner
+        def execute = Success(yield_result(inner))
+      end
+    end
+
+    it "returns the value on Success" do
+      expect(command_class.call(Success(:ok))).to succeed_command.with_value(:ok)
+    end
+
+    it "short-circuits on Failure — no explicit yield" do
+      expect(command_class.call(Failure(:nope))).to fail_command
+    end
+  end
 end
