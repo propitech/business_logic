@@ -82,19 +82,31 @@ module BusinessLogic
     end
 
     # Runs an ActiveModel-style write on `record` (in its own context,
-    # since `yield` is taken), then auto-yields: continues with the
-    # record on a truthy return, or short-circuits with
-    # `Failure(record.errors.to_hash)`. Treats records as first-class in
-    # commands — no bang methods, no `save`/`errors` branching, no
-    # single-write sub-commands.
+    # since `yield` is taken) and returns a `Result` — `Success(record)`
+    # on a truthy return, `Failure(record.errors.to_hash)` otherwise.
+    # Does NOT auto-yield: use it for a command's terminal step so the
+    # result need not be re-wrapped in `Success`, or when you want to
+    # branch on the `Result` yourself.
+    #
+    #   def execute = with_model(invitation) { update(accepted_at: Time.current) }
+    #
+    # @param record [#errors] an ActiveModel-style record
+    # @return [Dry::Monads::Result]
+    def with_model(record, &)
+      record.instance_exec(&) ? Success(record) : Failure(record.errors.to_hash)
+    end
+
+    # Auto-yielding {#with_model}: continues with the record on success,
+    # or short-circuits the whole command with its errors. Treats records
+    # as first-class in commands — no bang methods, no `save`/`errors`
+    # branching, no single-write sub-commands.
     #
     #   user = yield_model(User.new(attrs)) { save }
     #   yield_model(organization.memberships.build(user:)) { save }
-    #   yield_model(invitation) { update(accepted_at: Time.current) }
     #
     # @param record [#errors] an ActiveModel-style record
     def yield_model(record, &)
-      yield_result(record.instance_exec(&) ? Success(record) : Failure(record.errors.to_hash))
+      yield_result(with_model(record, &))
     end
 
     # Wraps `block` in a database transaction that rolls back when a

@@ -115,6 +115,32 @@ RSpec.describe BusinessLogic::Command do
     end
   end
 
+  describe "#with_model" do
+    let(:record_class) do
+      Class.new do
+        def initialize(saved) = (@saved = saved)
+        def save = @saved
+        def errors = self
+        def to_hash = {field: ["is invalid"]}
+      end
+    end
+    let(:command_class) do
+      Class.new(described_class) do
+        param :record
+        def execute = with_model(record) { save }
+      end
+    end
+
+    it "returns Success(record) on a truthy write — no re-wrap" do
+      record = record_class.new(true)
+      expect(command_class.call(record)).to succeed_command.with_value(record)
+    end
+
+    it "returns Failure(errors) on a falsy write without short-circuiting" do
+      expect(command_class.call(record_class.new(false))).to fail_command
+    end
+  end
+
   describe "#yield_result" do
     include Dry::Monads[:result]
 
