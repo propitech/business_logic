@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Add the `business_logic:wizard_install` generator, which writes a
+  `create_wizard_step_states` migration (polymorphic `subject`,
+  `wizard_key`, `step_name`, `succeeded_at`, `dismissed_at`, `error`,
+  `attempts`, and the unique `(subject, wizard, step)` index) so a host
+  app can install the table backing `BusinessLogic::Wizard` with one
+  command. README documents the install + per-flow subclassing.
 - Add `BusinessLogic::Wizard`, a declarative, DB-backed step runner:
   subclasses declare an ordered `step` DSL and each step's success is
   recorded in `wizard_step_states` via the new

@@ -1,0 +1,22 @@
+# frozen_string_literal: true
+
+class CreateWizardStepStates < ActiveRecord::Migration<%= migration_version %>
+  def change
+    create_table :wizard_step_states do |t|
+      t.references :subject, polymorphic: true, null: false
+      t.string :wizard_key, null: false
+      t.string :step_name, null: false
+      t.datetime :succeeded_at
+      t.datetime :dismissed_at
+      t.jsonb :error
+      t.integer :attempts, null: false, default: 0
+
+      t.timestamps
+    end
+
+    add_index :wizard_step_states,
+      %i[subject_type subject_id wizard_key step_name],
+      unique: true,
+      name: "index_wizard_step_states_on_subject_and_step"
+  end
+end
