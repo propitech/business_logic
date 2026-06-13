@@ -13,6 +13,7 @@ gem "dry-operation", "~> 1.1"
 gem "dry-validation", "~> 1.11"
 gem "rails", ">= 7.0"
 gem "rspec", "~> 3.0"
+gem "sqlite3", "~> 2.1" # in-memory DB for the WizardStepState AR specs
 gem "rspec_junit_formatter"
 gem "rspec-rails", "~> 8.0"
 gem "rubocop", "~> 1.87"
