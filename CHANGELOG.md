@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Add `BusinessLogic::Wizard`, a declarative, DB-backed step runner:
+  subclasses declare an ordered `step` DSL and each step's success is
+  recorded in `wizard_step_states` via the new
+  `BusinessLogic::WizardStepState` model. Verify-only semantics — a step
+  runs only once its prerequisites have succeeded, a succeeded step is
+  skipped (idempotent) unless re-run via `#reprocess`, and
+  `#furthest_incomplete` / `#completed?` drive resume across requests.
+  Includes a wizard-level dismissal marker (`WizardStepState.dismiss!` /
+  `.dismissed?`). The host owns the table (install it with the
+  forthcoming `business_logic:wizard:install` generator); the model is
+  required only when ActiveRecord is loaded.
 - Split `BusinessLogic::Command` into a bare base
   (`BusinessLogic::Command::Base`, aliased from `BaseCommand`) and
   a batteries-included default. `BusinessLogic::Command` now

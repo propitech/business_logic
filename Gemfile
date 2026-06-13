@@ -23,3 +23,4 @@ gem "rubocop-thread_safety", "~> 0.7.3"
 gem "simplecov", require: false
 gem "simplecov-cobertura", require: false
 gem "simplecov_json_formatter", require: false
+gem "sqlite3", "~> 2.1" # in-memory DB for the WizardStepState AR specs
