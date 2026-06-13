@@ -1,0 +1,15 @@
+Description:
+    Installs the wizard_step_states table that backs BusinessLogic::Wizard
+    (the DB-backed, verify-only step runner) and BusinessLogic::WizardStepState.
+    Run once per host app.
+
+Example:
+    bin/rails generate business_logic:wizard_install
+
+    This creates the migration:
+        db/migrate/<timestamp>_create_wizard_step_states.rb
+
+    Then migrate, and subclass BusinessLogic::Wizard per flow:
+        class OrganizationSetup < BusinessLogic::Wizard
+          step(:identity) { ... }
+        end

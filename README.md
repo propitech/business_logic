@@ -397,6 +397,52 @@ Add project-wide hooks (i18n, custom param extraction, shared
 validations) there. Bridge logic stays in the gem so a `bundle
 update` is the only step needed to pick up fixes.
 
+### `business_logic:wizard_install` — a multi-step flow
+
+For DB-backed, multi-step flows (onboarding, setup wizards), the gem
+ships `BusinessLogic::Wizard`: a verify-only step runner whose progress
+lives in a `wizard_step_states` table rather than the session.
+
+Install the table once:
+
+```shell
+bin/rails generate business_logic:wizard_install
+bin/rails db:migrate
+```
+
+Then declare a wizard per flow. Each `step` runs in instance context and
+returns a dry-monads `Result` (typically a command's):
+
+```ruby
+class OrganizationSetup < BusinessLogic::Wizard
+  step(:identity) { |input| SaveIdentity.call(organization: subject, **input) }
+  step(:contacts) { |input| SaveContacts.call(organization: subject, attrs: input) }
+  step(:details)  { |input| Complete.call(organization: subject, attrs: input) }
+end
+
+wizard = OrganizationSetup.new(organization)
+wizard.process(:identity, attrs)   # runs it; records success
+wizard.process(:contacts, attrs)   # only runs once :identity has succeeded
+wizard.furthest_incomplete         # => :details — drives resume
+wizard.completed?                  # => true once every step has succeeded
+```
+
+Semantics:
+
+- **Verify-only prerequisites** — a step runs only once every prior step
+  has succeeded; prerequisites are checked, never re-executed.
+- **Idempotent** — a succeeded step is skipped (`process` returns
+  `Success(:skipped)`) unless re-run via `#reprocess` (re-submit / edit).
+- **Resume** — `#furthest_incomplete` and `#completed?` read straight
+  from `wizard_step_states`, so progress survives across requests and
+  sessions. `subject` is any persisted record (polymorphic).
+- **Dismissal** — `BusinessLogic::WizardStepState.dismiss!(subject:,
+  wizard_key:)` / `.dismissed?(...)` record a wizard-level "don't remind
+  me" marker on a reserved row that `#completed?` ignores.
+
+`BusinessLogic::WizardStepState` is loaded only when ActiveRecord is
+present; the engine itself is plain Ruby.
+
 ## End-to-end pattern
 
 Controllers stay dispatchers. Build the form, call the operation,
