@@ -1,0 +1,36 @@
+# business_logic — project agent rules
+
+This file is the **only hand-authored agent surface** in this repository.
+The baseline layers above this block are managed (hash-pinned in
+`agents.lock.json`); rules you add here win, because the flattened `AGENTS.md`
+appends them after the baseline.
+
+After editing this file, run `bin/agents-render` to regenerate `AGENTS.md`.
+
+---
+
+## Mission {#mission}
+
+`business_logic` is a standalone Ruby gem that provides the
+`BusinessLogic::Command` base class and dry-rb integrations consumed by
+Propitech Rails apps (`property_management`, `dance_school`). It is a library
+— no web layer, no database. The public API is a contract; changes that break
+callers require a coordinated version bump across all consumers.
+
+## Workflow (business_logic additions) {#workflow-bl}
+
+On top of [base.md#workflow]:
+
+- Branch `ai/<type>/<slug>`; never push to `main`.
+- Work is tracked in **Linear** (Propitech workspace, team `PRO`).
+- There is no Kamal deploy. A release is a gem publish (`gem push`) after a
+  version bump in the gemspec.
+- Before a breaking public-API change, validate the gem against
+  `../property_management` and `../dance_school`: run their test suites with
+  the local gem path-substituted in their `Gemfile`.
+
+## References {#references}
+
+- [README.md](README.md) — public API documentation.
+- Consumer repos: `../property_management`, `../dance_school`.
+- Work tracking: **Linear** (Propitech workspace, team `PRO`) — see [base.md#plans].

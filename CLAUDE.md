@@ -1,43 +1,28 @@
-# Project instructions for AI assistants
+# CLAUDE.md
 
-## Linter violations: fix, never skip
+Auto-loaded by Claude Code at session start. Source of truth for
+agent behaviour is [`AGENTS.md`](AGENTS.md) — read it in full.
 
-When a linter flags an offence — rubocop, reek, or any other check
-surfaced by `qlty check` — **fix the underlying code**. Do not add
-file-level exclusions, method-level exclusions, in-line
-`# rubocop:disable` / `# reek:` comments, or YAML pragmas that
-silence the rule.
+@AGENTS.md
 
-Why: skipped violations rot the signal. The next contributor sees
-a green check and trusts it. Each pre-existing exclusion already
-in `.reek.yml` is a debt entry, not a precedent — do not add more.
+---
 
-How to apply:
+## Claude-Code-specific notes
 
-- If the rule fires on a method you wrote in this session, refactor
-  until the rule passes. Common rescues:
-  - `FeatureEnvy` → push the logic into the class the method envies,
-    or rebalance refs so self wins.
-  - `DuplicateMethodCall` → bind the value to a local once.
-  - `UtilityFunction` → either inline back into a caller that does
-    use self, or move to a module / class where it makes sense as
-    a free function.
-  - `InstanceVariableAssumption` → initialise the ivar in
-    `initialize` (override with `super` if `Dry::Initializer` or
-    similar manages the constructor).
-  - `TooManyStatements` → split the method on a real seam, not a
-    cosmetic one.
-- If the rule fires on pre-existing code you happen to touch,
-  prefer fixing it; if scope blocks that, leave the existing
-  exclusion alone but do not add a new one.
-- If you genuinely believe the rule is wrong for the case at hand
-  (rare), surface the trade-off to the user and let them decide —
-  do not silently add the exclusion.
+These deltas apply only when the harness is Claude Code. Everything
+else lives in `AGENTS.md`.
 
-## Testing
+### Working style
 
-- `mise exec ruby@3.4.5 -- bundle exec rspec` — all green before
-  reporting a task done.
-- `qlty check --no-fix lib/ spec/ .reek.yml` — clean.
+- Use `Read`, `Edit`, `Write` for files; reserve `Bash` for shell
+  work (git, rspec, rubocop, qlty, mise).
+- Run all gates before reporting done — see [AGENTS.md#gates-ruby-gem](AGENTS.md#gates-ruby-gem).
+- Plan-first rule from [AGENTS.md#plan-first](AGENTS.md#plan-first) is binding.
+  If the user gives a vague task, draft the plan in Linear and ask for
+  sign-off before coding.
 
-The repo pins ruby to 3.4.5 (`.ruby-version` + `mise.toml`).
+### Tone
+
+Default to terse, technical, plain text. Match formality to the
+human in the loop. Code, commits, and PR bodies are always written
+in normal prose regardless of any conversational compression mode.
