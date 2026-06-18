@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# (Re)render AGENTS.md from the pinned baseline cache + project deltas.
+#
+# Reads:
+#   .config/propitech/agents/agents.lock.json   — pinned version + layer list
+#   .config/propitech/agents/<layer>.md          — cached baseline layers
+#   .config/propitech/agents/deltas.md           — hand-authored project rules
+#
+# Writes:
+#   AGENTS.md                                    — flattened, self-contained
+#
+# Safe to run repeatedly. The deltas region is always sourced from deltas.md,
+# never from AGENTS.md, so re-rendering never overwrites your customizations.
+#
+# Usage:
+#   bin/agents-render               # renders AGENTS.md in place
+#   bin/agents-render --output PATH # render to a specific path (used by agents-check)
+
+require 'json'
+
+ROOT = File.expand_path('..', __dir__)
+AGENTS_DIR = File.join(ROOT, '.config/propitech/agents')
+LOCK_FILE = File.join(AGENTS_DIR, 'agents.lock.json')
+DELTAS_FILE = File.join(AGENTS_DIR, 'deltas.md')
+DEFAULT_OUT = File.join(ROOT, 'AGENTS.md')
+
+output_path = if (idx = ARGV.index('--output'))
+                ARGV[idx + 1] or abort 'agents-render: --output requires a path argument'
+              else
+                DEFAULT_OUT
+              end
+
+unless File.exist?(LOCK_FILE)
+  abort "agents-render: missing #{LOCK_FILE.delete_prefix("#{ROOT}/")}"
+end
+
+lock = JSON.parse(File.read(LOCK_FILE))
+version = lock['baselineVersion']
+ref = lock.dig('source', 'ref')
+layers = lock['layers']
+
+layer_content = layers.map do |layer|
+  path = File.join(AGENTS_DIR, "#{layer}.md")
+  abort "agents-render: cached layer missing: #{layer}.md — re-run the fosa template to restore" unless File.exist?(path)
+  File.read(path)
+end.join("\n")
+
+deltas_content = File.exist?(DELTAS_FILE) ? File.read(DELTAS_FILE).strip : ''
+
+banner = <<~BANNER
+  <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
+  <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
+  <!-- Baseline: agents-baseline-v#{version} (source: #{ref})                  -->
+  <!-- Project rules: .config/propitech/agents/deltas.md                       -->
+
+BANNER
+
+content = banner +
+          layer_content +
+          "\n\n<!-- BEGIN PROJECT DELTAS -->\n\n" +
+          deltas_content +
+          "\n\n<!-- END PROJECT DELTAS -->\n"
+
+File.write(output_path, content)
+puts "agents-render: #{output_path.delete_prefix("#{ROOT}/")} written (#{layers.join(' + ')}, v#{version})"
