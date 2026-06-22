@@ -118,16 +118,32 @@ module BusinessLogic
     #     Success(user)
     #   end
     #
-    # TODO: a `new_transaction` helper (`requires_new: true` savepoint)
-    # for nested transactions that roll back independently of this one
-    # on Failure. Postponed; ship it with an app integration test (proven
-    # against a real DB in property_management
-    # spec/business_logic/new_transaction_spec.rb).
-    #
     # @return [Dry::Monads::Result]
     def transaction(&block)
+      run_in_transaction(block)
+    end
+
+    # Like {#transaction} but always opens a *new* nested transaction —
+    # a `requires_new: true` savepoint when called inside an enclosing
+    # transaction. A `Failure` (or a DB exception, e.g. a constraint
+    # violation) rolls back only this savepoint, leaving the surrounding
+    # transaction usable. Use it for a write whose failure must not poison
+    # an outer command's transaction — e.g. a single-occupancy INSERT whose
+    # `PG::ExclusionViolation` is mapped to an unavailability `Failure`.
+    #
+    #   new_transaction { yield_model(Hold.new(attrs)) { save } }
+    #
+    # @return [Dry::Monads::Result]
+    def new_transaction(&block)
+      run_in_transaction(block, requires_new: true)
+    end
+
+    # Shared body for {#transaction} / {#new_transaction}: run the block,
+    # catching an auto-yielded {HALT}, and roll the transaction back when
+    # it yields a `Failure`. Returns the block's `Result`.
+    def run_in_transaction(block, requires_new: false)
       result = nil
-      ActiveRecord::Base.transaction do
+      ActiveRecord::Base.transaction(requires_new:) do
         result = catch(HALT) { block.call }
         raise ActiveRecord::Rollback if result.respond_to?(:failure?) && result.failure?
       end
