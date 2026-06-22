@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Add `BaseCommand#new_transaction`, a `requires_new: true` companion to
+  `#transaction`. Inside an enclosing transaction it opens a savepoint, so
+  a `Failure` (or a DB exception such as a constraint violation) rolls back
+  only the nested write and leaves the surrounding transaction usable —
+  for a write whose failure must not poison an outer command's transaction.
 - Add the `business_logic:wizard_install` generator, which writes a
   `create_wizard_step_states` migration (polymorphic `subject`,
   `wizard_key`, `step_name`, `succeeded_at`, `dismissed_at`, `error`,
