@@ -113,12 +113,25 @@ module BusinessLogic
       new(extract_attributes(params, key))
     end
 
+    # A form is a UI <-> business-logic bridge, never a security gate: the
+    # Contract is the authoritative input filter and the Model still raises
+    # ForbiddenAttributesError on a direct mass-assign. So convert params with
+    # `to_unsafe_h` rather than a strong-params `permit` — a scalar
+    # `permit(attribute_names)` would silently drop array (`ids: []`) and nested
+    # (`*_attributes`) shapes, forcing every such form to re-declare a permit
+    # list. Unknown keys are ignored at assignment (see #attribute_writer_missing),
+    # so a form keeps only the attributes it declares while those shapes survive.
     def self.extract_attributes(params, key)
       raw = params.fetch(key, {})
-      permitted = raw.is_a?(ActionController::Parameters) ? raw.permit(attribute_names) : raw
-      permitted.to_h.symbolize_keys
+      raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw
     end
     private_class_method :extract_attributes
+
+    # Ignore params the form does not declare, rather than raising
+    # UnknownAttributeError (ActiveModel's default). The form is not a security
+    # gate — the Contract filters and validates input downstream — so stray keys
+    # carried through by `to_unsafe_h` are simply dropped here.
+    def attribute_writer_missing(_name, _value) = nil
 
     # Translate a nested errors hash (dry-validation, AR, or anything
     # shaped like `{attr => [msgs]}` / `{attr => {nested => [msgs]}}`)
