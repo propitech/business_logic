@@ -52,6 +52,14 @@ RSpec.describe BusinessLogic::Form do
     end
   end
 
+  describe "mass assignment" do
+    it "accepts ActionController::Parameters directly, without permitting", :aggregate_failures do
+      params = ActionController::Parameters.new(first_name: "Ada")
+      expect { form_class.new(params) }.not_to raise_error
+      expect(form_class.new(params).first_name).to eq("Ada")
+    end
+  end
+
   describe "#assign_errors" do
     it "maps flat keys onto matching attributes" do
       form = form_class.new
