@@ -12,6 +12,8 @@ RSpec.describe BusinessLogic::Form do
 
       attribute :first_name, :string
       attribute :age, :integer
+
+      attr_accessor :tag_ids, :items_attributes
     end
   end
 
@@ -22,9 +24,20 @@ RSpec.describe BusinessLogic::Form do
       expect(form).to have_attributes(first_name: "Ada", age: 32)
     end
 
-    it "drops attributes not declared on the form" do
+    it "drops keys the form has no writer for", :aggregate_failures do
       params = ActionController::Parameters.new(test_thing: {first_name: "Ada", evil: "x"})
-      expect { form_class.from_params(params) }.not_to raise_error
+      form = form_class.from_params(params)
+      expect(form.first_name).to eq("Ada")
+      expect(form).not_to respond_to(:evil)
+    end
+
+    it "keeps array and nested values for keys with a writer", :aggregate_failures do
+      params = ActionController::Parameters.new(
+        test_thing: {tag_ids: %w[1 2], items_attributes: {"0" => {name: "x"}}}
+      )
+      form = form_class.from_params(params)
+      expect(form.tag_ids).to eq(%w[1 2])
+      expect(form.items_attributes).to eq("0" => {"name" => "x"})
     end
 
     it "returns a blank form when the key is missing" do
