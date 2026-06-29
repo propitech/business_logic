@@ -145,6 +145,15 @@ module BusinessLogic
 
     private
 
+    # A form is a UI <-> business-logic bridge, never a security gate: input is
+    # validated and filtered by a Contract before it reaches a Command/Model,
+    # and the Model still raises ForbiddenAttributesError on a direct mass-assign.
+    # So lift ActiveModel's strong-params guard off forms — a form accepts an
+    # ActionController::Parameters straight through (the Contract is the
+    # authoritative input filter), not just the to_unsafe_h hash from_params
+    # produces.
+    def sanitize_for_mass_assignment(attributes) = attributes
+
     def add_messages(attr, messages)
       Array(messages).each { |msg| errors.add(attr, msg) }
     end
