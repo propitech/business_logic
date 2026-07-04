@@ -1,0 +1,11 @@
+Propitech/PreferFailValidation:
+  Description: 'Assert failure with `fail_*.with_error(...)`, not a negated `succeed_*`.'
+  Enabled: true
+  Include:
+    - '**/*_spec.rb'
+
+Propitech/PreferSucceedValidation:
+  Description: 'Assert success with `succeed_*.with_value(...)`, not a negated `fail_*`.'
+  Enabled: true
+  Include:
+    - '**/*_spec.rb'

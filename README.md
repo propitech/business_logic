@@ -437,7 +437,7 @@ Semantics:
   from `wizard_step_states`, so progress survives across requests and
   sessions. `subject` is any persisted record (polymorphic).
 - **Dismissal** — `BusinessLogic::WizardStepState.dismiss!(subject:,
-  wizard_key:)` / `.dismissed?(...)` record a wizard-level "don't remind
+wizard_key:)` / `.dismissed?(...)` record a wizard-level "don't remind
   me" marker on a reserved row that `#completed?` ignores.
 
 `BusinessLogic::WizardStepState` is loaded only when ActiveRecord is
@@ -619,6 +619,29 @@ expect(Commands::CreateUser.call(user, form)).to succeed_command
 
 Aliases: `succeed_contract` / `succeed_validation` / `succeed_operation` / `succeed_command`;
 `fail_contract` / `fail_validation` / `fail_operation` / `fail_command`.
+
+## RuboCop cops
+
+The gem ships a RuboCop plugin that enforces the matcher standard so a
+failing (or succeeding) result is asserted with the dedicated matcher
+and its payload, never a negated sibling. Enable it in a consuming
+repo's `.rubocop.yml`:
+
+```yaml
+plugins:
+  - business_logic
+```
+
+| Cop                                 | Flags                        | Steers to                   |
+| ----------------------------------- | ---------------------------- | --------------------------- |
+| `Propitech/PreferFailValidation`    | `expect(x).not_to succeed_*` | `fail_*.with_error(...)`    |
+| `Propitech/PreferSucceedValidation` | `expect(x).not_to fail_*`    | `succeed_*.with_value(...)` |
+
+Both cops default to `Include: '**/*_spec.rb'`. Asserting failure with
+the negated success matcher (`not_to succeed_validation`) passes for
+_any_ non-success — including the wrong error — so it silently drops
+the error contract; the `fail_*.with_error(...)` form pins the exact
+failure. The success direction is symmetric.
 
 ## Development
 

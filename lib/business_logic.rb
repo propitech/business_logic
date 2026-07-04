@@ -9,3 +9,5 @@ require_relative "business_logic/wizard_step_state" if defined?(ActiveRecord::Ba
 
 module BusinessLogic # :nodoc:
 end
+
+require_relative "business_logic/rubocop"

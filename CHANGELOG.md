@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Ship a RuboCop plugin from the gem (enable with `plugins: [business_logic]`
+  in a consuming repo's `.rubocop.yml`) carrying two spec cops that enforce the
+  result-matcher standard. `Propitech/PreferFailValidation` flags
+  `expect(x).not_to succeed_*` and steers to `fail_*.with_error(...)`;
+  `Propitech/PreferSucceedValidation` flags `expect(x).not_to fail_*` and steers
+  to `succeed_*.with_value(...)`. The negated-sibling form passes for any
+  non-matching result and drops the error/value contract; the dedicated matcher
+  pins it. Requiring the gem in an application does not load RuboCop — the plugin
+  constant is autoloaded only when RuboCop resolves the `plugins:` entry.
 - Add `BaseCommand#new_transaction`, a `requires_new: true` companion to
   `#transaction`. Inside an enclosing transaction it opens a savepoint, so
   a `Failure` (or a DB exception such as a constraint violation) rolls back
