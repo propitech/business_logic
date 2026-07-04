@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.10.0 (source: agents-baseline-v1.10.0)                  -->
+<!-- Baseline: agents-baseline-v1.11.0 (source: agents-baseline-v1.11.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -126,6 +126,10 @@ The agent **must never**, regardless of permission:
 
 - Run a production deploy command.
 - Force-push to a protected branch.
+- Merge a PR with `--admin`. It bypasses branch protection — required
+  reviews and status checks — to force the change onto the base branch.
+  Let the PR merge through its gates, or enable auto-merge.
+  (`agentic-workflow:pr-cadence`)
 - Commit key material.
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
   the signature. Every commit must land gpg-signed and verifiable; if commits
