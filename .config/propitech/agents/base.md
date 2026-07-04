@@ -121,6 +121,10 @@ The agent **must never**, regardless of permission:
 
 - Run a production deploy command.
 - Force-push to a protected branch.
+- Merge a PR with `--admin`. It bypasses branch protection — required
+  reviews and status checks — to force the change onto the base branch.
+  Let the PR merge through its gates, or enable auto-merge.
+  (`agentic-workflow:pr-cadence`)
 - Commit key material.
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
   the signature. Every commit must land gpg-signed and verifiable; if commits
