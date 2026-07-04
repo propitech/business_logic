@@ -36,6 +36,22 @@ Sections carry stable `{#slug}` anchors. Reference rules by slug
    (schema dumps, generated clients, lockfiles, built baselines) — a manual
    edit drifts the moment the generator runs again.
 
+## Match model to task {#match-model-to-task}
+
+Size the task before you edit, and run it on a model that fits:
+
+- **Architectural planning or schema design** — switch to your strongest
+  reasoning model to plan the approach, then drop back down once the shape is
+  agreed. Planning is where reasoning depth pays off; see [Plans](#plans).
+- **Routine authoring, migrations, and tests** — the faster model is the
+  default for code you are writing against an agreed plan. Don't burn the
+  high-reasoning tier on mechanical work.
+
+Stated by capability, not by product name: pick the *strongest reasoning* tier
+for planning and the *fastest adequate* tier for execution, whatever those are
+called in the tool you are running. Compliance with the stack baseline (style,
+tests, gates) is non-negotiable at every tier — a faster model is not licence
+to skip [Code style](#code-style) or a stack's gates.
 ## Code style philosophy {#code-style}
 
 The toolchain is opinionated — defer to it. The exact gate commands are
@@ -68,11 +84,17 @@ Test tooling and stack-specific testing rules live in your stack baseline
   know an agent drafted the diff; never push to a protected branch.
 - **Conventional Commits**: `type(scope): subject`, imperative, ≤72-char
   subject. The body explains *why*, not what — the diff shows what.
-- **Pull requests** follow the org template (`propitech/.github-private`,
-  auto-filled by GitHub): **Summary** (with a `Closes: PRO-NN` line linking
-  the Linear issue), **Solution and changes**, **Documentation**,
-  **Developer Notes**. The `Closes:` line lets the integration move the
-  issue on merge. CI green before review. (`agentic-workflow:pr-cadence`)
+- **Pull requests** title with the resolved ticket and a lowercase tag,
+  each bracketed — `[PRO-NN][<tag>] <imperative summary>` (tag is any
+  lowercase word: `feat`, `fix`, `chore`, `wip`, … — mirrors the commit
+  type) — and follow the org template
+  (`propitech/.github-private`, auto-filled by GitHub): **Summary** (with a
+  `Closes: PRO-NN` line linking the Linear issue), **Solution and changes**,
+  **Documentation**, **Developer Notes**. The `Closes:` line lets the
+  integration move the issue on merge. Include a screenshot for any
+  user-visible change (embed the image the user supplied). CI green before
+  review. Match the template headings exactly and resolve repo-local before
+  org default. (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
 - **Track work in Linear**, not GitHub issues. Reference the issue id
   (`PRO-NN`) in the PR so the integration auto-links it.
   (`agentic-workflow:linear-update`)
@@ -100,7 +122,13 @@ The agent **must never**, regardless of permission:
 - Run a production deploy command.
 - Force-push to a protected branch.
 - Commit key material.
-- Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass commit hooks.
+- Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
+  the signature. Every commit must land gpg-signed and verifiable; if commits
+  are not signing, fix the gpg-agent rather than committing unsigned.
+- Create a commit or file content **server-side** — through the GitHub API
+  (contents or git-data endpoints) or a `createCommitOnBranch` GraphQL
+  mutation. Server-side commits bypass local signing. Clone, branch, edit,
+  and `git commit` locally so the gpg-agent signs it. (`agentic-workflow:signed-commits`)
 
 ## Plans (Linear) {#plans}
 
@@ -149,6 +177,11 @@ file (see [Operating principles](#operating-principles)).
 - **Project-specific rules go in `.config/propitech/agents/deltas.md`** — the
   only hand-authored agent surface in this repo. Regenerate with
   `bin/agents-render`, then commit `AGENTS.md` alongside.
+- **A machine-local `AGENTS.md.local` is read when present.** If a gitignored,
+  untracked `AGENTS.md.local` sits beside `AGENTS.md`, read it in addition to
+  this file and let its instructions win on conflict. It is personal and never
+  committed — use it for individual or experiment-scoped guidance; shared rules
+  belong in `deltas.md` or upstream, not in a file that never lands in git.
 - **Pull a newer baseline** with `bin/agents-render --update`, then review the
   `AGENTS.md` diff like a dependency bump.
 - The baselines are owned upstream in `propitech/claude-plugins`. To change a
