@@ -622,26 +622,49 @@ Aliases: `succeed_contract` / `succeed_validation` / `succeed_operation` / `succ
 
 ## RuboCop cops
 
-The gem ships a RuboCop plugin that enforces the matcher standard so a
-failing (or succeeding) result is asserted with the dedicated matcher
-and its payload, never a negated sibling. Enable it in a consuming
-repo's `.rubocop.yml`:
+The gem ships a RuboCop plugin enforcing the gem's conventions — the
+result-matcher standard in specs and the seed-authoring standard in
+`db/seeds`. Enable it in a consuming repo's `.rubocop.yml`:
 
 ```yaml
 plugins:
   - business_logic
 ```
 
-| Cop                                 | Flags                        | Steers to                   |
-| ----------------------------------- | ---------------------------- | --------------------------- |
-| `Propitech/PreferFailValidation`    | `expect(x).not_to succeed_*` | `fail_*.with_error(...)`    |
-| `Propitech/PreferSucceedValidation` | `expect(x).not_to fail_*`    | `succeed_*.with_value(...)` |
+| Cop                                 | Flags                                                                                | Steers to                                   |
+| ----------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `Propitech/PreferFailValidation`    | `expect(x).not_to succeed_*`                                                         | `fail_*.with_error(...)`                    |
+| `Propitech/PreferSucceedValidation` | `expect(x).not_to fail_*`                                                            | `succeed_*.with_value(...)`                 |
+| `Propitech/SeedUsesFactory`         | `Model.create!` / `Commands::….call`                                                 | `FactoryBot.create(:model)`                 |
+| `Propitech/SeedUsesContainer`       | `find`/`find_by`, `*create*`, `*update*`, `*destroy*`, `*delete*` on any AR receiver | `container.get(:key)` / `FactoryBot.create` |
 
-Both cops default to `Include: '**/*_spec.rb'`. Asserting failure with
-the negated success matcher (`not_to succeed_validation`) passes for
+The matcher cops default to `Include: '**/*_spec.rb'`. Asserting failure
+with the negated success matcher (`not_to succeed_validation`) passes for
 _any_ non-success — including the wrong error — so it silently drops
 the error contract; the `fail_*.with_error(...)` form pins the exact
 failure. The success direction is symmetric.
+
+The seed cops default to `Include: db/seeds.rb` and `db/seeds/**/*.rb`.
+They keep a seed to its two sanctioned moves: build rows with FactoryBot,
+and reach for a row another seed already built through the shared
+container. `SeedUsesFactory` flags a hand-rolled `Model.create`/`create!`
+and any `Commands::….call` (a command runs operation side-effects a seed
+must not depend on). `SeedUsesContainer` flags every other direct
+ActiveRecord persistence or lookup verb — on a model class or an instance
+— and routes it:
+
+- **lookup** (`find`, `find_by`, `find_by!`, …) → `container.get(:key)`,
+  set upstream with `container.set`;
+- **creation** (any `create`/`initialize` verb: `find_or_create_by`,
+  `find_or_initialize_by`, `create_with`, …) → `FactoryBot.create`;
+- **mutation** (any `save`/`update`/`destroy`/`delete` verb: `save!`,
+  `update!`, `update_all`, `destroy_all`, `delete_all`, …) → a FactoryBot
+  trait that builds the row in its final state.
+
+Left alone: `FactoryBot`/`FactoryGirl` builders, exact `create`/`create!`
+(owned by `SeedUsesFactory`), iteration (`find_each` and the block form
+`find { … }`), and anything that is not one of those verbs (`where`,
+`exists?`, `container.get`).
 
 ## Seed registry
 

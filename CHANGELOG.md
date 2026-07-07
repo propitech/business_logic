@@ -11,6 +11,20 @@
   non-matching result and drops the error/value contract; the dedicated matcher
   pins it. Requiring the gem in an application does not load RuboCop — the plugin
   constant is autoloaded only when RuboCop resolves the `plugins:` entry.
+- Add two seed-authoring cops to the plugin, scoped to `db/seeds.rb` and
+  `db/seeds/**/*.rb`, that hold a seed to two moves: build rows with FactoryBot,
+  and fetch a row another seed already built through the shared container.
+  `Propitech/SeedUsesFactory` (extracted from `rubocop-propitech`) flags a
+  hand-rolled `Model.create`/`create!` and any `Commands::….call` (a command
+  runs operation side-effects a seed must not depend on).
+  `Propitech/SeedUsesContainer` flags every other direct ActiveRecord
+  persistence or lookup verb — on a model class or an instance — and routes it:
+  lookup (`find`, `find_by`, …) to `container.get`; creation (any
+  `create`/`initialize` verb, e.g. `find_or_create_by`) to `FactoryBot.create`;
+  mutation (any `save`/`update`/`destroy`/`delete` verb) to a FactoryBot trait
+  that builds the final state. Iteration (`find_each`, block-form `find { … }`),
+  the `FactoryBot`/`FactoryGirl` builders, exact `create`/`create!` (owned by
+  `SeedUsesFactory`), and non-verbs (`where`, `exists?`) are left alone.
 - Add `BaseCommand#new_transaction`, a `requires_new: true` companion to
   `#transaction`. Inside an enclosing transaction it opens a savepoint, so
   a `Failure` (or a DB exception such as a constraint violation) rolls back
