@@ -9,3 +9,17 @@ Propitech/PreferSucceedValidation:
   Enabled: true
   Include:
     - '**/*_spec.rb'
+
+Propitech/SeedUsesFactory:
+  Description: 'Build seed data with FactoryBot factories and traits; no hand-rolled model create, no command invocation.'
+  Enabled: true
+  Include:
+    - 'db/seeds.rb'
+    - 'db/seeds/**/*.rb'
+
+Propitech/SeedUsesContainer:
+  Description: 'Fetch a record another seed owns through the container (`container.get`), not a class-level `find_by`.'
+  Enabled: true
+  Include:
+    - 'db/seeds.rb'
+    - 'db/seeds/**/*.rb'

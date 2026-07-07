@@ -5,6 +5,8 @@ require "lint_roller"
 
 require_relative "../cop/propitech/prefer_fail_validation"
 require_relative "../cop/propitech/prefer_succeed_validation"
+require_relative "../cop/propitech/seed_uses_factory"
+require_relative "../cop/propitech/seed_uses_container"
 
 module RuboCop
   module BusinessLogic
