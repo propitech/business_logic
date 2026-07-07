@@ -643,6 +643,71 @@ _any_ non-success — including the wrong error — so it silently drops
 the error contract; the `fail_*.with_error(...)` form pins the exact
 failure. The success direction is symmetric.
 
+## Seed registry
+
+`BusinessLogic::Seed` is a dependency-ordered, idempotent registry for
+`db/seeds`. Each seed is a subclass implementing `#call`; the registry
+discovers every subclass, orders them so each one's declared
+dependencies run first, and runs each once against a shared container.
+Progress is written through `#say` to the container's IO, so a test can
+capture it instead of writing to `$stdout`. It is plain Ruby — no Rails
+or ActiveSupport — so the host app supplies the seed directory and any
+app-specific constants by subclassing.
+
+Alias the base in your app and point it at your seed directory:
+
+```ruby
+# app/lib/seed.rb
+class Seed < BusinessLogic::Seed
+  DEV_PASSWORD = "password123"
+  def self.default_seeds_dir = Rails.root.join("db/seeds")
+end
+```
+
+Write each seed as a subclass, declaring what must run before it and
+passing records forward through the container:
+
+```ruby
+# db/seeds/users.rb
+module Seeds
+  class Users < Seed
+    def call
+      say "Seeding users..."
+      container.set(:admin, create_admin)
+    end
+  end
+end
+
+# db/seeds/company.rb
+module Seeds
+  class Company < Seed
+    depends_on :users
+
+    def call
+      say "Seeding company..."
+      Company.create!(owner: container.get(:admin))
+    end
+  end
+end
+```
+
+`depends_on :users` resolves to the sibling `Seeds::Users` at ordering
+time, so declaration order across files does not matter. A cycle raises
+`BusinessLogic::Seed::CircularDependencyError`.
+
+Run them from `db/seeds.rb`:
+
+```ruby
+# db/seeds.rb — loads db/seeds/*.rb, orders by dependency, runs each once.
+Seed.run_all
+```
+
+`run_all` loads the files under `default_seeds_dir` and runs only the
+concrete seeds (subclasses that implement `#call`), so the abstract
+alias is skipped. Pass `Seed.run_all(dir: nil)` when the files are
+already loaded, or `Seed.run(seed_classes, container)` to run a specific
+set — the entry point tests use this to stay off `$stdout`.
+
 ## Development
 
 ```shell

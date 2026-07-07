@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    business_logic (0.5.2)
+    business_logic (0.6.0)
 
 GEM
   remote: https://rubygems.org/
