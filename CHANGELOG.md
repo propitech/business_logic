@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Declare the gem's runtime dependencies (`activemodel`, `dry-initializer`,
+  `dry-monads`) in the gemspec. `require "business_logic"` loads them
+  unconditionally, but they previously resolved only through the host app's
+  Gemfile — a standalone install (such as qlty's sandboxed RuboCop pulling
+  the cops plugin) crashed with `cannot load such file -- active_model`.
 - Ship a RuboCop plugin from the gem (enable with `plugins: [business_logic]`
   in a consuming repo's `.rubocop.yml`) carrying two spec cops that enforce the
   result-matcher standard. `Propitech/PreferFailValidation` flags
