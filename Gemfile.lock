@@ -2,6 +2,9 @@ PATH
   remote: .
   specs:
     business_logic (0.6.0)
+      activemodel (>= 7.0)
+      dry-initializer (~> 3.2)
+      dry-monads (~> 1.9)
 
 GEM
   remote: https://rubygems.org/
