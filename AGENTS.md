@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.14.0 (source: agents-baseline-v1.14.0)                  -->
+<!-- Baseline: agents-baseline-v1.16.0 (source: agents-baseline-v1.16.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -103,9 +103,16 @@ Test tooling and stack-specific testing rules live in your stack baseline
 - **Track work in Linear**, not GitHub issues. Reference the issue id
   (`PRO-NN`) in the PR so the integration auto-links it.
   (`agentic-workflow:linear-update`)
-- **Worktrees** for parallel checkouts — use the project's `bin/worktree`,
-  never hand-rolled `git worktree add/remove`; hand-rolling leaves orphaned
-  services. (`rails-stack:worktree`) {#worktrees}
+- **Worktrees and the run lifecycle** — drive both with the project's own
+  workflow commands; never guess. Create and tear down parallel checkouts with
+  `bin/worktree`, never hand-rolled `git worktree add/remove` (hand-rolling
+  leaves orphaned services). Run, stop, and reset the app with `mise run start`,
+  `mise run stop`, and `mise run reset`. Each checkout already carries its own
+  port, database namespace, and services, and those commands read them from the
+  worktree — so never infer the server, hand-start a dev process (`rails s`,
+  `bin/dev`, …), or hardcode a port. If you don't know how to run a project,
+  discover its tasks (`mise tasks`) rather than assuming one.
+  (`rails-stack:worktree`) {#worktrees}
 
 ## Boundaries — ask before acting {#boundaries}
 
@@ -128,8 +135,10 @@ The agent **must never**, regardless of permission:
 - Force-push to a protected branch.
 - Merge a PR with `--admin`. It bypasses branch protection — required
   reviews and status checks — to force the change onto the base branch.
-  Let the PR merge through its gates, or enable auto-merge.
-  (`agentic-workflow:pr-cadence`)
+  Let the PR merge through its gates: enable auto-merge with
+  `gh pr merge --auto --merge` (never `--auto --squash`) so GitHub lands the
+  PR itself once every gate passes. Enabling auto-merge is the default final
+  step of opening a PR, not an option. (`agentic-workflow:pr-cadence`)
 - Commit key material.
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
   the signature. Every commit must land gpg-signed and verifiable; if commits
