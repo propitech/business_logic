@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.17.0 (source: agents-baseline-v1.17.0)                  -->
+<!-- Baseline: agents-baseline-v1.18.0 (source: agents-baseline-v1.18.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -72,6 +72,12 @@ of stack:
   *what* — the code already shows it.
 - **Run every gate before reporting done.** A green diff is the bar.
   (`agentic-workflow:gates`)
+- **Durable surfaces are written in plain prose.** Commits, PR titles and
+  bodies, code comments, Linear issues, and Notion pages are read by humans
+  long after the session ends. Write them in ordinary sentences, whatever
+  compressed style the chat is using. No arrow shorthand, no symbol
+  abbreviations, no telegraphic fragments.
+  (`agentic-workflow:durable-surface-prose`)
 
 ## Testing {#testing}
 
@@ -161,6 +167,15 @@ The agent **must never**, regardless of permission:
   group. One team (`PRO`) holds all work; scope is the cross-product filter.
   Add `Type` and `Discipline` when known. Never create an issue without a
   Scope label.
+- **A project enters Current only when a human commits to it.** Before promoting
+  work, sweep the board: close tickets superseded by newly defined work, move
+  finished projects to Done, and size the batch to measured velocity rather than
+  ambition. (`agentic-workflow:board-hygiene`,
+  `agentic-workflow:promote-to-current`)
+- **Archiving is a GraphQL job.** The Linear MCP can read and update but cannot
+  archive or delete, and archiving is what frees the workspace issue cap. Use the
+  GraphQL API with a key read from 1Password.
+  (`agentic-workflow:linear-archive`)
 - Update the plan as the work evolves. A stale plan is worse than no plan.
 
 ## Review-driven changes {#review-driven-changes}
