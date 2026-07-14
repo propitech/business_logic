@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.21.0 (source: agents-baseline-v1.21.0)                  -->
+<!-- Baseline: agents-baseline-v1.22.0 (source: agents-baseline-v1.22.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -128,6 +128,12 @@ Test tooling and stack-specific testing rules live in your stack baseline
   not cause — then watch the checks through and fix what breaks. A red check is
   fixed, never re-rolled and never forced through.
   (`agentic-workflow:pr-ci-watch`)
+- **Clean up after every merge.** A merged PR is finished only once the local
+  clones reflect it: `git fetch origin --prune`, fast-forward the local base
+  branch (`git merge --ff-only` — never a silent hard reset if it diverged),
+  delete the merged local branch (`git branch -d`), and tear down the task's
+  worktree (with the project's worktree tool where one exists). This applies in
+  every repository the task touched. (`agentic-workflow:pr-ci-watch`)
 - **Worktrees and the run lifecycle** — drive both with the project's own
   workflow commands; never guess. Create and tear down parallel checkouts with
   `bin/worktree`, never hand-rolled `git worktree add/remove` (hand-rolling
