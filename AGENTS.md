@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.18.0 (source: agents-baseline-v1.18.0)                  -->
+<!-- Baseline: agents-baseline-v1.20.0 (source: agents-baseline-v1.20.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -70,15 +70,17 @@ of stack:
 - **Comments: none by default.** Add one only when the *why* is non-obvious
   (hidden constraint, subtle invariant, bug workaround). Never narrate the
   *what* — the code already shows it.
-- **Run every gate before reporting done.** A green diff is the bar.
-  (`agentic-workflow:gates`)
 - **Durable surfaces are written in plain prose.** Commits, PR titles and
   bodies, code comments, Linear issues, and Notion pages are read by humans
   long after the session ends. Write them in ordinary sentences, whatever
   compressed style the chat is using. No arrow shorthand, no symbol
   abbreviations, no telegraphic fragments.
   (`agentic-workflow:durable-surface-prose`)
-
+- **Run every gate before reporting done.** A green diff is the bar. Iterate the
+  suite to green rather than reporting a partial pass, and never report done on
+  a gate you did not run. Which commands make up the suite is stack-specific —
+  see your stack baseline (e.g. `rails.md#gates`).
+  (`agentic-workflow:gates`)
 ## Testing {#testing}
 
 - **Every behaviour change ships with a test.** A failing test is a blocker:
@@ -109,6 +111,11 @@ Test tooling and stack-specific testing rules live in your stack baseline
 - **Track work in Linear**, not GitHub issues. Reference the issue id
   (`PRO-NN`) in the PR so the integration auto-links it.
   (`agentic-workflow:linear-update`)
+- **Watch CI after opening the PR.** Opening it is not landing it. Confirm the
+  branch is rebased on its base first — a stale base fails in ways your diff did
+  not cause — then watch the checks through and fix what breaks. A red check is
+  fixed, never re-rolled and never forced through.
+  (`agentic-workflow:pr-ci-watch`)
 - **Worktrees and the run lifecycle** — drive both with the project's own
   workflow commands; never guess. Create and tear down parallel checkouts with
   `bin/worktree`, never hand-rolled `git worktree add/remove` (hand-rolling
@@ -119,7 +126,6 @@ Test tooling and stack-specific testing rules live in your stack baseline
   `bin/dev`, …), or hardcode a port. If you don't know how to run a project,
   discover its tasks (`mise tasks`) rather than assuming one.
   (`rails-stack:worktree`) {#worktrees}
-
 ## Boundaries — ask before acting {#boundaries}
 
 The agent **must pause and confirm** before:
@@ -146,13 +152,27 @@ The agent **must never**, regardless of permission:
   PR itself once every gate passes. Enabling auto-merge is the default final
   step of opening a PR, not an option. (`agentic-workflow:pr-cadence`)
 - Commit key material.
+- Print, log, or persist a fetched secret, or paste one into a PR, commit,
+  Linear issue, or Notion page. Fetch secrets from 1Password at the moment of
+  use and pass them straight into the consuming command via the environment.
+  (`agentic-workflow:secrets-access`)
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
   the signature. Every commit must land gpg-signed and verifiable; if commits
   are not signing, fix the gpg-agent rather than committing unsigned.
 - Create a commit or file content **server-side** — through the GitHub API
   (contents or git-data endpoints) or a `createCommitOnBranch` GraphQL
-  mutation. Server-side commits bypass local signing. Clone, branch, edit,
-  and `git commit` locally so the gpg-agent signs it. (`agentic-workflow:signed-commits`)
+  mutation. Server-side commits bypass your local signing key. Clone, branch,
+  edit, and `git commit` locally so the gpg-agent signs it.
+
+  This rule has exactly one carve-out, and it is **not yours to invoke**: an
+  unattended CI pipeline has no gpg-agent and no key material, so the
+  baseline-sync bot in `propitech/claude-plugins` uses `createCommitOnBranch`,
+  which GitHub signs with its own web-flow key — a verified commit, not a
+  bypass. That carve-out is named here, in the boundary itself, rather than
+  left to a skill to disclose, because a never-rule with an undocumented
+  exception teaches you that the never-list is negotiable. It is not. If you
+  are reading this, you have a gpg-agent: commit locally.
+  (`agentic-workflow:signed-commits`)
 
 ## Plans (Linear) {#plans}
 
@@ -170,14 +190,43 @@ The agent **must never**, regardless of permission:
 - **A project enters Current only when a human commits to it.** Before promoting
   work, sweep the board: close tickets superseded by newly defined work, move
   finished projects to Done, and size the batch to measured velocity rather than
-  ambition. (`agentic-workflow:board-hygiene`,
-  `agentic-workflow:promote-to-current`)
+  ambition. No code begins until the project is Current and the ticket sits in
+  the current cycle at Todo; you evaluate the blockers and dependencies and
+  propose, the human commits. (`agentic-workflow:board-hygiene`)
 - **Archiving is a GraphQL job.** The Linear MCP can read and update but cannot
   archive or delete, and archiving is what frees the workspace issue cap. Use the
   GraphQL API with a key read from 1Password.
   (`agentic-workflow:linear-archive`)
 - Update the plan as the work evolves. A stale plan is worse than no plan.
 
+## Documentation {#documentation}
+
+Knowledge that lives only in a chat session is knowledge the next person does
+not have. Write it down where it will be found:
+
+- **The repository is the source of truth for how to build the thing.** Anything
+  an agent or a new engineer must know to work here — the stack, the layering,
+  the gates, the run lifecycle, the conventions — belongs in the repo, reachable
+  from its README, and close to the code it describes. A rule that holds across
+  Propitech projects belongs further up, in the shared baseline, not copied into
+  each repo. Copying is what makes the copies disagree.
+- **Notion is the source of truth for the product and the durable decisions.**
+  A shipped feature gets a domain page under the product's Product & Features
+  section, so someone can learn what the system does without reading it.
+  (`agentic-workflow:document-feature`)
+- **A material decision is recorded when it is made, not remembered.** When a
+  non-trivial architecture or design call is settled — or an earlier one is
+  reversed — write it to the plan's Resolved decisions and the relevant Notion
+  page. The reasoning is the part that decays; capture *why*, not just what.
+  (`agentic-workflow:document-decision`)
+- **Documentation ships with the change, not after it.** A feature that is not
+  documented is not done, in the same way that a feature with no test is not
+  done. Update the page in the pull request that changes the behaviour, while
+  you still remember why.
+- **A stale document is worse than a missing one**, because it is believed. When
+  you find documentation contradicting the code, fix it or delete it — do not
+  route around it, and do not leave the contradiction for the next reader to
+  discover the hard way.
 ## Review-driven changes {#review-driven-changes}
 
 When the human is walking the agent through PR review feedback, the loop is
@@ -220,6 +269,11 @@ file (see [Operating principles](#operating-principles)).
 - The baselines are owned upstream in `propitech/claude-plugins`. To change a
   **shared** rule, change it there (the fragment is the single source), not in
   this generated file.
+- **Agent memory keeps only machine-local, non-shareable facts.** Anything
+  shareable — a rule, a project fact, a decision — belongs in its owning home
+  (a claude-plugins skill or fragment, this repo's docs or deltas, or Notion).
+  Before saving a shareable memory, alert the user and propose that home
+  instead. (`agentic-workflow:memory-policy`)
 
 # Propitech agent baseline — Ruby gem
 
