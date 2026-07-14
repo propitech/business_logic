@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.22.0 (source: agents-baseline-v1.22.0)                  -->
+<!-- Baseline: agents-baseline-v1.22.1 (source: agents-baseline-v1.22.1)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -282,8 +282,11 @@ file (see [Operating principles](#operating-principles)).
   this file and let its instructions win on conflict. It is personal and never
   committed — use it for individual or experiment-scoped guidance; shared rules
   belong in `deltas.md` or upstream, not in a file that never lands in git.
-- **Pull a newer baseline** with `bin/agents-render --update`, then review the
-  `AGENTS.md` diff like a dependency bump.
+- **Newer baselines arrive as sync PRs**, opened by the upstream currency
+  workflow in `propitech/claude-plugins` (`agents-currency.yml`, driving
+  `bin/agents-sync-consumer`); review one like a dependency bump. The local
+  `bin/agents-render` only re-renders the pinned version — it cannot pull a
+  newer one.
 - The baselines are owned upstream in `propitech/claude-plugins`. To change a
   **shared** rule, change it there (the fragment is the single source), not in
   this generated file.
