@@ -58,11 +58,15 @@ module BusinessLogic
       attributes.map { |attribute| "option :#{attribute.name}" }
     end
 
-    # Placeholder keyword arguments for the preview and the spec. `nil` is a
+    # The argument list the preview and the spec pass to `.new`, parentheses
+    # included — empty for a component with no options, because `.new()` trips
+    # Style/MethodCallWithoutArgsParentheses in the host app. `nil` is a
     # deliberately wrong value: it names every option the component requires and
     # leaves the developer to supply real ones.
-    def placeholder_arguments
-      attributes.map { |attribute| "#{attribute.name}: nil" }.join(", ")
+    def placeholder_signature
+      return "" if attributes.empty?
+
+      "(#{attributes.map { |attribute| "#{attribute.name}: nil" }.join(', ')})"
     end
   end
 end

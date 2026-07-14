@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe <%= component_class %>, type: :component do
-  subject(:render!) { render_inline(described_class.new(<%= placeholder_arguments %>)) }
+  subject(:render!) { render_inline(described_class.new<%= placeholder_signature %>) }
 
   it "renders" do
     render!

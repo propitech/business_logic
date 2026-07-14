@@ -27,7 +27,11 @@ RSpec.describe BusinessLogic::ViewComponentGenerator do
       subject { file("app/components/listings/card/preview.rb") }
 
       it { is_expected.to contain(/class Preview < ApplicationViewComponentPreview/) }
-      it { is_expected.to contain(/def default/) }
+
+      # The method body stays empty — preview/default.html.erb drives it — so it
+      # has to be declared on one line or RuboCop's Style/EmptyMethod fires in
+      # the host app.
+      it { is_expected.to contain(/def default; end/) }
     end
 
     describe "preview example template" do
@@ -51,6 +55,20 @@ RSpec.describe BusinessLogic::ViewComponentGenerator do
       subject { file("app/components/banner/component.rb") }
 
       it { is_expected.to contain(/module Banner\n  class Component < ApplicationViewComponent\n  end\nend/) }
+    end
+
+    # With nothing to pass, the call is `.new` — `.new()` trips
+    # Style/MethodCallWithoutArgsParentheses in the host app.
+    describe "preview example template" do
+      subject { file("app/components/banner/preview/default.html.erb") }
+
+      it { is_expected.to contain(/render Banner::Component\.new %>/) }
+    end
+
+    describe "spec file" do
+      subject { file("spec/components/banner/component_spec.rb") }
+
+      it { is_expected.to contain(/render_inline\(described_class\.new\)/) }
     end
   end
 
