@@ -95,11 +95,12 @@ Test tooling and stack-specific testing rules live in your stack baseline
   moves `HEAD` under you, and commits you believed were landing on your branch
   land somewhere else. This is not hypothetical and it is not recoverable by
   care — the only fix is isolation. Create the worktree **before the first
-  edit**, and confirm which branch you are on before every commit. Where the
-  project ships a worktree tool, use it and never hand-roll (`bin/worktree` in a
-  Rails repo — see [#worktrees]); where it ships none, a plain
-  `git worktree add` is enough, because the hazard is the shared checkout, not
-  the tooling.
+  edit**, and confirm which branch you are on before every commit. Create and
+  remove worktrees with the `worktree` CLI (`propitech/worktree-tools`,
+  installed machine-wide through mise) in **every** repository — `bin/worktree`
+  in a Rails repo is a thin binstub over the same tool (see [#worktrees]), and a
+  repo that is not a runnable app takes `worktree add <slug> --no-start`. Never
+  hand-roll `git worktree add/remove`.
 - Branch `ai/<type>/<slug>` (e.g. `ai/feat/class-schedule`) so reviewers
   know an agent drafted the diff; never push to a protected branch.
 - **Conventional Commits**: `type(scope): subject`, imperative, ≤72-char
@@ -127,8 +128,8 @@ Test tooling and stack-specific testing rules live in your stack baseline
   clones reflect it: `git fetch origin --prune`, fast-forward the local base
   branch (`git merge --ff-only` — never a silent hard reset if it diverged),
   delete the merged local branch (`git branch -d`), and tear down the task's
-  worktree (with the project's worktree tool where one exists). This applies in
-  every repository the task touched. (`agentic-workflow:pr-ci-watch`)
+  worktree (with the `worktree` CLI — `bin/worktree rm` in a Rails repo). This
+  applies in every repository the task touched. (`agentic-workflow:pr-ci-watch`)
 - **Worktrees and the run lifecycle** — drive both with the project's own
   workflow commands; never guess. Create and tear down parallel checkouts with
   `bin/worktree`, never hand-rolled `git worktree add/remove` (hand-rolling
