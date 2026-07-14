@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+
+<%- namespace_parts.each_with_index do |part, depth| -%>
+<%= "  " * depth %>module <%= part %>
+<%- end -%>
+<%- body_indent = "  " * namespace_parts.size -%>
+<%= body_indent %>class Preview < ApplicationViewComponentPreview
+<%= body_indent %>  # Each public method renders the matching template in preview/.
+<%= body_indent %>  def default
+<%= body_indent %>  end
+<%= body_indent %>end
+<%- (namespace_parts.size - 1).downto(0) do |depth| -%>
+<%= "  " * depth %>end
+<%- end -%>

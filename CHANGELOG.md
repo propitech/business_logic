@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Add a `business_logic:view_component` generator, so the ViewComponent sidecar
+  layout every Propitech Rails app shares is scaffolded from one place instead
+  of from a per-app copy of the same generator. It writes the component, its
+  template, its Lookbook preview with one example template under `preview/`, and
+  the component spec — in the documented layout, with no `_component` or
+  `_preview` suffix anywhere. Each argument after the name becomes a
+  `dry-initializer` `option`. `--skip-preview` and `--skip-test` opt out.
 - Declare the gem's runtime dependencies (`activemodel`, `dry-initializer`,
   `dry-monads`) in the gemspec. `require "business_logic"` loads them
   unconditionally, but they previously resolved only through the host app's

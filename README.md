@@ -24,7 +24,8 @@ gem so bug fixes propagate via `bundle update`.
 Plus four matching generators (`business_logic:operation`,
 `business_logic:command`, `business_logic:contract`,
 `business_logic:form`) that scaffold a class + its RSpec file in
-the right directory.
+the right directory, and one that scaffolds the view layer's
+counterpart — [`business_logic:view_component`](#business_logicview_component--a-sidecar-viewcomponent).
 
 ## Installation
 
@@ -396,6 +397,55 @@ end
 Add project-wide hooks (i18n, custom param extraction, shared
 validations) there. Bridge logic stays in the gem so a `bundle
 update` is the only step needed to pick up fixes.
+
+### `business_logic:view_component` — a sidecar ViewComponent
+
+The one generator here that scaffolds view code rather than domain
+logic. It exists because every Propitech Rails app builds components
+on [`view_component-contrib`](https://github.com/palkan/view_component-contrib)
+in the same Sidecar Pattern Extended layout, and each of them was
+otherwise carrying its own copy of the same generator.
+
+```shell
+bin/rails generate business_logic:view_component Listings::Card listing
+```
+
+```text
+app/components/listings/card/component.rb              # Listings::Card::Component
+app/components/listings/card/component.html.erb
+app/components/listings/card/preview.rb                # Listings::Card::Preview
+app/components/listings/card/preview/default.html.erb
+spec/components/listings/card/component_spec.rb
+```
+
+The naming is the point: there is **no `_component` suffix** on the
+directory or the class, and no `_preview` suffix on the preview. The
+class is literally `Component`, inside a namespace module — which is
+what makes the sidecar directory a single self-contained unit you can
+move or delete in one operation.
+
+Each argument after the name becomes a `dry-initializer` `option` on
+the component, and lands as a placeholder keyword argument in the
+preview example and the spec:
+
+```ruby
+module Listings
+  module Card
+    class Component < ApplicationViewComponent
+      option :listing
+    end
+  end
+end
+```
+
+Preview examples live in a `preview/` subfolder, one ERB file per
+public method on the preview class, which is where `view_component-contrib`'s
+`Preview::Sidecarable` looks for them. `--skip-preview` and
+`--skip-test` opt out of the preview and the spec respectively.
+
+The component's spec is generated; a **system** spec is not. Driving a
+component through a real browser needs a host page, and how an app
+provides one is the app's business, not the gem's.
 
 ### `business_logic:wizard_install` — a multi-step flow
 

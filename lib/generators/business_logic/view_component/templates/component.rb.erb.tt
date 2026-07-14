@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+
+<%- namespace_parts.each_with_index do |part, depth| -%>
+<%= "  " * depth %>module <%= part %>
+<%- end -%>
+<%- body_indent = "  " * namespace_parts.size -%>
+<%= body_indent %>class Component < ApplicationViewComponent
+<%- options_declaration.each do |declaration| -%>
+<%= body_indent %>  <%= declaration %>
+<%- end -%>
+<%= body_indent %>end
+<%- (namespace_parts.size - 1).downto(0) do |depth| -%>
+<%= "  " * depth %>end
+<%- end -%>

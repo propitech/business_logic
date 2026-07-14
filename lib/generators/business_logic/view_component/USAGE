@@ -1,0 +1,23 @@
+Description:
+    Generates a ViewComponent in the Sidecar Pattern Extended layout: the
+    class, its template, its Lookbook preview and one preview example, plus
+    the component spec. Pass the component name (CamelCased or under_scored)
+    and an optional list of options the component takes.
+
+    There is no `_component` suffix on the directory or the class, and no
+    `_preview` suffix on the preview — the class is `Component` inside a
+    namespace module.
+
+Example:
+    bin/rails generate business_logic:view_component Listings::Card listing
+
+    This will create:
+        app/components/listings/card/component.rb        # Listings::Card::Component
+        app/components/listings/card/component.html.erb
+        app/components/listings/card/preview.rb          # Listings::Card::Preview
+        app/components/listings/card/preview/default.html.erb
+        spec/components/listings/card/component_spec.rb
+
+Options:
+    --skip-preview   Do not generate the preview and its example template.
+    --skip-test      Do not generate the component spec.
