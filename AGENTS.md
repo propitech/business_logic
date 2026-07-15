@@ -419,10 +419,9 @@ callers require a coordinated version bump across all consumers.
 
 ## Workflow (business_logic additions) {#workflow-bl}
 
-On top of [base.md#workflow]:
+On top of [base.md#workflow] (which already mandates the `ai/<type>/<slug>`
+branch name and tracking work in Linear):
 
-- Branch `ai/<type>/<slug>`; never push to `main`.
-- Work is tracked in **Linear** (Propitech workspace, team `PRO`).
 - There is no Kamal deploy. A release is a gem publish (`gem push`) after a
   version bump in the gemspec.
 - Before a breaking public-API change, validate the gem against
