@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.25.0 (source: agents-baseline-v1.25.0)                  -->
+<!-- Baseline: agents-baseline-v1.26.0 (source: agents-baseline-v1.26.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -88,6 +88,10 @@ of stack:
   without a linked plan or ticket.
 - **Don't mock what you don't own.** Wrap a third-party call behind your own
   adapter and mock the adapter, never the vendor's internals.
+- **Flaky tests get fixed, not re-rolled.** A test that fails on a clean diff
+  is root-caused and fixed in its own PR with a linked ticket; never merged on a
+  bare rerun-to-green, and never silently quarantined (`xit` / skip only with a
+  linked fix ticket). (`agentic-workflow:pr-ci-watch`)
 
 Test tooling and stack-specific testing rules live in your stack baseline
 (e.g. `rails.md#testing-rails`).
@@ -145,6 +149,16 @@ Test tooling and stack-specific testing rules live in your stack baseline
   `bin/dev`, …), or hardcode a port. If you don't know how to run a project,
   discover its tasks (`mise tasks`) rather than assuming one.
   (`rails-stack:worktree`) {#worktrees}
+- **Worktree/main pre-flight** — at task pickup verify the worktree's ambient
+  state before coding: `git fetch origin main` then `git log origin/main..HEAD`
+  (a reused or freshly-added branch can sit on another ticket's commits and leak
+  them into the PR — branch fresh off `origin/main` to fix), and confirm the
+  database the shell targets. The agent shell does not load mise/`.env`, so
+  `WORKTREE_DB_SUFFIX` is empty and `rails`/`rspec` hit the shared
+  `*_development` DB — where other worktrees' unmerged migrations leak into your
+  `schema.rb` dump. Prefix commands with `WORKTREE_DB_SUFFIX=_sN` (from `.env`),
+  and always `git diff origin/main -- db/schema.rb` before committing.
+  (`rails-stack:worktree`) {#worktree-preflight}
 ## Boundaries — ask before acting {#boundaries}
 
 The agent **must pause and confirm** before:
@@ -168,8 +182,11 @@ The agent **must never**, regardless of permission:
   reviews and status checks — to force the change onto the base branch.
   Let the PR merge through its gates: enable auto-merge with
   `gh pr merge --auto --merge` (never `--auto --squash`) so GitHub lands the
-  PR itself once every gate passes. Enabling auto-merge is the default final
-  step of opening a PR, not an option. (`agentic-workflow:pr-cadence`)
+  PR itself once every gate passes — a merge commit preserves each commit's own
+  gpg signature on the base branch, whereas a squash re-authors the change
+  server-side and lands it unsigned, the same bypass the signing rule below
+  forbids. Enabling auto-merge is the default final step of opening a PR, not an
+  option. (`agentic-workflow:pr-cadence`)
 - Commit key material.
 - Print, log, or persist a fetched secret, or paste one into a PR, commit,
   Linear issue, or Notion page. Fetch secrets from 1Password at the moment of
@@ -208,8 +225,9 @@ The agent **must never**, regardless of permission:
   when known. Never create an issue without a Scope label.
 - **A project enters Current only when a human commits to it.** Before promoting
   work, sweep the board: close tickets superseded by newly defined work, move
-  finished projects to Done, and size the batch to measured velocity rather than
-  ambition. No code begins until the project is Current and the ticket sits in
+  finished projects to Done (park trigger-gated leftovers in a holding project),
+  and size the batch to measured velocity rather than ambition, keeping WIP
+  bounded. No code begins until the project is Current and the ticket sits in
   the current cycle at Todo; you evaluate the blockers and dependencies and
   propose, the human commits. (`agentic-workflow:board-hygiene`)
 - **Archiving is a GraphQL job.** The Linear MCP can read and update but cannot
