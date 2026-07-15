@@ -134,6 +134,14 @@ Test tooling and stack-specific testing rules live in your stack baseline
   delete the merged local branch (`git branch -d`), and tear down the task's
   worktree (with the `worktree` CLI — `bin/worktree rm` in a Rails repo). This
   applies in every repository the task touched. (`agentic-workflow:pr-ci-watch`)
+- **Compare against a freshly fetched `origin/main`, never a local ref.** Your
+  local `main` and every remote-tracking ref is a snapshot from your last
+  fetch; other sessions and humans move the real branch continuously, and a
+  sibling clone you reach across into lags further still. Before you diff
+  against main, judge whether a change already landed, or read another repo's
+  state, run `git fetch origin` (or `git fetch origin main`) first and compare
+  against `origin/main`. A conclusion drawn from a stale local ref is wrong
+  exactly when it matters most — right after someone else merged.
 - **Worktrees and the run lifecycle** — drive both with the project's own
   workflow commands; never guess. Create and tear down parallel checkouts with
   `bin/worktree`, never hand-rolled `git worktree add/remove` (hand-rolling
