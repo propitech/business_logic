@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.30.0 (source: agents-baseline-v1.30.0)                  -->
+<!-- Baseline: agents-baseline-v1.31.0 (source: agents-baseline-v1.31.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -187,6 +187,9 @@ The agent **must pause and confirm** before:
 - Adding, removing, or major-bumping a dependency.
 - Anything that talks to a remote system: `git push`, opening a PR on
   someone's behalf, deploys, third-party API writes, Slack/Linear posts.
+  Routine Linear updates — a status flip plus a comment on the ticket you are
+  actively working — are the pre-authorized exception; project, milestone, and
+  initiative changes are not. (`agentic-workflow:linear-update`)
 - Disabling a test or a linter/security finding.
 
 The agent **must never**, regardless of permission:
@@ -416,10 +419,9 @@ callers require a coordinated version bump across all consumers.
 
 ## Workflow (business_logic additions) {#workflow-bl}
 
-On top of [base.md#workflow]:
+On top of [base.md#workflow] (which already mandates the `ai/<type>/<slug>`
+branch name and tracking work in Linear):
 
-- Branch `ai/<type>/<slug>`; never push to `main`.
-- Work is tracked in **Linear** (Propitech workspace, team `PRO`).
 - There is no Kamal deploy. A release is a gem publish (`gem push`) after a
   version bump in the gemspec.
 - Before a breaking public-API change, validate the gem against
