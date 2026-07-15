@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.31.0 (source: agents-baseline-v1.31.0)                  -->
+<!-- Baseline: agents-baseline-v1.32.0 (source: agents-baseline-v1.32.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -81,6 +81,10 @@ of stack:
   a gate you did not run. Which commands make up the suite is stack-specific —
   see your stack baseline (e.g. `rails.md#gates`).
   (`agentic-workflow:gates`)
+- **Run each gate as its own unpiped command.** A piped gate (`… | tail -1`)
+  reports the pipe's last stage, so a failure reads as green — and `&&` does not
+  rescue it, because the pipe already turned the failure into a success. Run the
+  gate bare and read its own exit status. (`agentic-workflow:gates`)
 ## Testing {#testing}
 
 - **Every behaviour change ships with a test.** A failing test is a blocker:
