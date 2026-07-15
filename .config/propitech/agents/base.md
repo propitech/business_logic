@@ -198,9 +198,9 @@ The agent **must never**, regardless of permission:
 - **Flagged "Out of scope" / "Deferred" items become Backlog issues** so
   nothing is lost. (`agentic-workflow:flagged-todo`)
 - **Every Linear issue carries a Scope label** — exactly one of the `Scope`
-  group. One team (`PRO`) holds all work; scope is the cross-product filter.
-  Add `Type` and `Discipline` when known. Never create an issue without a
-  Scope label.
+  group (`DS`, `PM`, `Tooling`, `Shared`). One team (`PRO`) holds all work;
+  scope is the cross-product filter, not the team. Add `Type` and `Discipline`
+  when known. Never create an issue without a Scope label.
 - **A project enters Current only when a human commits to it.** Before promoting
   work, sweep the board: close tickets superseded by newly defined work, move
   finished projects to Done, and size the batch to measured velocity rather than
