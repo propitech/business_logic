@@ -182,6 +182,9 @@ The agent **must pause and confirm** before:
 - Adding, removing, or major-bumping a dependency.
 - Anything that talks to a remote system: `git push`, opening a PR on
   someone's behalf, deploys, third-party API writes, Slack/Linear posts.
+  Routine Linear updates — a status flip plus a comment on the ticket you are
+  actively working — are the pre-authorized exception; project, milestone, and
+  initiative changes are not. (`agentic-workflow:linear-update`)
 - Disabling a test or a linter/security finding.
 
 The agent **must never**, regardless of permission:
