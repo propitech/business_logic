@@ -123,6 +123,13 @@ Test tooling and stack-specific testing rules live in your stack baseline
 - **Track work in Linear**, not GitHub issues. Reference the issue id
   (`PRO-NN`) in the PR so the integration auto-links it.
   (`agentic-workflow:linear-update`)
+- **Claim a ticket before the first edit by flipping it to In Progress.** With
+  several agent sessions and humans on one board at once, In Progress is a lock
+  the others read: it announces the work is taken, so nobody picks it up twice.
+  The reciprocal is binding too — before you start a ticket, check it is not
+  already In Progress under another session; if it is, it is claimed, so pick
+  another rather than duplicating the work. Flip it once at pickup; the GitHub
+  integration owns every later transition. (`agentic-workflow:linear-update`)
 - **Watch CI after opening the PR.** Opening it is not landing it. Confirm the
   branch is rebased on its base first — a stale base fails in ways your diff did
   not cause — then watch the checks through and fix what breaks. A red check is
