@@ -7,6 +7,7 @@ require_relative "../cop/propitech/prefer_fail_validation"
 require_relative "../cop/propitech/prefer_succeed_validation"
 require_relative "../cop/propitech/seed_uses_factory"
 require_relative "../cop/propitech/seed_uses_container"
+require_relative "../cop/propitech/no_not_implemented_error"
 
 module RuboCop
   module BusinessLogic

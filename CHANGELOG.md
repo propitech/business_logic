@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Add `BusinessLogic::AbstractMethodError` (a `NoMethodError`, hence a rescuable
+  `StandardError`) and a `Propitech/NoNotImplementedError` cop that flags
+  `raise NotImplementedError` and autocorrects it to
+  `raise BusinessLogic::AbstractMethodError`. `NotImplementedError` is a
+  `ScriptError`, not a `StandardError`: a bare `rescue` misses it, and Ruby
+  reserves it for features the platform does not implement (a missing
+  `fork(2)`). The cop ships enabled.
 - Add a `business_logic:view_component` generator, so the ViewComponent sidecar
   layout every Propitech Rails app shares is scaffolded from one place instead
   of from a per-app copy of the same generator. It writes the component, its

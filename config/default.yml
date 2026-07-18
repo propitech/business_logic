@@ -23,3 +23,7 @@ Propitech/SeedUsesContainer:
   Include:
     - 'db/seeds.rb'
     - 'db/seeds/**/*.rb'
+
+Propitech/NoNotImplementedError:
+  Description: 'Raise BusinessLogic::AbstractMethodError (a NoMethodError), not NotImplementedError (a ScriptError a bare rescue misses).'
+  Enabled: true
