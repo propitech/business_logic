@@ -8,7 +8,10 @@
   `raise BusinessLogic::AbstractMethodError`. `NotImplementedError` is a
   `ScriptError`, not a `StandardError`: a bare `rescue` misses it, and Ruby
   reserves it for features the platform does not implement (a missing
-  `fork(2)`). The cop ships enabled.
+  `fork(2)`). The cop ships enabled; its autocorrect is marked
+  `SafeAutoCorrect: false`, because rewriting to a `StandardError` changes what
+  surrounding `rescue` clauses catch, so only an explicit `rubocop -A` applies
+  it.
 - Add a `business_logic:view_component` generator, so the ViewComponent sidecar
   layout every Propitech Rails app shares is scaffolded from one place instead
   of from a per-app copy of the same generator. It writes the component, its
