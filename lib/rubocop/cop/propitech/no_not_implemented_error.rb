@@ -11,6 +11,14 @@ module RuboCop
       # `BusinessLogic::AbstractMethodError` — a `NoMethodError`, hence a
       # rescuable `StandardError` — instead.
       #
+      # @safety
+      #   The autocorrection is not safe: it changes the raised exception's
+      #   ancestry from `ScriptError` to `StandardError`, so a surrounding
+      #   `rescue` (bare, `StandardError`, `ScriptError`, or `Exception`) may
+      #   start or stop catching it. It is marked `SafeAutoCorrect: false`, so
+      #   `rubocop -a` only reports the offence; an explicit `rubocop -A`
+      #   applies the rewrite.
+      #
       # @example
       #   # bad
       #   def call = raise NotImplementedError

@@ -27,3 +27,7 @@ Propitech/SeedUsesContainer:
 Propitech/NoNotImplementedError:
   Description: 'Raise BusinessLogic::AbstractMethodError (a NoMethodError), not NotImplementedError (a ScriptError a bare rescue misses).'
   Enabled: true
+  # The rewrite changes the exception's ancestry (ScriptError to StandardError),
+  # which changes what surrounding rescue clauses catch — a behavioural change,
+  # so `rubocop -a` skips it and only an explicit `rubocop -A` applies it.
+  SafeAutoCorrect: false
