@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.33.0 (source: agents-baseline-v1.33.0)                  -->
+<!-- Baseline: agents-baseline-v1.34.0 (source: agents-baseline-v1.34.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -273,6 +273,16 @@ not have. Write it down where it will be found:
   A shipped feature gets a domain page under the product's Product & Features
   section, so someone can learn what the system does without reading it.
   (`agentic-workflow:document-feature`)
+- **Claude Design is the source of truth for the design.** The locked direction
+  lives in a product's Claude Design projects on claude.ai/design, and it lives
+  there in every repository and at every stage of a product's life — a closed
+  design phase does not hand the canon back to the code. The repository
+  implements the direction; it never becomes the direction. So a component
+  library published out of a repo is not a mirror that the repo may overrule:
+  it exists so that explorations generate against components that really exist,
+  and when the two disagree, the canvases are right and the code is the thing to
+  change. Harvest direction only — never paste or ship an HTML export.
+  (`agentic-workflow:design-canvas`, `agentic-workflow:tool-interfaces`)
 - **A material decision is recorded when it is made, not remembered.** When a
   non-trivial architecture or design call is settled — or an earlier one is
   reversed — write it to the plan's Resolved decisions and the relevant Notion
