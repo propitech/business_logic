@@ -17,23 +17,25 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
-    strategy:
-      matrix:
-        ruby:
-          - 3.3.7
-          - 3.4.5
+    name: Ruby
+    # A hardcoded ubuntu-latest is refused at dispatch once the org's
+    # hosted-minute allowance is spent (PRO-1236). Ruby comes from the runner
+    # image because ruby/setup-ruby refuses to install on the fleet, whose
+    # hosts are Fedora with an empty tool cache.
+    runs-on: ${{ vars.RUNNER_LABELS != '' && fromJSON(vars.RUNNER_LABELS) || 'ubuntu-latest' }}
+    container:
+      image: ghcr.io/propitech/runner-rails-8.1@sha256:df8bd45f9df37a79d7df7dfc7425c14a9ecadcaa4ec071776e0ddff4303e098a
 
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
+      # The image carries one Ruby, so this replaces the 3.3.7/3.4.5 matrix and
+      # setup-ruby's bundler-cache. required_ruby_version moved to ">= 3.4" in
+      # the same change, so the gem no longer promises a version CI does not
+      # exercise (PRO-1240).
+      - name: Install dependencies
+        run: bundle install --jobs 4
       - name: Run the default task
         env:
           CI: true
@@ -41,20 +43,19 @@ jobs:
 
       - name: Upload result to Quality.sh
         uses: qltysh/qlty-action/coverage@v2
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository && matrix.ruby == '3.4.5'
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         with:
           token: ${{secrets.QLTY_COVERAGE_TOKEN}}
           files: coverage/.resultset.json
 
   agents-check:
     name: AGENTS.md integrity
-    runs-on: ubuntu-latest
+    # See build above.
+    runs-on: ${{ vars.RUNNER_LABELS != '' && fromJSON(vars.RUNNER_LABELS) || 'ubuntu-latest' }}
+    container:
+      image: ghcr.io/propitech/runner-rails-8.1@sha256:df8bd45f9df37a79d7df7dfc7425c14a9ecadcaa4ec071776e0ddff4303e098a
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.4"
-          bundler: none
       - run: ruby bin/agents-check

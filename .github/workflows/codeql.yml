@@ -31,7 +31,12 @@ jobs:
     #   - https://gh.io/supported-runners-and-hardware-resources
     #   - https://gh.io/using-larger-runners (GitHub.com only)
     # Consider using larger runners or machines with greater resources for possible analysis time improvements.
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    # Was ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    # — starter-template boilerplate. The matrix below has no swift leg and the
+    # repository has no Swift code, so that branch never evaluated; carrying it
+    # implied a macOS build nobody has. A hardcoded hosted runner is also
+    # refused at dispatch once the org's allowance is spent (PRO-1236).
+    runs-on: ${{ vars.RUNNER_LABELS != '' && fromJSON(vars.RUNNER_LABELS) || 'ubuntu-latest' }}
     permissions:
       # required for all workflows
       security-events: write

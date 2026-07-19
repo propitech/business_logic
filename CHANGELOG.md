@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- **Breaking:** `required_ruby_version` is now `>= 3.4`, up from `>= 3.3`. CI
+  used to run the suite against both 3.3.7 and 3.4.5; it now runs against the
+  single Ruby the self-hosted runner image carries (3.4.9), because the
+  GitHub-hosted runners the matrix depended on are unavailable and
+  `ruby/setup-ruby` refuses to install on the self-hosted fleet. Rather than
+  keep promising a version nothing exercises, the promise is narrowed to what
+  is actually tested. Consumers still on Ruby 3.3 should stay on 0.6.0.
+
 - Add `BusinessLogic::AbstractMethodError` (a `NoMethodError`, hence a rescuable
   `StandardError`) and a `Propitech/NoNotImplementedError` cop that flags
   `raise NotImplementedError` and autocorrects it to
