@@ -188,12 +188,24 @@ The agent **must pause and confirm** before:
   someone's behalf, deploys, third-party API writes, Slack/Linear posts.
   Routine Linear updates — a status flip plus a comment on the ticket you are
   actively working — are the pre-authorized exception; project, milestone, and
-  initiative changes are not. (`agentic-workflow:linear-update`)
+  initiative changes are not. (`agentic-workflow:linear-update`) A **staging**
+  deploy is pre-authorized too, on the terms set out in the never-list below.
 - Disabling a test or a linter/security finding.
 
 The agent **must never**, regardless of permission:
 
-- Run a production deploy command.
+- Run a **production** deploy command. This one names its environment on
+  purpose, because it has a carve-out that a production deploy never gets: a
+  **staging** deploy is standing pre-authorized, and you may run it without
+  asking first. Staging exists to be broken, and an agent that cannot deploy
+  staging cannot verify its own work end to end — which is most of the value of
+  it having built the change. The condition is disclosure, not permission:
+  say that you are deploying staging before you run the command, and report
+  what happened afterwards, so the session carries a record of every deploy
+  the agent ran. Treat a deploy as production whenever it would touch a
+  production destination, whatever the destination is named or the flag says;
+  when you cannot tell which environment a command targets, it is production
+  and you stop.
 - Force-push to a protected branch.
 - Merge a PR with `--admin`. It bypasses branch protection — required
   reviews and status checks — to force the change onto the base branch.
