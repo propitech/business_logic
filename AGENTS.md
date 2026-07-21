@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.36.0 (source: agents-baseline-v1.36.0)                  -->
+<!-- Baseline: agents-baseline-v1.37.0 (source: agents-baseline-v1.37.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -178,6 +178,17 @@ Test tooling and stack-specific testing rules live in your stack baseline
   `schema.rb` dump. Prefix commands with `WORKTREE_DB_SUFFIX=_sN` (from `.env`),
   and always `git diff origin/main -- db/schema.rb` before committing.
   (`rails-stack:worktree`) {#worktree-preflight}
+- **A stack is reviewed at every rung, and the last rung discloses what it
+  carries.** Branch protection guards the default branch and nothing else, so a
+  pull request whose base is another feature branch merges with no required
+  review at all — for stacked work the review gate is not weaker, it is absent,
+  and it is absent for the diff least likely to be described accurately, because
+  the final pull request's body is written about its own commits rather than
+  about everything its branch carries. Both halves are required: point the
+  review at *every* pull request in the stack, not only the one targeting the
+  default branch; and have the final pull request list the stacked pull requests
+  merged into its branch and what each one lands, so the approver judges the
+  scope the branch actually carries. (`agentic-workflow:pr-cadence`)
 ## Boundaries — ask before acting {#boundaries}
 
 The agent **must pause and confirm** before:
