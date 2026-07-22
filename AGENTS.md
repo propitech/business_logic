@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.38.0 (source: agents-baseline-v1.38.0)                  -->
+<!-- Baseline: agents-baseline-v1.39.0 (source: agents-baseline-v1.39.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -224,14 +224,15 @@ The agent **must never**, regardless of permission:
   and you stop.
 - Force-push to a protected branch.
 - Merge a PR with `--admin`. It bypasses branch protection — required
-  reviews and status checks — to force the change onto the base branch.
-  Let the PR merge through its gates: enable auto-merge with
-  `gh pr merge --auto --merge` (never `--auto --squash`) so GitHub lands the
-  PR itself once every gate passes — a merge commit preserves each commit's own
-  gpg signature on the base branch, whereas a squash re-authors the change
-  server-side and lands it unsigned, the same bypass the signing rule below
-  forbids. Enabling auto-merge is the default final step of opening a PR, not an
-  option. (`agentic-workflow:pr-cadence`)
+  reviews and status checks — to force the change onto the base branch. Let the
+  PR merge through its gates instead. Whether a PR should land the moment those
+  gates go green is the human's call, so **arm auto-merge only when asked to**;
+  otherwise open the PR, report it, and leave the merge to them. When you do arm
+  it, use a merge commit — `gh pr merge --auto --merge`, never `--auto --squash`
+  — because a merge commit preserves each commit's own gpg signature on the base
+  branch, whereas a squash re-authors the change server-side and lands it
+  unsigned, the same bypass the signing rule below forbids.
+  (`agentic-workflow:pr-cadence`)
 - Commit key material.
 - Print, log, or persist a fetched secret, or paste one into a PR, commit,
   Linear issue, or Notion page. Fetch secrets from 1Password at the moment of
