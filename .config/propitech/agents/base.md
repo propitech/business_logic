@@ -97,62 +97,48 @@ Test tooling and stack-specific testing rules live in your stack baseline
 ## Workflow {#workflow}
 
 - **Work in your own worktree, in every repository, always.** Never edit,
-  branch, or commit in a shared clone — not in the repo you were invoked on, and
-  not in a sibling repo you reach across into. Other agent sessions and the
-  human are working in the same clones concurrently: a checkout you did not make
-  moves `HEAD` under you, and commits you believed were landing on your branch
-  land somewhere else. This is not hypothetical and it is not recoverable by
-  care — the only fix is isolation. Create the worktree **before the first
-  edit**, and confirm which branch you are on before every commit. Create and
-  remove worktrees with the `worktree` CLI (`propitech/worktree-tools`,
-  installed machine-wide through mise) in **every** repository — `bin/worktree`
-  in a Rails repo is a thin binstub over the same tool (see [#worktrees]), and a
-  repo that is not a runnable app takes `worktree add <slug> --no-start`. Never
-  hand-roll `git worktree add/remove`.
-- Branch `ai/<type>/<slug>` (e.g. `ai/feat/class-schedule`) so reviewers
-  know an agent drafted the diff; never push to a protected branch.
+  branch, or commit in a shared clone — not the repo you were invoked on, and
+  not a sibling repo you reach across into. Other sessions and the human work
+  the same clones concurrently: a checkout you did not make moves `HEAD` under
+  you, and commits you believed were landing on your branch land somewhere else.
+  Care does not fix this; isolation does. Create the worktree **before the first
+  edit** and confirm your branch before every commit, and drive worktree
+  create/teardown through the project's `worktree` tooling rather than
+  hand-rolled `git worktree add/remove` (see [#worktrees]).
+- Branch `ai/<type>/<slug>` (e.g. `ai/feat/class-schedule`) so reviewers know an
+  agent drafted the diff; never push to a protected branch.
 - **Conventional Commits**: `type(scope): subject`, imperative, ≤72-char
   subject. The body explains *why*, not what — the diff shows what.
-- **Pull requests** title with the resolved ticket and a lowercase tag,
-  each bracketed — `[PRO-NN][<tag>] <imperative summary>` (tag is any
-  lowercase word: `feat`, `fix`, `chore`, `wip`, … — mirrors the commit
-  type) — and follow the org template
-  (`propitech/.github-private`, auto-filled by GitHub): **Summary** (with a
-  `Closes: PRO-NN` line linking the Linear issue), **Solution and changes**,
-  **Documentation**, **Developer Notes**. The `Closes:` line lets the
-  integration move the issue on merge. Include a screenshot for any
-  user-visible change (embed the image the user supplied). CI green before
-  review. Match the template headings exactly and resolve repo-local before
-  org default. (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
-- **Track work in Linear**, not GitHub issues. Reference the issue id
+- **Every change ships as a pull request**, never a direct commit to a protected
+  branch. Title it `[PRO-NN][<tag>] <imperative summary>` (tag mirrors the commit
+  type: `feat`, `fix`, `chore`, `wip`, …) and fill the applicable template,
+  matching its headings exactly and keeping the `Closes: PRO-NN` line that lets
+  the integration move the issue on merge. Include a screenshot for any
+  user-visible change; CI green before review.
+  (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
+- **Track work in Linear**, not GitHub issues, and reference the issue id
   (`PRO-NN`) in the PR so the integration auto-links it.
   (`agentic-workflow:linear-update`)
 - **Claim a ticket before the first edit by flipping it to In Progress.** With
-  several agent sessions and humans on one board at once, In Progress is a lock
-  the others read: it announces the work is taken, so nobody picks it up twice.
-  The reciprocal is binding too — before you start a ticket, check it is not
-  already In Progress under another session; if it is, it is claimed, so pick
-  another rather than duplicating the work. Flip it once at pickup; the GitHub
-  integration owns every later transition. (`agentic-workflow:linear-update`)
+  several sessions and humans on one board at once, In Progress is the lock the
+  others read — it announces the work is taken. The reciprocal binds: before you
+  start, check the ticket is not already In Progress under another session, and
+  if it is, pick another. Flip it once at pickup; the GitHub integration owns
+  every later transition. (`agentic-workflow:linear-update`)
 - **Watch CI after opening the PR.** Opening it is not landing it. Confirm the
-  branch is rebased on its base first — a stale base fails in ways your diff did
-  not cause — then watch the checks through and fix what breaks. A red check is
-  fixed, never re-rolled and never forced through.
+  branch is rebased on its base first, then watch the checks through and fix what
+  breaks. A red check is fixed, never re-rolled and never forced through.
   (`agentic-workflow:pr-ci-watch`)
 - **Clean up after every merge.** A merged PR is finished only once the local
-  clones reflect it: `git fetch origin --prune`, fast-forward the local base
-  branch (`git merge --ff-only` — never a silent hard reset if it diverged),
-  delete the merged local branch (`git branch -d`), and tear down the task's
-  worktree (with the `worktree` CLI — `bin/worktree rm` in a Rails repo). This
-  applies in every repository the task touched. (`agentic-workflow:pr-ci-watch`)
-- **Compare against a freshly fetched `origin/main`, never a local ref.** Your
-  local `main` and every remote-tracking ref is a snapshot from your last
-  fetch; other sessions and humans move the real branch continuously, and a
-  sibling clone you reach across into lags further still. Before you diff
-  against main, judge whether a change already landed, or read another repo's
-  state, run `git fetch origin` (or `git fetch origin main`) first and compare
-  against `origin/main`. A conclusion drawn from a stale local ref is wrong
-  exactly when it matters most — right after someone else merged.
+  clones reflect it: fast-forward the base branch (never a hard reset if it
+  diverged), delete the merged local branch, and tear down the task's worktree,
+  in every repository the task touched. (`agentic-workflow:pr-ci-watch`)
+- **Compare against a freshly fetched `origin/main`, never a local ref.** Every
+  remote-tracking ref is a snapshot from your last fetch, and other sessions and
+  humans move the real branch continuously. Run `git fetch origin` before you
+  diff against main, judge whether a change already landed, or read another
+  repo's state. A conclusion drawn from a stale local ref is wrong exactly when
+  it matters most — right after someone else merged.
 - **Worktrees and the run lifecycle** — drive both with the project's own
   workflow commands; never guess. Create and tear down parallel checkouts with
   `bin/worktree`, never hand-rolled `git worktree add/remove` (hand-rolling
@@ -200,38 +186,32 @@ The agent **must pause and confirm** before:
   Routine Linear updates — a status flip plus a comment on the ticket you are
   actively working — are the pre-authorized exception; project, milestone, and
   initiative changes are not. (`agentic-workflow:linear-update`) A **staging**
-  deploy is pre-authorized too, on the terms set out in the never-list below.
+  deploy is pre-authorized too, on the terms in the never-list below.
 - Disabling a test or a linter/security finding.
 
 The agent **must never**, regardless of permission:
 
 - Run a **production** deploy command. This one names its environment on
-  purpose, because it has a carve-out that a production deploy never gets: a
-  **staging** deploy is standing pre-authorized, and you may run it without
-  asking first. Staging exists to be broken, and an agent that cannot deploy
-  staging cannot verify its own work end to end — which is most of the value of
-  it having built the change. The condition is disclosure, not permission:
-  say that you are deploying staging before you run the command, and report
-  what happened afterwards, so the session carries a record of every deploy
-  the agent ran. Treat a deploy as production whenever it would touch a
-  production destination, whatever the destination is named or the flag says;
-  when you cannot tell which environment a command targets, it is production
-  and you stop.
+  purpose, because a **staging** deploy has the opposite standing: it is
+  standing pre-authorized, and you may run it without asking. Staging exists to
+  be broken, and an agent that cannot deploy staging cannot verify its own work
+  end to end — which is most of the value of it having built the change. The
+  condition is disclosure, not permission: say that you are deploying staging
+  before you run the command, and report what happened, so the session carries a
+  record of every deploy. Treat a deploy as production whenever it would touch a
+  production destination, whatever it is named or the flag says; when you cannot
+  tell which environment a command targets, it is production and you stop.
 - Force-push to a protected branch.
-- Merge a PR with `--admin`. It bypasses branch protection — required
-  reviews and status checks — to force the change onto the base branch. Let the
-  PR merge through its gates instead. Whether a PR should land the moment those
-  gates go green is the human's call, so **arm auto-merge only when asked to**;
-  otherwise open the PR, report it, and leave the merge to them. When you do arm
-  it, use a merge commit — `gh pr merge --auto --merge`, never `--auto --squash`
-  — because a merge commit preserves each commit's own gpg signature on the base
-  branch, whereas a squash re-authors the change server-side and lands it
-  unsigned, the same bypass the signing rule below forbids.
-  (`agentic-workflow:pr-cadence`)
+- Merge a PR with `--admin`. It bypasses branch protection — required reviews
+  and status checks — to force the change onto the base branch. Let the PR merge
+  through its gates instead. Whether it should land the moment those gates go
+  green is the human's call, so **arm auto-merge only when asked to**; the merge
+  method and its signing consequences are owned by
+  `agentic-workflow:pr-cadence`.
 - Commit key material.
 - Print, log, or persist a fetched secret, or paste one into a PR, commit,
-  Linear issue, or Notion page. Fetch secrets from 1Password at the moment of
-  use and pass them straight into the consuming command via the environment.
+  Linear issue, or Notion page. Fetch secrets at the moment of use and pass them
+  straight into the consuming command via the environment, never into output.
   (`agentic-workflow:secrets-access`)
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
   the signature. Every commit must land gpg-signed and verifiable; if commits
@@ -250,7 +230,6 @@ The agent **must never**, regardless of permission:
   exception teaches you that the never-list is negotiable. It is not. If you
   are reading this, you have a gpg-agent: commit locally.
   (`agentic-workflow:signed-commits`)
-
 - **Approve your own pull request from a second identity you operate.** A pull
   request stays blocked until a context that did not author it reviews it. The
   cross-account reviewer identity exists so that a *separate reviewer session*,
