@@ -44,14 +44,13 @@ Size the task before you edit, and run it on a model that fits:
   reasoning model to plan the approach, then drop back down once the shape is
   agreed. Planning is where reasoning depth pays off; see [Plans](#plans).
 - **Routine authoring, migrations, and tests** — the faster model is the
-  default for code you are writing against an agreed plan. Don't burn the
+  default for code written against an agreed plan. Don't burn the
   high-reasoning tier on mechanical work.
 
-Stated by capability, not by product name: pick the *strongest reasoning* tier
-for planning and the *fastest adequate* tier for execution, whatever those are
-called in the tool you are running. Compliance with the stack baseline (style,
-tests, gates) is non-negotiable at every tier — a faster model is not licence
-to skip [Code style](#code-style) or a stack's gates.
+Stated by capability, not product name — whatever your tool calls those tiers.
+Compliance with the stack baseline (style, tests, gates) is non-negotiable at
+every tier: a faster model is not licence to skip [Code style](#code-style) or
+a stack's gates.
 ## Code style philosophy {#code-style}
 
 The toolchain is opinionated — defer to it. The exact gate commands are
