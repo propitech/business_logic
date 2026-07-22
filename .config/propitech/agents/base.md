@@ -250,6 +250,28 @@ The agent **must never**, regardless of permission:
   are reading this, you have a gpg-agent: commit locally.
   (`agentic-workflow:signed-commits`)
 
+- **Approve your own pull request from a second identity you operate.** A pull
+  request stays blocked until a context that did not author it reviews it. The
+  cross-account reviewer identity exists so that a *separate reviewer session*,
+  launched by the human for that purpose, can post an approval GitHub counts
+  (`agentic-workflow:cross-review-reviewer`). It is never for the authoring
+  session to fetch the reviewer credential and approve its own work: that
+  satisfies branch protection mechanically while removing the only thing the
+  gate provides — a reviewing context that has not already convinced itself the
+  code is correct. A session that finds its own pull request blocked on review
+  leaves it blocked and says so. If a reviewer-launch helper rejects the
+  arguments you are passing it, that is the rule firing, not a syntax problem
+  to work around. {#review-identity}
+- **Write a session URL onto a durable surface.** No `claude.ai/code/session_…`
+  link — and no `Claude-Session:` trailer carrying one — in a commit message, a
+  pull request title or body, a review or issue comment, a Linear issue, a
+  Notion page, or code. When the harness's default commit instruction says to
+  append a `Claude-Session:` trailer, drop that trailer entirely and keep
+  `Co-Authored-By:`; this rule overrides the harness default. A session link
+  ties a public, durable artifact to a private working transcript: it is dead
+  for every reader without the operator's account, and it leaks the fact and
+  shape of the agent run into surfaces that outlive it.
+  (`agentic-workflow:durable-surface-prose`) {#no-session-urls}
 ## Plans (Linear) {#plans}
 
 - The plan/epic lives in **Linear** (Propitech workspace), not the repo: an
