@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "1.40.0",
+  "baselineVersion": "1.41.0",
   "source": {
-    "ref": "agents-baseline-v1.40.0"
+    "ref": "agents-baseline-v1.41.0"
   },
   "layers": [
     "base",
