@@ -31,3 +31,14 @@ Propitech/NoNotImplementedError:
   # which changes what surrounding rescue clauses catch — a behavioural change,
   # so `rubocop -a` skips it and only an explicit `rubocop -A` applies it.
   SafeAutoCorrect: false
+
+Propitech/PreferBeDeleted:
+  Description: 'Assert Paranoia soft-delete with `be_deleted`, not the `deleted_at` column.'
+  Enabled: true
+  Include:
+    - '**/*_spec.rb'
+  # The cop keys off the `deleted_at` receiver pattern and cannot prove the
+  # receiver is a Paranoia model, so autocorrect could rewrite a non-paranoid
+  # assertion into a call on a `deleted?` predicate that does not exist — a
+  # behavioural change, so `rubocop -a` reports and only `rubocop -A` applies.
+  SafeAutoCorrect: false

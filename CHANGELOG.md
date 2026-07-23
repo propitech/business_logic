@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Add a `Propitech/PreferBeDeleted` cop that flags a Paranoia soft-delete
+  assertion written against the `deleted_at` timestamp column
+  (`expect(record.deleted_at).to be_present` / `be_nil`, and their negations)
+  and autocorrects it to the gem's own `be_deleted` matcher
+  (`expect(record).to be_deleted`), preserving polarity. `deleted_at` is the
+  storage detail; `be_deleted` states the behaviour Paranoia guarantees, reads
+  clearly, and mirrors how the models are queried. The cop keys off the
+  `deleted_at` receiver pattern and cannot prove the receiver is a paranoid
+  model, so its autocorrect is marked `SafeAutoCorrect: false` — `rubocop -a`
+  reports and only an explicit `rubocop -A` applies it.
 - Add `BusinessLogic::AbstractMethodError` (a `NoMethodError`, hence a rescuable
   `StandardError`) and a `Propitech/NoNotImplementedError` cop that flags
   `raise NotImplementedError` and autocorrects it to
