@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.42.0 (source: agents-baseline-v1.42.0)                  -->
+<!-- Baseline: agents-baseline-v1.43.0 (source: agents-baseline-v1.43.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
