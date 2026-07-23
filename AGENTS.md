@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.43.0 (source: agents-baseline-v1.43.0)                  -->
+<!-- Baseline: agents-baseline-v1.44.0 (source: agents-baseline-v1.44.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -163,6 +163,18 @@ Test tooling and stack-specific testing rules live in your stack baseline
   `schema.rb` dump. Prefix commands with `WORKTREE_DB_SUFFIX=_sN` (from `.env`),
   and always `git diff origin/main -- db/schema.rb` before committing.
   (`rails-stack:worktree`) {#worktree-preflight}
+- **A ticket is finished when its pull request is open, not when the code is
+  green.** Picking up a ticket and shipping it are one task, so run the arc
+  through in a single pass — claim the issue, implement, gates, commit, push,
+  open the pull request, watch CI — and report the result rather than pausing at
+  working code to ask whether to open the pull request. The human answered that
+  when they named the ticket; asking again returns the work at the moment it was
+  closest to done. Stop only where continuing would be wrong: the human scoped
+  the request narrowly ("just implement it", "don't push yet"), the gates are red
+  in a way that needs their decision, the ticket is blocked or ambiguous, or the
+  work turns out to need a plan. Uncertainty about whether the change is *right*
+  resolves to a draft pull request, not a question.
+  (`agentic-workflow:ticket-to-pr`)
 - **A stack is reviewed at every rung, and the last rung discloses what it
   carries.** Branch protection guards the default branch and nothing else, so a
   pull request whose base is another feature branch merges with no required
