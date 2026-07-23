@@ -685,6 +685,7 @@ plugins:
 | ----------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------- |
 | `Propitech/PreferFailValidation`    | `expect(x).not_to succeed_*`                                                         | `fail_*.with_error(...)`                    |
 | `Propitech/PreferSucceedValidation` | `expect(x).not_to fail_*`                                                            | `succeed_*.with_value(...)`                 |
+| `Propitech/PreferBeDeleted`         | `expect(x.deleted_at).to be_present` / `be_nil`                                      | `expect(x).to be_deleted`                   |
 | `Propitech/SeedUsesFactory`         | `Model.create!` / `Commands::….call`                                                 | `FactoryBot.create(:model)`                 |
 | `Propitech/SeedUsesContainer`       | `find`/`find_by`, `*create*`, `*update*`, `*destroy*`, `*delete*` on any AR receiver | `container.get(:key)` / `FactoryBot.create` |
 
@@ -693,6 +694,15 @@ with the negated success matcher (`not_to succeed_validation`) passes for
 _any_ non-success — including the wrong error — so it silently drops
 the error contract; the `fail_*.with_error(...)` form pins the exact
 failure. The success direction is symmetric.
+
+`PreferBeDeleted` steers a Paranoia soft-delete assertion from the
+`deleted_at` storage column to the gem's own `be_deleted` matcher —
+`expect(record).to be_deleted` — preserving polarity (`to be_present` /
+`not_to be_nil` become `to be_deleted`; `to be_nil` / `not_to be_present`
+become `not_to be_deleted`). It keys off the `deleted_at` receiver
+pattern and cannot prove the receiver is a paranoid model, so its
+autocorrect is `SafeAutoCorrect: false`: `rubocop -a` reports and only
+`rubocop -A` rewrites.
 
 The seed cops default to `Include: db/seeds.rb` and `db/seeds/**/*.rb`.
 They keep a seed to its two sanctioned moves: build rows with FactoryBot,
