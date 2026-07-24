@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.44.0 (source: agents-baseline-v1.44.0)                  -->
+<!-- Baseline: agents-baseline-v1.45.0 (source: agents-baseline-v1.45.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -114,14 +114,15 @@ Test tooling and stack-specific testing rules live in your stack baseline
 - **Conventional Commits**: `type(scope): subject`, imperative, ≤72-char
   subject. The body explains *why*, not what — the diff shows what.
 - **Every change ships as a pull request**, never a direct commit to a protected
-  branch. Title it `[PRO-NN][<tag>] <imperative summary>` (tag mirrors the commit
-  type: `feat`, `fix`, `chore`, `wip`, …) and fill the applicable template,
-  matching its headings exactly and keeping the `Closes: PRO-NN` line that lets
-  the integration move the issue on merge. Include a screenshot for any
-  user-visible change; CI green before review.
-  (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
+  branch. Title it `[<KEY>-NN][<tag>] <imperative summary>` — `<KEY>` is this
+  repo's Linear team key (for example `SQH` in property_management, `MOV` in
+  dance_school) and the tag mirrors the commit type: `feat`, `fix`, `chore`,
+  `wip`, … Fill the applicable template, matching its headings exactly and
+  keeping the `Closes: <KEY>-NN` line that lets the integration move the issue on
+  merge. Include a screenshot for any user-visible change; CI green before
+  review. (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
 - **Track work in Linear**, not GitHub issues, and reference the issue id
-  (`PRO-NN`) in the PR so the integration auto-links it.
+  (`<KEY>-NN`) in the PR so the integration auto-links it.
   (`agentic-workflow:linear-update`)
 - **Claim a ticket before the first edit by flipping it to In Progress.** With
   several sessions and humans on one board at once, In Progress is the lock the
@@ -277,10 +278,13 @@ The agent **must never**, regardless of permission:
   (`agentic-workflow:plan-first`, `agentic-workflow:decompose-deliverables`)
 - **Flagged "Out of scope" / "Deferred" items become Backlog issues** so
   nothing is lost. (`agentic-workflow:flagged-todo`)
-- **Every Linear issue carries a Scope label** — exactly one of the `Scope`
-  group (`DS`, `PM`, `Tooling`, `Shared`). One team (`PRO`) holds all work;
-  scope is the cross-product filter, not the team. Add `Type` and `Discipline`
-  when known. Never create an issue without a Scope label.
+- **The team encodes the product; a `Scope` label marks only the exceptions.**
+  Each product has its own Linear team, so an issue's team already says which
+  product it belongs to — an unlabelled issue is that team's primary product.
+  Apply a `Scope` label only to work that is *not* the team's product:
+  `Tooling` (dev tooling / CI / agent workflow) or `Shared` (spanning more than
+  one product), plus any per-repo scope a team defines. Add `Type` and
+  `Discipline` when known.
 - **A project enters Current only when a human commits to it.** Before promoting
   work, sweep the board: close tickets superseded by newly defined work, move
   finished projects to Done (park trigger-gated leftovers in a holding project),
