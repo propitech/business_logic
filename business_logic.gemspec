@@ -50,10 +50,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Everything `require "business_logic"` loads unconditionally: Form needs
-  # ActiveModel, BaseCommand needs dry-initializer and dry-monads. Consumers
-  # that only have the gem in their Gemfile (such as qlty's sandboxed RuboCop
-  # installing the cops plugin) rely on these resolving transitively.
+  # ActiveModel, BaseCommand needs dry-initializer and dry-monads, and
+  # Command::RescueFrom needs i18n to translate a Hash `with:` payload.
+  # Consumers that only have the gem in their Gemfile (such as qlty's sandboxed
+  # RuboCop installing the cops plugin) rely on these resolving transitively.
   spec.add_dependency "activemodel", ">= 7.0"
   spec.add_dependency "dry-initializer", "~> 3.2"
   spec.add_dependency "dry-monads", "~> 1.9"
+  spec.add_dependency "i18n", ">= 1.0"
 end
