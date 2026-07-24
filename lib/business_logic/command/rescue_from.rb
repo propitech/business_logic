@@ -27,6 +27,19 @@ module BusinessLogic
     # may add to them. An unregistered exception propagates
     # unchanged.
     #
+    # Because a registered class matches its subclasses too
+    # (`exception.is_a?`), a raised exception can match more than one
+    # handler. Precedence is most-recently-declared-first, as in
+    # ActionController: a narrower handler declared after a broad one
+    # wins, and a handler on a subclass wins over an inherited one. So
+    # declare the broad fallback first —
+    #
+    #     rescue_from StandardError, with: :unexpected
+    #     rescue_from ArgumentError, with: {base: "..."}
+    #
+    # maps a raised `ArgumentError` to the Hash, and any other
+    # `StandardError` to `:unexpected`.
+    #
     # `BusinessLogic::Command` extends this by default. Extending it
     # also includes {CallWrapper}, which is what actually rescues, so
     # a stricter base ({Command::Base}) opts in with a single
@@ -50,7 +63,14 @@ module BusinessLogic
         private
 
         def failure_for(exception)
-          _, spec = self.class.rescue_handlers.find { |klass, _| exception.is_a?(klass) }
+          # `reverse_each`, not `find`: when subclass matching makes
+          # more than one registered class match, the most-recently
+          # declared handler wins, as in ActionController. The
+          # registry is built parent-first then in declaration order,
+          # so reverse iteration lets a narrower handler declared
+          # after a broad one — and any handler on a subclass —
+          # shadow the broad one rather than the other way round.
+          _, spec = self.class.rescue_handlers.reverse_each.find { |klass, _| exception.is_a?(klass) }
           build_failure(spec) if spec
         end
 

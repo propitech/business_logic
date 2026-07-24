@@ -64,6 +64,37 @@ RSpec.describe BusinessLogic::Command::RescueFrom do
     end
   end
 
+  describe "precedence when handlers overlap" do
+    let(:command_class) do
+      Class.new(base) do
+        rescue_from StandardError, with: :broad
+        rescue_from ArgumentError, with: :narrow
+
+        def execute = raise(exception_class)
+
+        def exception_class = ArgumentError
+      end
+    end
+
+    it "picks the narrower handler declared after the broad one" do
+      expect(command_class.call).to fail_command.with_error(:narrow)
+    end
+
+    it "falls back to the broad handler for a non-overlapping match" do
+      other = Class.new(command_class) { def exception_class = RuntimeError }
+      expect(other.call).to fail_command.with_error(:broad)
+    end
+
+    it "lets a subclass handler win over the inherited broad one" do
+      child = Class.new(command_class) do
+        rescue_from KeyError, with: :from_child
+
+        def exception_class = KeyError
+      end
+      expect(child.call).to fail_command.with_error(:from_child)
+    end
+  end
+
   describe "the registry" do
     let(:parent) do
       Class.new(base) do
