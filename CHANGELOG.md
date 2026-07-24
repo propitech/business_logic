@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Add `BusinessLogic::Command::RescueFrom` and
+  `BusinessLogic::Command::ContractValidation`, both pre-mixed into
+  `BusinessLogic::Command`. `.rescue_from(exception_class, with:)` maps an
+  exception raised inside `#execute` onto the command's `Failure` channel — a
+  Symbol becomes `Failure(symbol)`, a Hash becomes
+  `Failure(key => [I18n.t(value)])` — accumulating into a frozen per-class
+  registry that subclasses inherit, and leaving an unregistered exception to
+  propagate. `ContractValidation` supplies the private `#validate` that runs a
+  command's `contract` over `attrs.to_h`. Both behaviours were duplicated in
+  the consuming apps; they now live next to `Command` so each app inherits
+  them. The rescue mapping wraps `#call` outside the `HALT` catch, so an
+  auto-yielded `Failure` still returns normally, and it never maps
+  `AlreadyCalled`, which is a caller bug rather than a domain outcome. The
+  Hash form translates through `I18n`, now a declared runtime dependency.
+
 - Add a `Propitech/PreferBeDeleted` cop that flags a Paranoia soft-delete
   assertion written against the `deleted_at` timestamp column
   (`expect(record.deleted_at).to be_present` / `be_nil`, and their negations)

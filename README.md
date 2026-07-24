@@ -148,8 +148,8 @@ available:
 - `option :name` — keyword input data.
 
 `BusinessLogic::Command` is the batteries-included base —
-`ApplicationCommand` inherits from it directly. It pre-extends
-two class-level mixins so every subclass also gets:
+`ApplicationCommand` inherits from it directly. It pre-mixes four
+extensions so every subclass also gets:
 
 - **`BusinessLogic::Command::DependencyInjection`** —
   `dependency :name, default: -> { ... }` (sugar for `option`
@@ -160,10 +160,19 @@ two class-level mixins so every subclass also gets:
   `.bind_form(form:, **mappings)` for wiring a
   `BusinessLogic::Form` into a call. See
   [Binding a Form to a Command](#binding-a-form-to-a-command) below.
+- **`BusinessLogic::Command::RescueFrom`** —
+  `.rescue_from(exception_class, with:)` for mapping an exception
+  raised inside `#execute` to a `Failure`. See
+  [Mapping an exception to a Failure](#mapping-an-exception-to-a-failure)
+  below.
+- **`BusinessLogic::Command::ContractValidation`** — a default
+  private `#validate` running the command's contract. See
+  [The default #validate](#the-default-validate) below.
 
-Apps that want a stricter base — no DI, no form binding — may
-subclass `BusinessLogic::Command::Base` directly and `extend`
-either mixin per command.
+Apps that want a stricter base — no DI, no form binding, no
+rescue mapping — may subclass `BusinessLogic::Command::Base`
+directly and mix in the extensions per command (`extend` for the
+first three, `include` for `ContractValidation`).
 
 `#call` takes no arguments and is single-shot — a second
 invocation raises `BusinessLogic::Command::AlreadyCalled`.
@@ -311,6 +320,69 @@ Commands::UpdateUser
   .with(contract: Contracts::AdminUpdateUserContract.new)
   .call(user: @user)
 ```
+
+#### Mapping an exception to a Failure
+
+Some third-party call sites signal a domain-level refusal by
+raising: assigning an unknown value to a string-backed enum
+raises `ArgumentError`, an illegal `aasm` move raises
+`AASM::InvalidTransition`. `.rescue_from` maps those onto the
+command's own `Failure` channel so the caller keeps branching on
+the `Result` instead of wrapping every call in `begin`/`rescue`:
+
+```ruby
+module Commands
+  class UpdateRate < ApplicationCommand
+    rescue_from ArgumentError, with: {base: "owner.rates.errors.invalid_selection"}
+    rescue_from AASM::InvalidTransition, with: :invalid_transition
+
+    option :rate
+    option :attrs
+
+    def execute = with_model(rate) { update(attrs) }
+  end
+end
+```
+
+- `with:` a **Symbol** becomes `Failure(symbol)`.
+- `with:` a **Hash** becomes `Failure(key => [I18n.t(value)])`,
+  the shape `Form#assign_errors` (and so `FormBinding`) expects.
+- An exception with no matching declaration propagates unchanged.
+- Declarations accumulate in a frozen per-class registry
+  (`.rescue_handlers`); a subclass inherits its parent's mappings
+  and may add to them.
+
+The mapping wraps `#call`, outside the `HALT` catch — a `Failure`
+auto-yielded by `yield_result` / `yield_model` returns normally
+and never reaches a handler. `BusinessLogic::Command::AlreadyCalled`
+is never mapped either: calling a command twice is a caller bug,
+not a domain outcome.
+
+#### The default `#validate`
+
+A command that declares `attrs` (any input answering `#to_h`) and
+`contract` gets a private `#validate` for free:
+
+```ruby
+module Commands
+  class CreateUser < ApplicationCommand
+    option     :attrs
+    dependency :contract, default: -> { Contracts::CreateUser.new }
+
+    def execute
+      validated = yield validate
+      persist(validated)
+    end
+  end
+end
+```
+
+It returns `Success(result.to_h)` or `Failure(result.errors.to_h)`.
+A command whose contract call is non-standard — a different input
+shape, or a `Success` wrapping the raw result rather than its hash
+— overrides `#validate`, as the
+[Binding a Form to a Command](#binding-a-form-to-a-command)
+example above does.
 
 #### Command vs Operation — when to pick which
 
