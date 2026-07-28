@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.46.0 (source: agents-baseline-v1.46.0)                  -->
+<!-- Baseline: agents-baseline-v1.47.0 (source: agents-baseline-v1.47.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -169,7 +169,11 @@ Test tooling and stack-specific testing rules live in your stack baseline
 - **Clean up after every merge.** A merged PR is finished only once the local
   clones reflect it: fast-forward the base branch (never a hard reset if it
   diverged), delete the merged local branch, and tear down the task's worktree,
-  in every repository the task touched. (`agentic-workflow:pr-ci-watch`)
+  in every repository the task touched. A base checked out in **another**
+  worktree is the exception and needs nothing: the fetched `origin/<base>` is
+  what every comparison reads, so a lagging local branch there is not a task to
+  discharge and not one to hand back to the human.
+  (`agentic-workflow:pr-ci-watch`)
 - **Compare against a freshly fetched `origin/main`, never a local ref.** Every
   remote-tracking ref is a snapshot from your last fetch, and other sessions and
   humans move the real branch continuously. Run `git fetch origin` before you
