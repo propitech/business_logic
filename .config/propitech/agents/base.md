@@ -35,6 +35,18 @@ Sections carry stable `{#slug}` anchors. Reference rules by slug
 8. **Never hand-edit a generated artifact.** Regenerate it through its tool
    (schema dumps, generated clients, lockfiles, built baselines) — a manual
    edit drifts the moment the generator runs again.
+9. **Context is a budget.** Don't re-read a file you already read this
+   session unless it may have changed, reach for a targeted edit rather than
+   rewriting a file whole, and send a broad search to a subagent so its file
+   dumps land in that agent's context instead of yours. The main thread pays
+   for everything it reads on every turn that follows. {#context-economy}
+10. **Verify before asserting.** Never state an API name, a flag, a version, a
+    commit SHA, a package name, or a path from memory. Read the code or the
+    docs first, and when you cannot verify a fact, say so rather than filling
+    the gap: a fabricated fact is believed, acted on, and corrected only after
+    it has cost something. Scoped forms of this already bind a blocking review
+    finding (`agentic-workflow:cross-review-reviewer`) and a recalled memory
+    (`agentic-workflow:memory-policy`). {#verify-before-asserting}
 
 ## Match model to task {#match-model-to-task}
 
@@ -79,6 +91,26 @@ of stack:
   reports the pipe's last stage, so a failure reads as green — and `&&` does not
   rescue it, because the pipe already turned the failure into a success. Run the
   gate bare and read its own exit status. (`agentic-workflow:gates`)
+## Reporting to the human {#reporting}
+
+Chat is the one surface where brevity costs nothing, and it is the surface
+agents are worst at. Say what happened and what it means, then stop.
+
+- **No preamble, no restatement, no sign-off.** Don't open by agreeing to the
+  task or repeating the question back, and don't close by summarising work the
+  diff and the gate output already show.
+- **Lead with the result.** The finding, the failure, or the `file:line` comes
+  first; reasoning follows it, and only where it is not obvious. Quote a
+  failing gate by its shortest decisive line rather than pasting the log.
+- **Brevity is not omission.** A step you skipped is named as skipped, a check
+  you did not run is named as not run, and a failure is reported as a failure.
+  Dropping the caveat is not concision — it is a different claim.
+- **It stops at the durable surfaces.** Commits, pull request titles and
+  bodies, Linear issues, Notion pages, and code comments are written in full
+  plain prose however compressed the chat has become. That rule is stated under
+  [Code style](#code-style); this section is only about the live exchange.
+  (`agentic-workflow:durable-surface-prose`)
+
 ## Testing {#testing}
 
 - **Every behaviour change ships with a test.** A failing test is a blocker:
