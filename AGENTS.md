@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.47.0 (source: agents-baseline-v1.47.0)                  -->
+<!-- Baseline: agents-baseline-v1.48.0 (source: agents-baseline-v1.48.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -148,7 +148,7 @@ Test tooling and stack-specific testing rules live in your stack baseline
 - **Every change ships as a pull request**, never a direct commit to a protected
   branch. Title it `[<KEY>-NN][<tag>] <imperative summary>` — `<KEY>` is this
   repo's Linear team key (for example `SQH` in property_management, `MOV` in
-  dance_school) and the tag mirrors the commit type: `feat`, `fix`, `chore`,
+  movely) and the tag mirrors the commit type: `feat`, `fix`, `chore`,
   `wip`, … Fill the applicable template, matching its headings exactly and
   keeping the `Closes: <KEY>-NN` line that lets the integration move the issue on
   merge. Include a screenshot for any user-visible change; CI green before
