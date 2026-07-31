@@ -41,6 +41,8 @@ exclude_patterns = [
   "**/testdata/**",
   "**/vendor/**",
   "out/**",
+  ".config/propitech/agents/**",
+  "AGENTS.md",
 ]
 
 test_patterns = [
