@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.50.0 (source: agents-baseline-v1.50.0)                  -->
+<!-- Baseline: agents-baseline-v1.52.0 (source: agents-baseline-v1.52.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -46,11 +46,15 @@ Sections carry stable `{#slug}` anchors. Reference rules by slug
    dumps land in that agent's context instead of yours. The main thread pays
    for everything it reads on every turn that follows. {#context-economy}
 10. **Verify before asserting.** Never state an API name, a flag, a version, a
-    commit SHA, a package name, or a path from memory. Read the code or the
-    docs first, and when you cannot verify a fact, say so rather than filling
-    the gap: a fabricated fact is believed, acted on, and corrected only after
-    it has cost something. Scoped forms of this already bind a blocking review
-    finding (`agentic-workflow:cross-review-reviewer`) and a recalled memory
+    commit SHA, a package name, or a path from memory. The same binds
+    *behaviour* recalled from training: how a library, a framework, or a service
+    responds is read from the installed version's code or its docs, because
+    trained memory is a snapshot of some other release and says nothing about
+    the one this project pins. Read the code or the docs first, and when you
+    cannot verify a fact, say so rather than filling the gap: a fabricated fact
+    is believed, acted on, and corrected only after it has cost something.
+    Scoped forms of this already bind a blocking review finding
+    (`agentic-workflow:cross-review-reviewer`) and a recalled memory
     (`agentic-workflow:memory-policy`). {#verify-before-asserting}
 
 ## Match model to task {#match-model-to-task}
@@ -96,10 +100,45 @@ of stack:
   reports the pipe's last stage, so a failure reads as green — and `&&` does not
   rescue it, because the pipe already turned the failure into a success. Run the
   gate bare and read its own exit status. (`agentic-workflow:gates`)
+## Silent execution {#silent-execution}
+
+Do the work; don't perform it. What a turn produces is the deliverable — the
+diff, the data that was asked for, or the report the task named — and the
+transcript of tool calls already records how it got there.
+
+- **No narration of steps or of your thought process.** Don't announce the step
+  you are about to take, name the tool you are about to reach for, or recap the
+  one that just ran. The reasoning is not the product; the conclusion is.
+- **No explanation of routine actions.** Reading a file, running the gates,
+  cutting a branch, pushing — these carry no explanation unless the human asks
+  or something about them went wrong.
+- **No progress commentary, no filler, no jokes, no emoji.** "Let me check…",
+  "Perfect, that worked", "Now I'll…" say nothing the next line does not.
+- **Speak unprompted only for** an error you cannot resolve, a question that
+  genuinely blocks the work, or a confirmation or disclosure that
+  [Boundaries](#boundaries) requires — including the staging-deploy disclosure,
+  which is owed before and after the command even though nothing is being
+  asked. The boundary owns that list; this bullet stays closed by deferring to
+  it rather than restating it in narrower words.
+- **When one of those cases applies, say it the way the final report is said**
+  — result first, no preamble, no sign-off ([Reporting](#reporting)). Being
+  allowed to speak is not being allowed to pad.
+- **Human gates are not narration and this rule never suppresses them.** Where
+  a skill mandates a stop for a human — the review-loop approval stops
+  ([Review-driven changes](#review-driven-changes)), the board-hygiene sweep
+  confirmations, the flagged-todo list confirmation — the stop and everything
+  the human needs in order to answer it *are* that step's deliverable. Silence
+  applies to commentary, never to a gate.
+
+The final report is the other thing silence does not cover: it has its own
+rules under [Reporting](#reporting).
+
 ## Reporting to the human {#reporting}
 
-Chat is the one surface where brevity costs nothing, and it is the surface
-agents are worst at. Say what happened and what it means, then stop.
+This section governs the **final report** — the message that closes a task.
+What comes before it is owned by [Silent execution](#silent-execution): silence,
+apart from the few utterances that section permits, which take the shape these
+bullets describe. Say what happened and what it means, then stop.
 
 - **No preamble, no restatement, no sign-off.** Don't open by agreeing to the
   task or repeating the question back, and don't close by summarising work the
@@ -107,9 +146,11 @@ agents are worst at. Say what happened and what it means, then stop.
 - **Lead with the result.** The finding, the failure, or the `file:line` comes
   first; reasoning follows it, and only where it is not obvious. Quote a
   failing gate by its shortest decisive line rather than pasting the log.
-- **Brevity is not omission.** A step you skipped is named as skipped, a check
-  you did not run is named as not run, and a failure is reported as a failure.
-  Dropping the caveat is not concision — it is a different claim.
+- **The final report is complete.** Brevity is about wording, not about
+  content: a step you skipped is named as skipped, a check you did not run is
+  named as not run, and a failure is reported as a failure. Dropping the caveat
+  is not concision — it is a different claim. This is a rule about what the
+  closing message must contain, and never a reason to narrate on the way there.
 - **It stops at the durable surfaces.** Commits, pull request titles and
   bodies, Linear issues, Notion pages, and code comments are written in full
   plain prose however compressed the chat has become. That rule is stated under
@@ -178,17 +219,20 @@ Test tooling and stack-specific testing rules live in your stack baseline
   remote-tracking ref is a snapshot from your last fetch, and other sessions and
   humans move the real branch continuously. Run `git fetch origin` before you
   diff against main, judge whether a change already landed, or read another
-  repo's state. A conclusion drawn from a stale local ref is wrong exactly when
-  it matters most — right after someone else merged.
+  repo's state. Reading the stale ref instead treats a stale snapshot as current
+  ([#verify-before-asserting]), and it is wrong exactly when it matters most —
+  right after someone else merged.
 - **Worktrees and the run lifecycle** — drive both with the project's own
-  workflow commands; never guess. Create and tear down parallel checkouts with
-  `bin/worktree`, never hand-rolled `git worktree add/remove` (hand-rolling
-  leaves orphaned services). Run, stop, and reset the app with `mise run start`,
+  workflow commands, which are read rather than recalled
+  ([#verify-before-asserting]). Create and tear down parallel checkouts with
+  `bin/worktree`, never
+  hand-rolled `git worktree add/remove` (hand-rolling leaves orphaned
+  services). Run, stop, and reset the app with `mise run start`,
   `mise run stop`, and `mise run reset`. Each checkout already carries its own
   port, database namespace, and services, and those commands read them from the
   worktree — so never infer the server, hand-start a dev process (`rails s`,
   `bin/dev`, …), or hardcode a port. If you don't know how to run a project,
-  discover its tasks (`mise tasks`) rather than assuming one.
+  discover its tasks (`mise tasks`).
   (`rails-stack:worktree`) {#worktrees}
 - **Worktree/main pre-flight** — at task pickup verify the worktree's ambient
   state before coding: `git fetch origin main` then `git log origin/main..HEAD`
