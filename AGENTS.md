@@ -1,380 +1,259 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v1.52.0 (source: agents-baseline-v1.52.0)                  -->
+<!-- Baseline: agents-baseline-v2.2.0 (source: agents-baseline-v2.2.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
 
-Cross-stack house rules for any AI coding agent working in a Propitech
-repository. This is the **org-base** layer: it applies regardless of the
-project's stack (Rails, Node, …).
+Cross-stack house rules for any AI coding agent in a Propitech repository. This
+**org-base** layer applies whatever the project's stack.
 
-> **Managed file — do not hand-edit.** This file is vendored from the
+> **Managed file — do not hand-edit.** Vendored from the
 > [Fosa template](https://github.com/propitech/fosa) and verified by
-> `bin/agents-check`. Editing it here is drift; the check will fail. Put
-> project-specific rules in the root `AGENTS.md` instead (it imports this
-> file and overrides it), and re-sync this layer by re-running the template
+> `bin/agents-check`, which fails on a hand-edit. Project-specific rules go in
+> the root `AGENTS.md`, which imports and overrides this file; re-sync by
+> re-running the template
 > (`bin/rails app:template LOCATION=…/fosa/template.rb`).
 
-Sections carry stable `{#slug}` anchors. Reference rules by slug
-(`base.md#boundaries`), never by section number — slugs survive reordering.
+Reference a rule by its `{#slug}` anchor (`base.md#boundaries`), never by
+section number.
 
 ## Operating principles {#operating-principles}
 
-1. **Plan first for non-trivial work** — see [Plans](#plans). Anything that
-   crosses more than two files outside tests, touches the schema, or
-   introduces a new abstraction starts with a plan in **Linear**. Agree the
-   plan before writing code. {#plan-first}
-2. **Small diffs, single concern.** One commit = one logical change.
-   Refactors and behaviour changes are separate commits.
-3. **No speculative abstractions.** Three similar lines beat a premature
-   DSL. Don't design for hypothetical future requirements.
-4. **No half-finished implementations.** If you can't finish, leave the
-   tree green and document the gap in the plan.
-5. **Trust the framework, validate the boundary.** No defensive `nil`
-   checks against your own code; do validate user input and third-party
-   responses.
-6. **Read before writing.** Grep for prior art. The template and sibling
-   Propitech repos already encode many decisions.
-7. **Ask when reversibility is low.** See [Boundaries](#boundaries).
-8. **Never hand-edit a generated artifact.** Regenerate it through its tool
-   (schema dumps, generated clients, lockfiles, built baselines) — a manual
-   edit drifts the moment the generator runs again.
-9. **Context is a budget.** Don't re-read a file you already read this
-   session unless it may have changed, reach for a targeted edit rather than
-   rewriting a file whole, and send a broad search to a subagent so its file
-   dumps land in that agent's context instead of yours. The main thread pays
-   for everything it reads on every turn that follows. {#context-economy}
-10. **Verify before asserting.** Never state an API name, a flag, a version, a
-    commit SHA, a package name, or a path from memory. The same binds
-    *behaviour* recalled from training: how a library, a framework, or a service
-    responds is read from the installed version's code or its docs, because
-    trained memory is a snapshot of some other release and says nothing about
-    the one this project pins. Read the code or the docs first, and when you
-    cannot verify a fact, say so rather than filling the gap: a fabricated fact
-    is believed, acted on, and corrected only after it has cost something.
-    Scoped forms of this already bind a blocking review finding
-    (`agentic-workflow:cross-review-reviewer`) and a recalled memory
-    (`agentic-workflow:memory-policy`). {#verify-before-asserting}
+1. **Plan first for non-trivial work** — more than two non-test files, a schema
+   change, or a new abstraction starts with a plan agreed in **Linear**
+   ([Plans](#plans)). {#plan-first}
+2. **Small diffs, single concern.** One commit is one logical change; refactor
+   and behaviour change are separate commits.
+3. **No speculative abstractions.** Three similar lines beat a premature DSL.
+4. **No half-finished implementations.** Where you cannot finish, leave the tree
+   green and record the gap in the plan.
+5. **Trust the framework, validate the boundary.** No defensive `nil` checks
+   against your own code; validate user input and third-party responses.
+6. **Read before writing.** Grep for prior art.
+7. **Ask when reversibility is low** ([Boundaries](#boundaries)).
+8. **Never hand-edit a generated artifact** — schema dumps, generated clients,
+   lockfiles, built baselines. Regenerate through its tool.
+9. **Context is a budget.** Don't re-read a file already read this session
+   unless it may have changed, edit surgically rather than rewriting a file
+   whole, and send a broad search to a subagent. {#context-economy}
+10. **Verify before asserting.** Never state an API name, flag, version, commit
+    SHA, package name, path, or a library's *behaviour* from memory — trained
+    memory is a snapshot of a release this project does not pin. Read the
+    installed code or its docs; where you cannot verify, say so. Scoped forms
+    bind a blocking review finding (`agentic-workflow:cross-review-reviewer`)
+    and a recalled memory (`agentic-workflow:memory-policy`).
+    {#verify-before-asserting}
 
-## Match model to task {#match-model-to-task}
-
-Size the task before you edit, and run it on a model that fits:
-
-- **Architectural planning or schema design** — switch to your strongest
-  reasoning model to plan the approach, then drop back down once the shape is
-  agreed. Planning is where reasoning depth pays off; see [Plans](#plans).
-- **Routine authoring, migrations, and tests** — the faster model is the
-  default for code written against an agreed plan. Don't burn the
-  high-reasoning tier on mechanical work.
-
-Stated by capability, not product name — whatever your tool calls those tiers.
-Compliance with the stack baseline (style, tests, gates) is non-negotiable at
-every tier: a faster model is not licence to skip [Code style](#code-style) or
-a stack's gates.
 ## Code style philosophy {#code-style}
 
-The toolchain is opinionated — defer to it. The exact gate commands are
-stack-specific; see your stack baseline (e.g. `rails.md#gates`). Regardless
-of stack:
+The toolchain is opinionated — defer to it; gate commands are stack-specific
+(e.g. `rails.md#gates`). Regardless of stack:
 
-- **Never silence.** Fix the code; don't disable a linter rule, append to a
-  todo file, or add an ignore comment to make a finding go away. If a rule
-  is genuinely wrong for a case, say so and open a plan — don't paper over
-  it.
-- **Comments: none by default.** Add one only when the *why* is non-obvious
-  (hidden constraint, subtle invariant, bug workaround). Never narrate the
-  *what* — the code already shows it.
-- **Durable surfaces are written in plain prose.** Commits, PR titles and
-  bodies, code comments, Linear issues, and Notion pages are read by humans
-  long after the session ends. Write them in ordinary sentences, whatever
-  compressed style the chat is using. No arrow shorthand, no symbol
-  abbreviations, no telegraphic fragments.
+- **Never silence.** Fix the code; never disable a linter rule, append to a todo
+  file, or add an ignore comment. Where a rule is genuinely wrong for a case,
+  say so and open a plan.
+- **Comments: none by default.** Add one only where the *why* is non-obvious;
+  never narrate the *what*.
+- **Durable surfaces are written in plain prose** — commits, pull request titles
+  and bodies, code comments, Linear issues, Notion pages — in ordinary
+  sentences, whatever compressed style the chat is using. The rule lives here
+  and is cited, never restated, elsewhere.
   (`agentic-workflow:durable-surface-prose`)
-- **Run every gate before reporting done.** A green diff is the bar. Iterate the
-  suite to green rather than reporting a partial pass, and never report done on
-  a gate you did not run. Which commands make up the suite is stack-specific —
-  see your stack baseline (e.g. `rails.md#gates`).
+- **Run every gate before reporting done**, iterating to green rather than
+  reporting a partial pass, and never report done on a gate you did not run.
+  Which commands make up the suite is stack-specific (e.g. `rails.md#gates`).
   (`agentic-workflow:gates`)
-- **Run each gate as its own unpiped command.** A piped gate (`… | tail -1`)
-  reports the pipe's last stage, so a failure reads as green — and `&&` does not
-  rescue it, because the pipe already turned the failure into a success. Run the
-  gate bare and read its own exit status. (`agentic-workflow:gates`)
+- **Run each gate as its own unpiped command.** A pipe (`… | tail -1`) reports
+  its last stage, so a failure reads as green, and `&&` does not rescue it.
+  (`agentic-workflow:gates`)
 ## Silent execution {#silent-execution}
 
-Do the work; don't perform it. What a turn produces is the deliverable — the
-diff, the data that was asked for, or the report the task named — and the
-transcript of tool calls already records how it got there.
+Do the work; don't perform it. The deliverable is what the turn produces; the
+tool transcript records how.
 
-- **No narration of steps or of your thought process.** Don't announce the step
-  you are about to take, name the tool you are about to reach for, or recap the
-  one that just ran. The reasoning is not the product; the conclusion is.
-- **No explanation of routine actions.** Reading a file, running the gates,
-  cutting a branch, pushing — these carry no explanation unless the human asks
-  or something about them went wrong.
-- **No progress commentary, no filler, no jokes, no emoji.** "Let me check…",
-  "Perfect, that worked", "Now I'll…" say nothing the next line does not.
+- **Never narrate a step or your thought process** — no announcing the next
+  step, naming a tool, or recapping the one that ran.
+- **Never explain a routine action** (reading a file, running the gates, cutting
+  a branch, pushing) unless the human asks or something went wrong.
+- **No progress commentary, no filler, no jokes, no emoji.**
 - **Speak unprompted only for** an error you cannot resolve, a question that
-  genuinely blocks the work, or a confirmation or disclosure that
-  [Boundaries](#boundaries) requires — including the staging-deploy disclosure,
-  which is owed before and after the command even though nothing is being
-  asked. The boundary owns that list; this bullet stays closed by deferring to
-  it rather than restating it in narrower words.
-- **When one of those cases applies, say it the way the final report is said**
-  — result first, no preamble, no sign-off ([Reporting](#reporting)). Being
-  allowed to speak is not being allowed to pad.
-- **Human gates are not narration and this rule never suppresses them.** Where
-  a skill mandates a stop for a human — the review-loop approval stops
-  ([Review-driven changes](#review-driven-changes)), the board-hygiene sweep
-  confirmations, the flagged-todo list confirmation — the stop and everything
-  the human needs in order to answer it *are* that step's deliverable. Silence
-  applies to commentary, never to a gate.
-
-The final report is the other thing silence does not cover: it has its own
-rules under [Reporting](#reporting).
+  genuinely blocks the work, or a confirmation or disclosure
+  [Boundaries](#boundaries) requires — that section owns the list, including the
+  staging-deploy disclosure.
+- **Say it the way the final report is said** — result first, no preamble, no
+  sign-off ([Reporting](#reporting)).
+- **Never suppress a human gate.** Where a skill mandates a stop for a human —
+  the review-loop approval ([Review-driven changes](#review-driven-changes)),
+  the board-hygiene sweep confirmations, the flagged-todo list confirmation —
+  that stop and what the human needs to answer it are the step's deliverable.
 
 ## Reporting to the human {#reporting}
 
-This section governs the **final report** — the message that closes a task.
-What comes before it is owned by [Silent execution](#silent-execution): silence,
-apart from the few utterances that section permits, which take the shape these
-bullets describe. Say what happened and what it means, then stop.
+This governs the **final report**, the message that closes a task; everything
+before it belongs to [Silent execution](#silent-execution), whose permitted
+utterances take the shape below.
 
-- **No preamble, no restatement, no sign-off.** Don't open by agreeing to the
-  task or repeating the question back, and don't close by summarising work the
-  diff and the gate output already show.
-- **Lead with the result.** The finding, the failure, or the `file:line` comes
-  first; reasoning follows it, and only where it is not obvious. Quote a
-  failing gate by its shortest decisive line rather than pasting the log.
-- **The final report is complete.** Brevity is about wording, not about
-  content: a step you skipped is named as skipped, a check you did not run is
-  named as not run, and a failure is reported as a failure. Dropping the caveat
-  is not concision — it is a different claim. This is a rule about what the
-  closing message must contain, and never a reason to narrate on the way there.
-- **It stops at the durable surfaces.** Commits, pull request titles and
-  bodies, Linear issues, Notion pages, and code comments are written in full
-  plain prose however compressed the chat has become. That rule is stated under
-  [Code style](#code-style); this section is only about the live exchange.
-  (`agentic-workflow:durable-surface-prose`)
+- **No preamble, no restatement, no sign-off.**
+- **Lead with the result** — the finding, the failure, the `file:line` — with
+  reasoning after it and only where it is not obvious. Quote a failing gate by
+  its shortest decisive line rather than pasting the log.
+- **The report is complete.** Name a skipped step as skipped, a check not run as
+  not run, a failure as a failure; dropping the caveat is a different claim, not
+  concision. This governs the closing message only, and never licenses narration
+  on the way there.
+- **It covers the live exchange only** — durable surfaces keep full plain prose
+  ([Code style](#code-style)).
 
 ## Testing {#testing}
 
-- **Every behaviour change ships with a test.** A failing test is a blocker:
-  fix the test or the code — never comment it out, never skip or ignore it
-  without a linked plan or ticket.
+- **Every behaviour change ships with a test.** A failing test is a blocker: fix
+  the test or the code — never comment it out, never skip or ignore it without a
+  linked plan or ticket.
 - **Don't mock what you don't own.** Wrap a third-party call behind your own
-  adapter and mock the adapter, never the vendor's internals.
-- **Flaky tests get fixed, not re-rolled.** A test that fails on a clean diff
-  is root-caused and fixed in its own PR with a linked ticket; never merged on a
-  bare rerun-to-green, and never silently quarantined (`xit` / skip only with a
-  linked fix ticket). (`agentic-workflow:pr-ci-watch`)
+  adapter and mock the adapter.
+- **Flaky tests get fixed, not re-rolled.** A test failing on a clean diff is
+  root-caused and fixed in its own pull request with a linked ticket, never
+  merged on a bare rerun-to-green and never silently quarantined (`xit` or skip
+  only with a linked fix ticket). (`agentic-workflow:pr-ci-watch`)
 
-Test tooling and stack-specific testing rules live in your stack baseline
-(e.g. `rails.md#testing-rails`).
+Stack-specific testing rules live in your stack baseline (e.g.
+`rails.md#testing-rails`).
 ## Workflow {#workflow}
 
-- **Work in your own worktree, in every repository, always.** Never edit,
-  branch, or commit in a shared clone — not the repo you were invoked on, and
-  not a sibling repo you reach across into. Other sessions and the human work
-  the same clones concurrently: a checkout you did not make moves `HEAD` under
-  you, and commits you believed were landing on your branch land somewhere else.
-  Care does not fix this; isolation does. Create the worktree **before the first
-  edit** and confirm your branch before every commit, and drive worktree
-  create/teardown through the project's `worktree` tooling rather than
-  hand-rolled `git worktree add/remove` (see [#worktrees]).
-- Branch `ai/<type>/<slug>` (e.g. `ai/feat/class-schedule`) so reviewers know an
-  agent drafted the diff; never push to a protected branch.
+- **Work in your own worktree, in every repository, always** — never edit,
+  branch, or commit in a shared clone, including a sibling repo you reach into.
+  Create it before the first edit, confirm your branch before every commit, and
+  drive create and teardown through the project's `worktree` tooling
+  ([#worktrees]).
+- Branch `ai/<type>/<slug>` (e.g. `ai/feat/class-schedule`); never push to a
+  protected branch.
 - **Conventional Commits**: `type(scope): subject`, imperative, ≤72-char
-  subject. The body explains *why*, not what — the diff shows what.
+  subject; the body explains *why*.
 - **Every change ships as a pull request**, never a direct commit to a protected
-  branch. Title it `[<KEY>-NN][<tag>] <imperative summary>` — `<KEY>` is this
-  repo's Linear team key (for example `SQH` in squarehour, `MOV` in
-  movely) and the tag mirrors the commit type: `feat`, `fix`, `chore`,
-  `wip`, … Fill the applicable template, matching its headings exactly and
-  keeping the `Closes: <KEY>-NN` line that lets the integration move the issue on
-  merge. Include a screenshot for any user-visible change; CI green before
+  branch, titled `[<KEY>-NN][<tag>] <imperative summary>` — `<KEY>` is the
+  repo's Linear team key (`SQH` in squarehour, `MOV` in movely), `<tag>` mirrors
+  the commit type. Fill the applicable template, keep its `Closes: <KEY>-NN`
+  line, attach any user-visible change's screenshot to the Linear issue rather
+  than the pull request body, which has no upload API, and get CI green before
   review. (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
-- **Track work in Linear**, not GitHub issues, and reference the issue id
-  (`<KEY>-NN`) in the PR so the integration auto-links it.
+- **Track work in Linear**, not GitHub issues, citing `<KEY>-NN` in the pull
+  request. (`agentic-workflow:linear-update`)
+- **Claim a ticket before the first edit by flipping it to In Progress** — the
+  lock other sessions read. Pick another if it is already In Progress elsewhere.
+  Flip it once at pickup; the GitHub integration owns later transitions.
   (`agentic-workflow:linear-update`)
-- **Claim a ticket before the first edit by flipping it to In Progress.** With
-  several sessions and humans on one board at once, In Progress is the lock the
-  others read — it announces the work is taken. The reciprocal binds: before you
-  start, check the ticket is not already In Progress under another session, and
-  if it is, pick another. Flip it once at pickup; the GitHub integration owns
-  every later transition. (`agentic-workflow:linear-update`)
-- **Watch CI after opening the PR.** Opening it is not landing it. Confirm the
-  branch is rebased on its base first, then watch the checks through and fix what
-  breaks. A red check is fixed, never re-rolled and never forced through.
+- **Watch CI after opening the pull request**, having confirmed the branch is
+  rebased on its base. Fix a red check; never re-roll or force it through.
   (`agentic-workflow:pr-ci-watch`)
-- **Clean up after every merge.** A merged PR is finished only once the local
-  clones reflect it: fast-forward the base branch (never a hard reset if it
-  diverged), delete the merged local branch, and tear down the task's worktree,
-  in every repository the task touched. A base checked out in **another**
-  worktree is the exception and needs nothing: the fetched `origin/<base>` is
-  what every comparison reads, so a lagging local branch there is not a task to
-  discharge and not one to hand back to the human.
+- **Clean up after every merge**, in every repository the task touched — base
+  branch fast-forwarded, merged branch deleted, worktree torn down. A base
+  checked out in another worktree is the exception and needs nothing.
   (`agentic-workflow:pr-ci-watch`)
-- **Compare against a freshly fetched `origin/main`, never a local ref.** Every
-  remote-tracking ref is a snapshot from your last fetch, and other sessions and
-  humans move the real branch continuously. Run `git fetch origin` before you
-  diff against main, judge whether a change already landed, or read another
-  repo's state. Reading the stale ref instead treats a stale snapshot as current
-  ([#verify-before-asserting]), and it is wrong exactly when it matters most —
-  right after someone else merged.
+- **Compare against a freshly fetched `origin/main`, never a local ref** — run
+  `git fetch origin` before diffing against main, judging whether a change
+  landed, or reading another repo's state ([#verify-before-asserting]).
 - **Worktrees and the run lifecycle** — drive both with the project's own
-  workflow commands, which are read rather than recalled
-  ([#verify-before-asserting]). Create and tear down parallel checkouts with
-  `bin/worktree`, never
-  hand-rolled `git worktree add/remove` (hand-rolling leaves orphaned
-  services). Run, stop, and reset the app with `mise run start`,
-  `mise run stop`, and `mise run reset`. Each checkout already carries its own
-  port, database namespace, and services, and those commands read them from the
-  worktree — so never infer the server, hand-start a dev process (`rails s`,
-  `bin/dev`, …), or hardcode a port. If you don't know how to run a project,
-  discover its tasks (`mise tasks`).
-  (`rails-stack:worktree`) {#worktrees}
-- **Worktree/main pre-flight** — at task pickup verify the worktree's ambient
-  state before coding: `git fetch origin main` then `git log origin/main..HEAD`
-  (a reused or freshly-added branch can sit on another ticket's commits and leak
-  them into the PR — branch fresh off `origin/main` to fix), and confirm the
-  database the shell targets. The agent shell does not load mise/`.env`, so
-  `WORKTREE_DB_SUFFIX` is empty and `rails`/`rspec` hit the shared
-  `*_development` DB — where other worktrees' unmerged migrations leak into your
-  `schema.rb` dump. Prefix commands with `WORKTREE_DB_SUFFIX=_sN` (from `.env`),
-  and always `git diff origin/main -- db/schema.rb` before committing.
-  (`rails-stack:worktree`) {#worktree-preflight}
+  commands, read rather than recalled ([#verify-before-asserting]):
+  `bin/worktree` for parallel checkouts, never hand-rolled
+  `git worktree add/remove`; `mise run start`, `mise run stop`, `mise run reset`
+  for the app. Each checkout carries its own port, database namespace, and
+  services, so never infer the server, hand-start a dev process (`rails s`,
+  `bin/dev`, …), or hardcode a port. (`rails-stack:worktree`) {#worktrees}
+- **Worktree and main pre-flight** — at pickup verify the branch is fresh off
+  `origin/main` rather than carrying another ticket's commits, and verify which
+  database the shell targets before running `rails` or `rspec`, since the agent
+  shell loads neither mise nor `.env`. (`rails-stack:worktree`)
+  {#worktree-preflight}
 - **A ticket is finished when its pull request is open, not when the code is
-  green.** Picking up a ticket and shipping it are one task, so run the arc
-  through in a single pass — claim the issue, implement, gates, commit, push,
-  open the pull request, watch CI — and report the result rather than pausing at
-  working code to ask whether to open the pull request. The human answered that
-  when they named the ticket; asking again returns the work at the moment it was
-  closest to done. Stop only where continuing would be wrong: the human scoped
-  the request narrowly ("just implement it", "don't push yet"), the gates are red
-  in a way that needs their decision, the ticket is blocked or ambiguous, or the
-  work turns out to need a plan. Uncertainty about whether the change is *right*
-  resolves to a draft pull request, not a question.
-  (`agentic-workflow:ticket-to-pr`)
+  green.** Run the arc through in one pass — claim, implement, gates, commit,
+  push, open the pull request, watch CI — and report the result rather than
+  pausing at working code to ask whether to open it. Stop only where continuing
+  would be wrong: the human scoped the request narrowly, the gates are red in a
+  way that needs their decision, the ticket is blocked or ambiguous, or the work
+  needs a plan. Uncertainty about whether the change is *right* resolves to a
+  draft pull request. (`agentic-workflow:ticket-to-pr`)
 - **A stack is reviewed at every rung, and the last rung discloses what it
-  carries.** Branch protection guards the default branch and nothing else, so a
-  pull request whose base is another feature branch merges with no required
-  review at all — for stacked work the review gate is not weaker, it is absent,
-  and it is absent for the diff least likely to be described accurately, because
-  the final pull request's body is written about its own commits rather than
-  about everything its branch carries. Both halves are required: point the
-  review at *every* pull request in the stack, not only the one targeting the
-  default branch; and have the final pull request list the stacked pull requests
-  merged into its branch and what each one lands, so the approver judges the
-  scope the branch actually carries. (`agentic-workflow:pr-cadence`)
+  carries.** Branch protection guards the default branch only, so a pull request
+  based on another feature branch merges with no required review. Point the
+  review at *every* pull request in the stack, and have the final one list the
+  stacked pull requests merged into its branch and what each lands.
+  (`agentic-workflow:pr-cadence`)
 ## Boundaries — ask before acting {#boundaries}
 
 The agent **must pause and confirm** before:
 
 - Destructive Git ops: `reset --hard`, `push --force`, branch delete,
   `clean -fd`, `checkout .`.
-- Schema-touching migrations on existing tables (rename, drop, `NOT NULL`
-  add without default).
+- Schema-touching migrations on existing tables (rename, drop, `NOT NULL` add
+  without default).
 - Editing secrets or deploy config (credential stores, key material,
   environment files, deploy manifests).
 - Adding, removing, or major-bumping a dependency.
-- Anything that talks to a remote system: `git push`, opening a PR on
-  someone's behalf, deploys, third-party API writes, Slack/Linear posts.
-  Routine Linear updates — a status flip plus a comment on the ticket you are
-  actively working — are the pre-authorized exception; project, milestone, and
-  initiative changes are not. (`agentic-workflow:linear-update`) A **staging**
-  deploy is pre-authorized too, on the terms in the never-list below.
-- Disabling a test or a linter/security finding.
+- Anything that talks to a remote system: `git push`, opening a pull request on
+  someone's behalf, deploys, third-party API writes, Slack or Linear posts. Two
+  exceptions are pre-authorized — a routine Linear update, meaning a status flip
+  and a comment on the ticket you are actively working and never a project,
+  milestone, or initiative change (`agentic-workflow:linear-update`), and a
+  **staging** deploy on the terms below.
+- Disabling a test or a linter or security finding.
 
 The agent **must never**, regardless of permission:
 
-- Run a **production** deploy command. This one names its environment on
-  purpose, because a **staging** deploy has the opposite standing: it is
-  standing pre-authorized, and you may run it without asking. Staging exists to
-  be broken, and an agent that cannot deploy staging cannot verify its own work
-  end to end — which is most of the value of it having built the change. The
-  condition is disclosure, not permission: say that you are deploying staging
-  before you run the command, and report what happened, so the session carries a
-  record of every deploy. Treat a deploy as production whenever it would touch a
-  production destination, whatever it is named or the flag says; when you cannot
-  tell which environment a command targets, it is production and you stop.
+- Run a **production** deploy command. A **staging** deploy is instead
+  pre-authorized, on disclosure rather than permission: say you are deploying
+  staging before running the command, and report what happened. Treat a deploy
+  as production whenever it would touch a production destination, whatever it is
+  named; where you cannot tell, it is production and you stop.
 - Force-push to a protected branch.
-- Merge a PR with `--admin`. It bypasses branch protection — required reviews
-  and status checks — to force the change onto the base branch. Let the PR merge
-  through its gates instead. Whether it should land the moment those gates go
-  green is the human's call, so **arm auto-merge only when asked to**; the merge
-  method and its signing consequences are owned by
-  `agentic-workflow:pr-cadence`.
+- Merge a pull request with `--admin`, which bypasses branch protection; let it
+  merge through its gates. Whether it lands the moment they go green is the
+  human's call, so **arm auto-merge only when asked to**.
+  (`agentic-workflow:pr-cadence`)
 - Commit key material.
-- Print, log, or persist a fetched secret, or paste one into a PR, commit,
-  Linear issue, or Notion page. Fetch secrets at the moment of use and pass them
-  straight into the consuming command via the environment, never into output.
+- Print, log, or persist a fetched secret, or paste one into a pull request,
+  commit, Linear issue, or Notion page. Fetch it at the moment of use and pass
+  it into the consuming command via the environment.
   (`agentic-workflow:secrets-access`)
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
-  the signature. Every commit must land gpg-signed and verifiable; if commits
-  are not signing, fix the gpg-agent rather than committing unsigned.
-- Create a commit or file content **server-side** — through the GitHub API
-  (contents or git-data endpoints) or a `createCommitOnBranch` GraphQL
-  mutation. Server-side commits bypass your local signing key. Clone, branch,
-  edit, and `git commit` locally so the gpg-agent signs it.
-
-  This rule has exactly one carve-out, and it is **not yours to invoke**: an
-  unattended CI pipeline has no gpg-agent and no key material, so the
-  baseline-sync bot in `propitech/claude-plugins` uses `createCommitOnBranch`,
-  which GitHub signs with its own web-flow key — a verified commit, not a
-  bypass. That carve-out is named here, in the boundary itself, rather than
-  left to a skill to disclose, because a never-rule with an undocumented
-  exception teaches you that the never-list is negotiable. It is not. If you
-  are reading this, you have a gpg-agent: commit locally.
+  the signature: every commit lands gpg-signed and verifiable. Where commits are
+  not signing, fix the gpg-agent rather than committing unsigned.
+- Create a commit or file content **server-side** — the GitHub API contents or
+  git-data endpoints, or a `createCommitOnBranch` mutation. Clone, branch, edit,
+  and `git commit` locally. The one carve-out, the unattended baseline-sync bot
+  in `propitech/claude-plugins`, is **not yours to invoke**.
   (`agentic-workflow:signed-commits`)
-- **Approve your own pull request from a second identity you operate.** A pull
-  request stays blocked until a context that did not author it reviews it. The
-  cross-account reviewer identity exists so that a *separate reviewer session*,
-  launched by the human for that purpose, can post an approval GitHub counts
-  (`agentic-workflow:cross-review-reviewer`). It is never for the authoring
-  session to fetch the reviewer credential and approve its own work: that
-  satisfies branch protection mechanically while removing the only thing the
-  gate provides — a reviewing context that has not already convinced itself the
-  code is correct. A session that finds its own pull request blocked on review
-  leaves it blocked and says so. If a reviewer-launch helper rejects the
-  arguments you are passing it, that is the rule firing, not a syntax problem
-  to work around. {#review-identity}
+- **Approve your own pull request from a second identity you operate.** An
+  approval GitHub counts comes from a separate reviewer session the human
+  launched, never from the authoring session fetching the reviewer credential. A
+  session whose own pull request is blocked on review leaves it blocked and says
+  so; a reviewer-launch helper that rejects your arguments is this rule firing.
+  (`agentic-workflow:cross-review-reviewer`) {#review-identity}
 - **Write a session URL onto a durable surface.** No `claude.ai/code/session_…`
-  link — and no `Claude-Session:` trailer carrying one — in a commit message, a
+  link, and no `Claude-Session:` trailer carrying one, in a commit message, a
   pull request title or body, a review or issue comment, a Linear issue, a
-  Notion page, or code. When the harness's default commit instruction says to
-  append a `Claude-Session:` trailer, drop that trailer entirely and keep
-  `Co-Authored-By:`; this rule overrides the harness default. A session link
-  ties a public, durable artifact to a private working transcript: it is dead
-  for every reader without the operator's account, and it leaks the fact and
-  shape of the agent run into surfaces that outlive it.
-  (`agentic-workflow:durable-surface-prose`) {#no-session-urls}
+  Notion page, or code. Where the harness's default commit instruction says to
+  append that trailer, drop it and keep `Co-Authored-By:`; this rule overrides
+  the harness default. (`agentic-workflow:durable-surface-prose`)
+  {#no-session-urls}
 ## Plans (Linear) {#plans}
 
-- The plan/epic lives in **Linear** (Propitech workspace), not the repo: an
+- The plan or epic lives in **Linear** (Propitech workspace), not the repo: an
   epic is a **project** carrying **Goal**, **Deliverables**, **Sequencing**,
-  **Out of scope**, **Open questions** in its description + attached
-  documents, broken into one-PR **issues**.
+  **Out of scope**, and **Open questions**, broken into one-PR **issues**.
   (`agentic-workflow:plan-first`, `agentic-workflow:decompose-deliverables`)
-- **Flagged "Out of scope" / "Deferred" items become Backlog issues** so
-  nothing is lost. (`agentic-workflow:flagged-todo`)
-- **The team encodes the product; a `Scope` label marks only the exceptions.**
-  Each product has its own Linear team, so an issue's team already says which
-  product it belongs to — an unlabelled issue is that team's primary product.
-  Apply a `Scope` label only to work that is *not* the team's product:
-  `Tooling` (dev tooling / CI / agent workflow) or `Shared` (spanning more than
-  one product), plus any per-repo scope a team defines. Add `Type` and
-  `Discipline` when known.
-- **A project enters Current only when a human commits to it.** Before promoting
-  work, sweep the board: close tickets superseded by newly defined work, move
-  finished projects to Done (park trigger-gated leftovers in a holding project),
-  and size the batch to measured velocity rather than ambition, keeping WIP
-  bounded. No code begins until the project is Current and the ticket sits in
-  the current cycle at Todo; you evaluate the blockers and dependencies and
-  propose, the human commits. (`agentic-workflow:board-hygiene`)
-- **Archiving is a GraphQL job.** The Linear MCP can read and update but cannot
-  archive or delete, and archiving is what frees the workspace issue cap. Use the
-  GraphQL API with a key read from 1Password.
+- **Flagged "Out of scope" and "Deferred" items become Backlog issues.**
+  (`agentic-workflow:flagged-todo`)
+- **The team encodes the product; a `Scope` label marks only the exceptions.** An
+  unlabelled issue belongs to its team's primary product; label only work that
+  is not (`Tooling`, `Shared`, or a per-repo scope). Add `Type` and `Discipline`
+  when known.
+- **A project enters Current only when a human commits to it**, after a board
+  sweep and with WIP sized to measured velocity. No code begins until the
+  project is Current and the ticket sits in the current cycle at Todo.
+  (`agentic-workflow:board-hygiene`)
+- **Archiving is a GraphQL job** with a key read from 1Password: the Linear MCP
+  cannot archive, and archiving is what frees the workspace issue cap.
   (`agentic-workflow:linear-archive`)
 - Update the plan as the work evolves. A stale plan is worse than no plan.
 
@@ -383,89 +262,64 @@ The agent **must never**, regardless of permission:
 Knowledge that lives only in a chat session is knowledge the next person does
 not have. Write it down where it will be found:
 
-- **The repository is the source of truth for how to build the thing.** Anything
-  an agent or a new engineer must know to work here — the stack, the layering,
-  the gates, the run lifecycle, the conventions — belongs in the repo, reachable
-  from its README, and close to the code it describes. A rule that holds across
-  Propitech projects belongs further up, in the shared baseline, not copied into
-  each repo. Copying is what makes the copies disagree.
-- **Notion is the source of truth for the product and the durable decisions.**
-  A shipped feature gets a domain page under the product's Product & Features
-  section, so someone can learn what the system does without reading it.
+- **The repository is the source of truth for how to build the thing** — stack,
+  layering, gates, run lifecycle, conventions — reachable from its README. A
+  rule holding across Propitech projects goes into the shared baseline, never
+  copied into each repo.
+- **Notion is the source of truth for the product and the durable decisions**,
+  and a shipped feature is written up there.
   (`agentic-workflow:document-feature`)
-- **Claude Design is the source of truth for the design.** The locked direction
-  lives in a product's Claude Design projects on claude.ai/design, and it lives
-  there in every repository and at every stage of a product's life — a closed
-  design phase does not hand the canon back to the code. The repository
-  implements the direction; it never becomes the direction. So a component
-  library published out of a repo is not a mirror that the repo may overrule:
-  it exists so that explorations generate against components that really exist,
-  and when the two disagree, the canvases are right and the code is the thing to
-  change. Harvest direction only — never paste or ship an HTML export.
+- **Claude Design is the source of truth for the design**, in every repository
+  and at every stage of a product's life. The repository implements the
+  direction and never becomes it, so where code and canvases disagree the
+  canvases are right. Harvest direction only — never ship an HTML export.
   (`agentic-workflow:design-canvas`, `agentic-workflow:tool-interfaces`)
-- **A material decision is recorded when it is made, not remembered.** When a
-  non-trivial architecture or design call is settled — or an earlier one is
-  reversed — write it to the plan's Resolved decisions and the relevant Notion
-  page. The reasoning is the part that decays; capture *why*, not just what.
-  (`agentic-workflow:document-decision`)
-- **Documentation ships with the change, not after it.** A feature that is not
-  documented is not done, in the same way that a feature with no test is not
-  done. Update the page in the pull request that changes the behaviour, while
-  you still remember why.
-- **A stale document is worse than a missing one**, because it is believed. When
-  you find documentation contradicting the code, fix it or delete it — do not
-  route around it, and do not leave the contradiction for the next reader to
-  discover the hard way.
+- **A material decision is recorded when it is made, not remembered**, and what
+  is recorded is the *why*. (`agentic-workflow:document-decision`)
+- **Documentation ships with the change**, in the pull request that changes the
+  behaviour.
+- **A stale document is worse than a missing one**, because it is believed: fix
+  it or delete it.
 ## Review-driven changes {#review-driven-changes}
 
-When the human is walking the agent through PR review feedback, the loop is
+When the human is walking the agent through pull request review feedback
 (`agentic-workflow:review-loop`):
 
-1. **One comment per prompt.** Act on that one comment only — no batching,
-   no opportunistic cleanup of nearby code.
-2. **Challenge before applying.** If the feedback is wrong, incomplete, or
+1. **One comment per prompt** — no batching, no cleanup of nearby code.
+2. **Challenge before applying.** Where the feedback is wrong, incomplete, or
    contradicts house rules, push back with reasoning before touching code.
-   A reviewer is not always right; silent compliance is worse than a
-   respectful disagreement.
-3. **Fix, don't silence.** Address the underlying issue — never bypass a
-   finding with an ignore directive. The [Never silence](#code-style) rule
-   applies to every gate.
+3. **Fix, don't silence** — never bypass a finding with an ignore directive
+   ([Never silence](#code-style)).
 4. **Run the gates every iteration**, plus the relevant test subset, before
    reporting back.
-5. **Wait for "satisfied" before committing.** Show the diff and gate
-   results, then stop. Commit only when the human explicitly approves — one
-   commit per review comment unless told otherwise.
+5. **Wait for "satisfied" before committing.** Show the diff and gate results,
+   then stop. Commit only on explicit approval — one commit per review comment
+   unless told otherwise.
 ## Agent instructions (this file) {#agent-instructions}
 
-This `AGENTS.md` is a **generated** artifact — a pinned baseline (the managed
-sections above) plus this project's deltas. Treat it like any other generated
-file (see [Operating principles](#operating-principles)).
+This `AGENTS.md` is a **generated** artifact — a pinned baseline plus this
+project's deltas — treated like any other generated file
+([Operating principles](#operating-principles)).
 
 - **Don't hand-edit the managed region** or the vendored
-  `.config/propitech/agents/<layer>.md` caches: they carry a `DO NOT EDIT`
-  banner and are checksum-pinned, so a hand-edit fails the local re-render
-  check.
-- **Project-specific rules go in `.config/propitech/agents/deltas.md`** — the
-  only hand-authored agent surface in this repo. Regenerate with
-  `bin/agents-render`, then commit `AGENTS.md` alongside.
-- **A machine-local `AGENTS.md.local` is read when present.** If a gitignored,
-  untracked `AGENTS.md.local` sits beside `AGENTS.md`, read it in addition to
-  this file and let its instructions win on conflict. It is personal and never
-  committed — use it for individual or experiment-scoped guidance; shared rules
-  belong in `deltas.md` or upstream, not in a file that never lands in git.
-- **Newer baselines arrive as sync PRs**, opened by the upstream currency
-  workflow in `propitech/claude-plugins` (`agents-currency.yml`, driving
-  `bin/agents-sync-consumer`); review one like a dependency bump. The local
-  `bin/agents-render` only re-renders the pinned version — it cannot pull a
-  newer one.
-- The baselines are owned upstream in `propitech/claude-plugins`. To change a
-  **shared** rule, change it there (the fragment is the single source), not in
-  this generated file.
+  `.config/propitech/agents/<layer>.md` caches: they are checksum-pinned, so a
+  hand-edit fails the local re-render check.
+- **Project-specific rules go in `.config/propitech/agents/deltas.md`**, the
+  only hand-authored agent surface here. Regenerate with `bin/agents-render`,
+  then commit `AGENTS.md` alongside.
+- **A machine-local `AGENTS.md.local` is read when present** and wins on
+  conflict. It never lands in git, so shared rules belong in `deltas.md` or
+  upstream.
+- **Newer baselines arrive as sync pull requests** from the upstream currency
+  workflow (`agents-currency.yml`, driving `bin/agents-sync-consumer`); review
+  one like a dependency bump. Local `bin/agents-render` only re-renders the
+  pinned version.
+- **Change a shared rule upstream** in `propitech/claude-plugins`, where the
+  fragment is the single source.
 - **Agent memory keeps only machine-local, non-shareable facts.** Anything
-  shareable — a rule, a project fact, a decision — belongs in its owning home
-  (a claude-plugins skill or fragment, this repo's docs or deltas, or Notion).
-  Before saving a shareable memory, alert the user and propose that home
-  instead. (`agentic-workflow:memory-policy`)
+  shareable belongs in its owning home (a claude-plugins skill or fragment, this
+  repo's docs or deltas, or Notion); before saving one, alert the user and
+  propose that home. (`agentic-workflow:memory-policy`)
 
 # Propitech agent baseline — Ruby gem
 
