@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.2.0 (source: agents-baseline-v2.2.0)                  -->
+<!-- Baseline: agents-baseline-v2.3.0 (source: agents-baseline-v2.3.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -238,25 +238,24 @@ The agent **must never**, regardless of permission:
   {#no-session-urls}
 ## Plans (Linear) {#plans}
 
-- The plan or epic lives in **Linear** (Propitech workspace), not the repo: an
-  epic is a **project** carrying **Goal**, **Deliverables**, **Sequencing**,
-  **Out of scope**, and **Open questions**, broken into one-PR **issues**.
-  (`agentic-workflow:plan-first`, `agentic-workflow:decompose-deliverables`)
-- **Flagged "Out of scope" and "Deferred" items become Backlog issues.**
-  (`agentic-workflow:flagged-todo`)
+- **The plan lives in Linear** (Propitech workspace), never in the repo: an epic
+  is a **project**, broken into one-PR **issues**
+  (`agentic-workflow:plan-first`, `agentic-workflow:decompose-deliverables`).
+- **A ticket is written to be built cold**, by whoever picks it up
+  (`agentic-workflow:ticket-authoring`).
+- **Flagged "Out of scope" and "Deferred" items become Backlog issues**
+  (`agentic-workflow:flagged-todo`).
 - **The team encodes the product; a `Scope` label marks only the exceptions.** An
   unlabelled issue belongs to its team's primary product; label only work that
   is not (`Tooling`, `Shared`, or a per-repo scope). Add `Type` and `Discipline`
   when known.
-- **A project enters Current only when a human commits to it**, after a board
-  sweep and with WIP sized to measured velocity. No code begins until the
-  project is Current and the ticket sits in the current cycle at Todo.
-  (`agentic-workflow:board-hygiene`)
-- **Archiving is a GraphQL job** with a key read from 1Password: the Linear MCP
-  cannot archive, and archiving is what frees the workspace issue cap.
-  (`agentic-workflow:linear-archive`)
+- **Work begins only on a human's commitment**, and on a board swept before
+  anything is promoted (`agentic-workflow:start-gate`,
+  `agentic-workflow:board-hygiene`).
+- **Closing a project on the board is not archiving it off the board**, and
+  archiving is what frees the workspace issue cap
+  (`agentic-workflow:linear-archive`).
 - Update the plan as the work evolves. A stale plan is worse than no plan.
-
 ## Documentation {#documentation}
 
 Knowledge that lives only in a chat session is knowledge the next person does
