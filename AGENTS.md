@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.4.0 (source: agents-baseline-v2.4.0)                  -->
+<!-- Baseline: agents-baseline-v2.4.1 (source: agents-baseline-v2.4.1)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -133,8 +133,8 @@ Stack-specific testing rules live in your stack baseline (e.g.
 - **Every change ships as a pull request**, never a direct commit to a
   protected branch.
   (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
-- **Track work in Linear**, not GitHub issues, citing `<KEY>-NN` in the pull
-  request. (`agentic-workflow:linear-update`)
+- **Track work in Linear**, not GitHub issues, citing the issue's identifier in
+  the pull request. (`agentic-workflow:linear-update`)
 - **Claim a ticket before the first edit by flipping it to In Progress.**
   (`agentic-workflow:linear-update`)
 - **Watch CI after opening the pull request**, and fix a red check rather than
