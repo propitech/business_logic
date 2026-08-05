@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.5.0 (source: agents-baseline-v2.5.0)                  -->
+<!-- Baseline: agents-baseline-v2.6.0 (source: agents-baseline-v2.6.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -146,16 +146,12 @@ Stack-specific testing rules live in your stack baseline (e.g.
   landed, or reading another repo's state ([#verify-before-asserting]).
 - **Worktrees and the run lifecycle** — drive both with the project's own
   commands, read rather than recalled ([#verify-before-asserting]):
-  `bin/worktree` for parallel checkouts, never hand-rolled
-  `git worktree add/remove`; `mise run start`, `mise run stop`, `mise run reset`
-  for the app. Each checkout carries its own port, database namespace, and
-  services, so never infer the server, hand-start a dev process (`rails s`,
-  `bin/dev`, …), or hardcode a port. (`rails-stack:worktree`) {#worktrees}
+  `bin/worktree` for checkouts, `mise run start|stop|reset` for the app. Each
+  checkout carries its own port and database namespace; never infer either.
+  (`rails-stack:worktree`) {#worktrees}
 - **Worktree and main pre-flight** — at pickup verify the branch is fresh off
-  `origin/main` rather than carrying another ticket's commits, and verify which
-  database the shell targets before running `rails` or `rspec`, since the agent
-  shell loads neither mise nor `.env`. (`rails-stack:worktree`)
-  {#worktree-preflight}
+  `origin/main`, and verify which database the shell targets before running
+  `rails` or `rspec`. (`rails-stack:worktree`) {#worktree-preflight}
 - **A ticket is finished when its pull request is open, not when the code is
   green.** Run the arc through in one pass and report the result, stopping
   only where continuing would be wrong. (`agentic-workflow:ticket-to-pr`)
