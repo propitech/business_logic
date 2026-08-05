@@ -128,8 +128,8 @@ Stack-specific testing rules live in your stack baseline (e.g.
 - **Every change ships as a pull request**, never a direct commit to a
   protected branch.
   (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
-- **Track work in Linear**, not GitHub issues, citing `<KEY>-NN` in the pull
-  request. (`agentic-workflow:linear-update`)
+- **Track work in Linear**, not GitHub issues, citing the issue's identifier in
+  the pull request. (`agentic-workflow:linear-update`)
 - **Claim a ticket before the first edit by flipping it to In Progress.**
   (`agentic-workflow:linear-update`)
 - **Watch CI after opening the pull request**, and fix a red check rather than
