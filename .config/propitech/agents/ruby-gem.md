@@ -1,14 +1,8 @@
 # Propitech agent baseline — Ruby gem
 
-House rules for a standalone Ruby gem in the Propitech org. This is the
-**type-baseline** layer; it sits on top of [`base.md`](base.md) and is
-overridden by the project's root `AGENTS.md`.
-
-> **Managed file — do not hand-edit.** Vendored from the agent baseline and
-> verified by `bin/agents-check`. Project-specific rules go in the root
-> `AGENTS.md`. Re-sync by re-running `bin/agents-render`.
-
-Reference rules by `{#slug}`, never by section number.
+Ruby-gem rules on top of [`base.md`](base.md); the project's root `AGENTS.md`
+overrides both. Managed file — do not hand-edit; see `base.md`. Reference
+rules by `{#slug}`, never by section number.
 
 ## Stack contract {#stack-contract}
 

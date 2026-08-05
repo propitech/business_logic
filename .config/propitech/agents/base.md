@@ -1,17 +1,10 @@
 # Propitech agent baseline — org-base
 
-Cross-stack house rules for any AI coding agent in a Propitech repository. This
-**org-base** layer applies whatever the project's stack.
-
-> **Managed file — do not hand-edit.** Vendored from the
-> [Fosa template](https://github.com/propitech/fosa) and verified by
-> `bin/agents-check`, which fails on a hand-edit. Project-specific rules go in
-> the root `AGENTS.md`, which imports and overrides this file; re-sync by
-> re-running the template
-> (`bin/rails app:template LOCATION=…/fosa/template.rb`).
-
-Reference a rule by its `{#slug}` anchor (`base.md#boundaries`), never by
-section number.
+Cross-stack house rules for any AI coding agent in a Propitech repository,
+whatever the stack. **Managed file — do not hand-edit** (`bin/agents-check`
+fails on one); project-specific rules go in the root `AGENTS.md`, which imports
+and overrides this file. Reference a rule by its `{#slug}` anchor
+(`base.md#boundaries`), never by section number.
 
 ## Operating principles {#operating-principles}
 
@@ -64,8 +57,7 @@ The toolchain is opinionated — defer to it; gate commands are stack-specific
   (`agentic-workflow:gates`)
 ## Silent execution {#silent-execution}
 
-Do the work; don't perform it. The deliverable is what the turn produces; the
-tool transcript records how.
+Do the work; don't perform it.
 
 - **Never narrate a step or your thought process** — no announcing the next
   step, naming a tool, or recapping the one that ran.
@@ -85,9 +77,8 @@ tool transcript records how.
 
 ## Reporting to the human {#reporting}
 
-This governs the **final report**, the message that closes a task; everything
-before it belongs to [Silent execution](#silent-execution), whose permitted
-utterances take the shape below.
+Rules for the **final report**, the message that closes a task — and for every
+utterance [Silent execution](#silent-execution) permits before it.
 
 - **No preamble, no restatement, no sign-off.**
 - **Lead with the result** — the finding, the failure, the `file:line` — with
@@ -187,8 +178,8 @@ The agent **must never**, regardless of permission:
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
   the signature. (`agentic-workflow:signed-commits`)
 - Create a commit or file content **server-side**; clone, branch, edit, and
-  `git commit` locally instead. The one carve-out, the unattended
-  baseline-sync bot in `propitech/claude-plugins`, is **not yours to invoke**.
+  `git commit` locally instead — the sole carve-out, the claude-plugins
+  baseline-sync bot, is **not yours to invoke**.
   (`agentic-workflow:signed-commits`)
 - **Approve your own pull request from a second identity you operate.** An
   approval GitHub counts comes from a separate reviewer session the human
@@ -225,8 +216,8 @@ The agent **must never**, regardless of permission:
 - Update the plan as the work evolves. A stale plan is worse than no plan.
 ## Documentation {#documentation}
 
-Knowledge that lives only in a chat session is knowledge the next person does
-not have. Write it down where it will be found:
+Write knowledge down where it will be found — never leave it only in the chat
+session:
 
 - **The repository is the source of truth for how to build the thing** — stack,
   layering, gates, run lifecycle, conventions — reachable from its README. A
@@ -276,10 +267,9 @@ project's deltas — treated like any other generated file
 - **A machine-local `AGENTS.md.local` is read when present** and wins on
   conflict. It never lands in git, so shared rules belong in `deltas.md` or
   upstream.
-- **Newer baselines arrive as sync pull requests** from the upstream currency
-  workflow (`agents-currency.yml`, driving `bin/agents-sync-consumer`); review
-  one like a dependency bump. Local `bin/agents-render` only re-renders the
-  pinned version.
+- **Review a baseline sync pull request like a dependency bump.** Local
+  `bin/agents-render` only re-renders the pinned version; newer baselines
+  arrive only as those sync pull requests.
 - **Change a shared rule upstream** in `propitech/claude-plugins`, where the
   fragment is the single source.
 - **Agent memory keeps only machine-local, non-shareable facts.** Anything
