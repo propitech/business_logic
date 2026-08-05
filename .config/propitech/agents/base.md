@@ -125,25 +125,16 @@ Stack-specific testing rules live in your stack baseline (e.g.
   protected branch.
 - **Conventional Commits**: `type(scope): subject`, imperative, ≤72-char
   subject; the body explains *why*.
-- **Every change ships as a pull request**, never a direct commit to a protected
-  branch, titled `[<KEY>-NN][<tag>] <imperative summary>` — `<KEY>` is the
-  repo's Linear team key (`SQH` in squarehour, `MOV` in movely), `<tag>` mirrors
-  the commit type. Fill the applicable template, keep its `Closes: <KEY>-NN`
-  line, attach any user-visible change's screenshot to the Linear issue rather
-  than the pull request body, which has no upload API, and get CI green before
-  review. (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
+- **Every change ships as a pull request**, never a direct commit to a
+  protected branch.
+  (`agentic-workflow:pr-cadence`, `agentic-workflow:pr-template`)
 - **Track work in Linear**, not GitHub issues, citing `<KEY>-NN` in the pull
   request. (`agentic-workflow:linear-update`)
-- **Claim a ticket before the first edit by flipping it to In Progress** — the
-  lock other sessions read. Pick another if it is already In Progress elsewhere.
-  Flip it once at pickup; the GitHub integration owns later transitions.
+- **Claim a ticket before the first edit by flipping it to In Progress.**
   (`agentic-workflow:linear-update`)
-- **Watch CI after opening the pull request**, having confirmed the branch is
-  rebased on its base. Fix a red check; never re-roll or force it through.
-  (`agentic-workflow:pr-ci-watch`)
-- **Clean up after every merge**, in every repository the task touched — base
-  branch fast-forwarded, merged branch deleted, worktree torn down. A base
-  checked out in another worktree is the exception and needs nothing.
+- **Watch CI after opening the pull request**, and fix a red check rather than
+  re-rolling or forcing it through. (`agentic-workflow:pr-ci-watch`)
+- **Clean up after every merge**, in every repository the task touched.
   (`agentic-workflow:pr-ci-watch`)
 - **Compare against a freshly fetched `origin/main`, never a local ref** — run
   `git fetch origin` before diffing against main, judging whether a change
@@ -161,19 +152,10 @@ Stack-specific testing rules live in your stack baseline (e.g.
   shell loads neither mise nor `.env`. (`rails-stack:worktree`)
   {#worktree-preflight}
 - **A ticket is finished when its pull request is open, not when the code is
-  green.** Run the arc through in one pass — claim, implement, gates, commit,
-  push, open the pull request, watch CI — and report the result rather than
-  pausing at working code to ask whether to open it. Stop only where continuing
-  would be wrong: the human scoped the request narrowly, the gates are red in a
-  way that needs their decision, the ticket is blocked or ambiguous, or the work
-  needs a plan. Uncertainty about whether the change is *right* resolves to a
-  draft pull request. (`agentic-workflow:ticket-to-pr`)
+  green.** Run the arc through in one pass and report the result, stopping
+  only where continuing would be wrong. (`agentic-workflow:ticket-to-pr`)
 - **A stack is reviewed at every rung, and the last rung discloses what it
-  carries.** Branch protection guards the default branch only, so a pull request
-  based on another feature branch merges with no required review. Point the
-  review at *every* pull request in the stack, and have the final one list the
-  stacked pull requests merged into its branch and what each lands.
-  (`agentic-workflow:pr-cadence`)
+  carries.** (`agentic-workflow:pr-cadence`)
 ## Boundaries — ask before acting {#boundaries}
 
 The agent **must pause and confirm** before:
@@ -201,22 +183,16 @@ The agent **must never**, regardless of permission:
   as production whenever it would touch a production destination, whatever it is
   named; where you cannot tell, it is production and you stop.
 - Force-push to a protected branch.
-- Merge a pull request with `--admin`, which bypasses branch protection; let it
-  merge through its gates. Whether it lands the moment they go green is the
-  human's call, so **arm auto-merge only when asked to**.
-  (`agentic-workflow:pr-cadence`)
+- Merge a pull request with `--admin`, bypassing branch protection, or arm
+  auto-merge without being asked. (`agentic-workflow:pr-cadence`)
 - Commit key material.
-- Print, log, or persist a fetched secret, or paste one into a pull request,
-  commit, Linear issue, or Notion page. Fetch it at the moment of use and pass
-  it into the consuming command via the environment.
-  (`agentic-workflow:secrets-access`)
+- Print, log, or persist a fetched secret, or paste one onto any durable
+  surface. (`agentic-workflow:secrets-access`)
 - Use `--no-verify`, `--no-gpg-sign`, or otherwise bypass the commit hooks or
-  the signature: every commit lands gpg-signed and verifiable. Where commits are
-  not signing, fix the gpg-agent rather than committing unsigned.
-- Create a commit or file content **server-side** — the GitHub API contents or
-  git-data endpoints, or a `createCommitOnBranch` mutation. Clone, branch, edit,
-  and `git commit` locally. The one carve-out, the unattended baseline-sync bot
-  in `propitech/claude-plugins`, is **not yours to invoke**.
+  the signature. (`agentic-workflow:signed-commits`)
+- Create a commit or file content **server-side**; clone, branch, edit, and
+  `git commit` locally instead. The one carve-out, the unattended
+  baseline-sync bot in `propitech/claude-plugins`, is **not yours to invoke**.
   (`agentic-workflow:signed-commits`)
 - **Approve your own pull request from a second identity you operate.** An
   approval GitHub counts comes from a separate reviewer session the human
