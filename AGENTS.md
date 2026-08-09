@@ -343,12 +343,9 @@ See `base.md#code-style` for the never-silence rule. Specifics:
 
 # business_logic — project agent rules
 
-This file is the **only hand-authored agent surface** in this repository.
-The baseline layers above this block are managed (hash-pinned in
-`agents.lock.json`); rules you add here win, because the flattened `AGENTS.md`
-appends them after the baseline.
-
-After editing this file, run `bin/agents-render` to regenerate `AGENTS.md`.
+The only hand-authored agent surface in this repository; the flattened
+`AGENTS.md` appends it after the managed baseline (hash-pinned in
+`agents.lock.json`), so rules here win. After editing, run `bin/agents-render`.
 
 ---
 
