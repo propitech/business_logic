@@ -1,6 +1,6 @@
 # business_logic — project agent rules
 
-The only hand-authored agent surface in this repository; the flattened
+This is the repository's only hand-authored agent surface; the flattened
 `AGENTS.md` appends it after the managed baseline (hash-pinned in
 `agents.lock.json`), so rules here win. After editing, run `bin/agents-render`.
 
