@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.8.0 (source: agents-baseline-v2.8.0)                  -->
+<!-- Baseline: agents-baseline-v2.9.0 (source: agents-baseline-v2.9.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -33,10 +33,14 @@ and overrides this file. Reference a rule by its `{#slug}` anchor
 10. **Verify before asserting.** Never state an API name, flag, version, commit
     SHA, package name, path, or a library's *behaviour* from memory — trained
     memory is a snapshot of a release this project does not pin. Read the
-    installed code or its docs; where you cannot verify, say so. Scoped forms
-    bind a blocking review finding (`agentic-workflow:cross-review-reviewer`)
-    and a recalled memory (`agentic-workflow:memory-policy`).
-    {#verify-before-asserting}
+    installed code or its docs; where you cannot verify, say so. A recalled
+    agent memory is the same kind of claim: it records what was true when it was
+    written, so verify it against the tree before acting on it, and where it
+    conflicts the repo and its docs win — a recall arrives as context, not as a
+    request, so no trigger fires on it and no skill carries that form
+    (`agentic-workflow:memory-policy` governs what is written to memory). A
+    blocking review finding binds another scoped form
+    (`agentic-workflow:cross-review-reviewer`). {#verify-before-asserting}
 
 ## Code style philosophy {#code-style}
 
