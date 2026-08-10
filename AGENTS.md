@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.7.0 (source: agents-baseline-v2.7.0)                  -->
+<!-- Baseline: agents-baseline-v2.8.0 (source: agents-baseline-v2.8.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline — org-base
@@ -44,8 +44,12 @@ The toolchain is opinionated — defer to it; gate commands are stack-specific
 (e.g. `rails.md#gates`). Regardless of stack:
 
 - **Never silence.** Fix the code; never disable a linter rule, append to a todo
-  file, or add an ignore comment. Where a rule is genuinely wrong for a case,
-  say so and open a plan.
+  file, or add an ignore comment. `rubocop:disable`, `# brakeman:ignore`,
+  `eslint-disable`, an inline `# :reek:Foo`, and an entry appended to a
+  lint-todo file are examples of the form, written here so the literal is
+  greppable — they are not the list to check against, and a silencing mechanism
+  absent from them is prohibited exactly as much. Where a rule is genuinely
+  wrong for a case, say so and open a plan.
 - **Comments: none by default.** Add one only where the *why* is non-obvious;
   never narrate the *what*.
 - **Durable surfaces are written in plain prose** — commits, pull request titles
