@@ -300,7 +300,7 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
-    simplecov (1.0.3)
+    simplecov (1.1.1)
     simplecov-cobertura (4.0.0)
       rexml
       simplecov (~> 1.0)
