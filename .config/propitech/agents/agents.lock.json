@@ -1,14 +1,73 @@
 {
-  "baselineVersion": "2.10.1",
+  "baselineVersion": "2.12.0",
   "source": {
-    "ref": "agents-baseline-v2.10.1"
+    "ref": "agents-baseline-v2.12.0"
   },
   "layers": [
     "base",
     "ruby-gem"
   ],
   "layerHashes": {
-    "base": "1f90a46e01d4b18dc9716e17575f90c8a2d6113d060a29b0f9865994719071ba",
-    "ruby-gem": "488da18abf0ba012b5cff3cc2b1977b12a3098c99252b5eedad97a06713fd404"
+    "base": "ab9960ce1e188b5571828ab0d9e488171ff1e24ce4efb5a9f1c3accd1d2b1d07",
+    "ruby-gem": "3c6582a66870f84c217571a2000fd77c1f386dc98ef21565014910a6bf44306a"
+  },
+  "skills": {
+    "agentic-workflow": [
+      "board-hygiene",
+      "claude-code-setup",
+      "cross-review-coder",
+      "cross-review-reviewer",
+      "decompose-deliverables",
+      "design-canvas",
+      "design-methodology",
+      "discovery-sync",
+      "document-decision",
+      "document-feature",
+      "durable-surface-prose",
+      "flagged-todo",
+      "gates",
+      "linear-archive",
+      "linear-update",
+      "memory-policy",
+      "plain-english",
+      "plan-first",
+      "pr-cadence",
+      "pr-ci-watch",
+      "pr-template",
+      "review-loop",
+      "secrets-access",
+      "signed-commits",
+      "start-gate",
+      "ticket-authoring",
+      "ticket-to-pr",
+      "tool-interfaces"
+    ],
+    "rails-conventions": [
+      "annotations",
+      "component",
+      "controller-gate",
+      "design-taste",
+      "i18n",
+      "library-test-matchers",
+      "meaningful-tests",
+      "migration",
+      "settings-resolution",
+      "state-machine",
+      "stimulus-check",
+      "stimulus-external-lib",
+      "system-specs",
+      "test-prof",
+      "validation",
+      "view-logic"
+    ],
+    "rails-stack": [
+      "command",
+      "component-library-sync",
+      "design-system",
+      "icon",
+      "seeds",
+      "service-object",
+      "worktree"
+    ]
   }
 }

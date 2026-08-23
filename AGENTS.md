@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.10.1 (source: agents-baseline-v2.10.1)                  -->
+<!-- Baseline: agents-baseline-v2.12.0 (source: agents-baseline-v2.12.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -47,15 +47,46 @@ and overrides this file. Reference a rule by its `{#slug}` anchor
 The toolchain is opinionated, so defer to it; gate commands are stack-specific
 (e.g. `rails.md#gates`). Regardless of stack:
 
-- **Never silence.** Fix the code; never disable a linter rule, append to a todo
-  file, or add an ignore comment. `rubocop:disable`, `# brakeman:ignore`,
+- **Never silence a case** (the whole-project settlement below is the one
+  exception). Fix the code; never disable a linter rule for a case, append to a
+  todo file, or add an ignore comment. `rubocop:disable`, `# brakeman:ignore`,
   `eslint-disable`, an inline `# :reek:Foo`, and an entry appended to a
   lint-todo file are examples of the form, written here so the literal is
   greppable. They are not the list to check against, and a silencing mechanism
   absent from them is prohibited exactly as much. Where a rule is genuinely
   wrong for a case, say so and open a plan.
-- **Comments: none by default.** Add one only where the *why* is non-obvious;
-  never narrate the *what*.
+- **A tool's rule that contradicts this baseline project-wide is settled once,
+  in the tool's own configuration** — a check demanding a comment on every
+  class, say, where a comment is reserved for a published surface. Record the
+  reason beside it and ask first ([Boundaries](#boundaries)), since the check
+  stops everywhere. A per-case ignore and a todo file decide nothing and stay
+  barred.
+- **Code carries its own explanation.** An explanation that a better name or an
+  extracted method can carry is written as that name or that method, never as a
+  comment.
+- **The one comment that earns its place is the API doc on a published
+  surface** — something called from outside its deployable unit: a gem's public
+  API, a shared library, an interface another system calls. A class called only
+  in-process is not published, however widely it is used. Write it where the
+  name and the signature do not already say it — purpose, parameters, return,
+  and what it raises when raising is part of the contract — as YARDoc, a TSDoc
+  block, a godoc sentence, or a docstring. It says how the thing is used, never
+  what the body does.
+- **A comment a tool reads or writes is a directive, not prose**, and this rule
+  does not reach it. Test it by deletion: a directive's removal changes what
+  the code does (a shebang, `# frozen_string_literal: true`) or what a tool
+  writes next run (`<!-- prettier-ignore -->`, a generated annotation block);
+  prose's removal changes neither; and a removal that changes only what a tool
+  *reports* — `rubocop:disable` — is silencing. Leave a directive where the
+  tool expects it, and regenerate rather than hand-edit one a tool wrote
+  ([Operating principles](#operating-principles)).
+- **Everything else is deleted, not written.** No narration of the *what*, no
+  section banners, no commented-out code, and no chronology — nothing saying
+  when a line changed, what it replaced, or which incident produced it
+  ([Documentation](#documentation)). A constraint that holds now may take one
+  short comment when its cause lies outside the unit and the comment names that
+  cause — the upstream issue, the vendor bug, the protocol quirk, the lock
+  ordering another component relies on — so a reader can go and look.
 - **Durable surfaces are written in plain prose** (commits, pull request titles
   and bodies, code comments, Linear issues, Notion pages), in ordinary
   sentences, whatever compressed style the chat is using. The rule lives here
@@ -281,10 +312,20 @@ Write knowledge down where it will be found, never only in the chat session:
   (`agentic-workflow:design-canvas`, `agentic-workflow:tool-interfaces`)
 - **A material decision is recorded when it is made, not remembered**, and what
   is recorded is the *why*. (`agentic-workflow:document-decision`)
+- **A document describes the system as it stands**, in the present tense: its
+  structure, its boundaries, how to run it. Git, the pull request, and Linear
+  hold the sequence of events, and the decision record holds the *why* one was
+  chosen, as a constraint that still applies rather than a log of a day.
+- **History earns a place in a document only as the justification of a
+  prohibition** — the clause that stops the next reader re-trying a dead route.
+  Never as a changelog, a "we used to do X", or a note about a past migration
+  or incident.
 - **Documentation ships with the change**, in the pull request that changes the
   behaviour.
 - **A stale document is worse than a missing one**, because it is believed: fix
   it or delete it.
+- **Length is not quality.** Write the shortest text that makes the system
+  usable, and where the code and its API docs already say it, write nothing.
 ## Review-driven changes {#review-driven-changes}
 
 When the human is walking the agent through pull request review feedback
@@ -376,7 +417,18 @@ See `base.md#code-style` for the never-silence rule. Specifics:
 
 - Do not append to `.rubocop_todo.yml`; fix the code instead.
 - Do not add `# rubocop:disable` inline comments.
-- Do not add `# :reek:` annotations or directory rules in `.reek.yml`.
+- Do not add `# :reek:` annotations, and do not scope a detector to a path or a
+  file in `.reek.yml`.
+- Two checks want a comment on every top-level class and module — RuboCop's
+  `Style/Documentation` and Reek's `IrresponsibleModule`, both on by default —
+  where `base.md#code-style` reserves a comment for a published surface, which
+  a class internal to the gem is not. Turn the check off for the whole project
+  in `.rubocop.yml` or `.reek.yml`, with the reason recorded there and the
+  human asked first: that is the rule-set decision `base.md#code-style` allows,
+  and it is a different shape from the per-case ignores barred above, which
+  scope a rule to a path, a file, or a call site. Where the gem's own top-level
+  classes are its distributed interface, leave the checks on and write the
+  comments as API docs.
 - A Qlty billing block ("out of minutes") is not a code issue. Confirm clean
   locally with `qlty check`; other gates stay binding.
 
