@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.12.0 (source: agents-baseline-v2.12.0)                  -->
+<!-- Baseline: agents-baseline-v2.13.0 (source: agents-baseline-v2.13.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -324,8 +324,11 @@ Write knowledge down where it will be found, never only in the chat session:
   behaviour.
 - **A stale document is worse than a missing one**, because it is believed: fix
   it or delete it.
-- **Length is not quality.** Write the shortest text that makes the system
-  usable, and where the code and its API docs already say it, write nothing.
+- **Length is not quality, and a document instructs rather than explains.**
+  Write what to do and when to do it, in the shortest text that leaves the
+  reader able to act; where the code and its API docs already say it, write
+  nothing. Every documentation edit trims the sections it touches.
+  (`agentic-workflow:concise-docs`)
 ## Review-driven changes {#review-driven-changes}
 
 When the human is walking the agent through pull request review feedback
