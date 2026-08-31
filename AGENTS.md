@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.13.0 (source: agents-baseline-v2.13.0)                  -->
+<!-- Baseline: agents-baseline-v2.15.0 (source: agents-baseline-v2.15.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -324,6 +324,13 @@ Write knowledge down where it will be found, never only in the chat session:
   behaviour.
 - **A stale document is worse than a missing one**, because it is believed: fix
   it or delete it.
+- **A fact that changes is corrected wherever it is stated, not only where it
+  was quoted.** The unit of edit is the whole paragraph, and every other
+  document, comment, or test describing the same thing, because correcting only
+  the sentence a reviewer pointed at leaves the clauses beside it stating the
+  old fact. Search on the enumeration rather than the symbol: prose that counts
+  callers says "both", or names the two it knew about, so a grep for the caller
+  you are adding finds nothing. {#correction-reach}
 - **Length is not quality, and a document instructs rather than explains.**
   Write what to do and when to do it, in the shortest text that leaves the
   reader able to act; where the code and its API docs already say it, write
@@ -334,7 +341,9 @@ Write knowledge down where it will be found, never only in the chat session:
 When the human is walking the agent through pull request review feedback
 (`agentic-workflow:review-loop`):
 
-1. **One comment per prompt.** No batching, no cleanup of nearby code.
+1. **One comment per prompt.** No batching, and no cleanup of nearby
+   unrelated code; a restatement of the same fact is not unrelated
+   ([Correction reach](#correction-reach)).
 2. **Challenge before applying.** Where the feedback is wrong, incomplete, or
    contradicts house rules, push back with reasoning before touching code.
 3. **Fix, don't silence.** Never bypass a finding with an ignore directive
