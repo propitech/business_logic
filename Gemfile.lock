@@ -333,6 +333,7 @@ DEPENDENCIES
   dry-monads (~> 1.11)
   dry-operation (~> 1.1)
   dry-validation (~> 1.11)
+  json (< 3)
   rails (>= 7.0)
   rake (~> 13.4)
   rspec (~> 3.0)
