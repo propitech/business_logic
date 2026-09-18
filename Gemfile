@@ -14,7 +14,7 @@ gem "dry-validation", "~> 1.11"
 # json 3.0 made JSON.parse keyword-only and activesupport 8.1.3.1 still passes
 # its options hash positionally (rails/rails#58601, unreleased). Drop the cap
 # once a Rails release ships that fix.
-gem "json", "< 3"
+gem "json", "< 4"
 gem "rails", ">= 7.0"
 gem "rspec", "~> 3.0"
 gem "rspec_junit_formatter"
