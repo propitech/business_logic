@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- `config.business_logic.test_dir` now moves the generated specs. The
+  generators read `tests_dir`, a key nothing set, so the documented setting
+  fell through to the default `spec/business_logic`.
+
 - `business_logic:install` no longer writes
   `app/business_logic/application_operation.rb` and no longer adds
   `dry-operation` to the Gemfile. The command is the shape the Propitech Rails
