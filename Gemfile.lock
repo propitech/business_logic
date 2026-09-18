@@ -294,9 +294,9 @@ GEM
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
       rubocop-rspec (~> 3.5)
-    rubocop-thread_safety (0.7.3)
+    rubocop-thread_safety (0.8.0)
       lint_roller (~> 1.1)
-      rubocop (~> 1.72, >= 1.72.1)
+      rubocop (~> 1.89)
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
@@ -343,7 +343,7 @@ DEPENDENCIES
   rubocop-rake (~> 0.7)
   rubocop-rspec (~> 3.10)
   rubocop-rspec_rails
-  rubocop-thread_safety (~> 0.7.3)
+  rubocop-thread_safety (~> 0.8.0)
   simplecov
   simplecov-cobertura
   simplecov_json_formatter
