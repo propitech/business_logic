@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Base class for form objects. Inherits the dry-operation ⇄ Rails
+# Base class for form objects. Inherits the command ⇄ Rails
 # form helpers bridge from `BusinessLogic::Form`. Put project-wide
 # concerns (i18n hooks, custom param extraction, base validations)
 # here.

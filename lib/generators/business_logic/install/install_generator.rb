@@ -15,7 +15,6 @@ module BusinessLogic
     private
 
     def copy_files
-      copy_file "application_operation.rb.tt", "#{install_path}/application_operation.rb"
       copy_file "application_command.rb.tt", "#{install_path}/application_command.rb"
       copy_file "application_contract.rb.tt", "#{install_path}/application_contract.rb"
       copy_file "application_form.rb.tt", "#{install_path}/application_form.rb"
@@ -25,7 +24,6 @@ module BusinessLogic
     def install_gems
       gem "ammeter", "~> 1.1", group: :test
       gem "dry-initializer", "~> 3.1"
-      gem "dry-operation", "~> 1.0"
       gem "dry-validation", "~> 1.10"
     end
   end

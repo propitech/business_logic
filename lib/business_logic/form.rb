@@ -3,7 +3,7 @@
 require "active_model"
 
 module BusinessLogic
-  # Base class for form objects that bridge dry-operation results to
+  # Base class for form objects that bridge command results to
   # Rails form helpers. App-side subclass `ApplicationForm` inherits
   # from this so per-project concerns (i18n hooks, custom error
   # routing) can land in the app without owning the bridge logic.
