@@ -2,7 +2,6 @@
 
 if ENV["CI"]
   require "simplecov"
-  require "simplecov_json_formatter"
   require "simplecov-cobertura"
 
   formatters = [
@@ -11,7 +10,11 @@ if ENV["CI"]
     SimpleCov::Formatter::CoberturaFormatter
   ]
   SimpleCov.start do
+    cover "lib/**/*.rb"
     formatter SimpleCov::Formatter::MultiFormatter.new formatters
-    add_filter "/spec/"
+    skip "/spec/"
+    # The gemspec requires version.rb before SimpleCov starts, so Coverage
+    # never sees it and cover would list it at 0%.
+    skip "lib/business_logic/version.rb"
   end
 end
