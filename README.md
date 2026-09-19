@@ -477,8 +477,10 @@ end
 `BusinessLogic::Form` (inherited via `ApplicationForm`) ships with
 two helpers:
 
-- **`.from_params(params, key: model_name.param_key)`** — strong-params
-  extraction. Permits only declared attributes.
+- **`.from_params(params, key: model_name.param_key)`** — builds the form
+  from the attributes nested under `key`, from controller params or from a
+  plain Hash keyed by String or Symbol. Attributes the form does not declare
+  are dropped at assignment; the contract, not the form, filters input.
 - **`#assign_errors(source)`** — translates a nested errors hash
   (from a contract, an Active Record model, anything shaped like
   `{attr => [msgs]}` / `{attr => {nested => [msgs]}}`) into

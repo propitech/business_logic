@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_model"
+require "active_support/core_ext/hash/indifferent_access"
 require "active_support/core_ext/object/try"
 
 module BusinessLogic
@@ -110,6 +111,16 @@ module BusinessLogic
       self.class.attribute_required?(attribute_name)
     end
 
+    # Builds the form from the attributes nested under `key`.
+    #
+    #   Forms::CreateUser.from_params(params)
+    #   Forms::CreateUser.from_params({user: {name: "Ada"}})
+    #
+    # @param params [ActionController::Parameters, Hash] controller params, or
+    #   a plain Hash keyed by String or Symbol as the console and specs pass
+    # @param key [String, Symbol] the nesting key, the model's param key by
+    #   default
+    # @return [Form]
     def self.from_params(params, key: model_name.param_key)
       new(extract_attributes(params, key))
     end
@@ -123,8 +134,7 @@ module BusinessLogic
     # list. Unknown keys are ignored at assignment (see #attribute_writer_missing),
     # so a form keeps only the attributes it declares while those shapes survive.
     def self.extract_attributes(params, key)
-      raw = params.fetch(key, {})
-      raw.try(:to_unsafe_h) || raw
+      (params.try(:to_unsafe_h) || params).with_indifferent_access.fetch(key, {})
     end
     private_class_method :extract_attributes
 

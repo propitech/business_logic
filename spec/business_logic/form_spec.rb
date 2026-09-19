@@ -51,9 +51,20 @@ RSpec.describe BusinessLogic::Form do
       expect(form.first_name).to eq("Ada")
     end
 
-    it "accepts a plain Hash keyed by the param key" do
+    it "accepts a plain Hash keyed by the param key as a String" do
       form = form_class.from_params({"test_thing" => {first_name: "Ada", age: "32"}})
       expect(form).to have_attributes(first_name: "Ada", age: 32)
+    end
+
+    it "accepts a plain Hash keyed by the param key as a Symbol" do
+      form = form_class.from_params({test_thing: {first_name: "Ada", age: "32"}})
+      expect(form).to have_attributes(first_name: "Ada", age: 32)
+    end
+
+    it "keeps array and nested values from a plain Hash", :aggregate_failures do
+      form = form_class.from_params({test_thing: {tag_ids: %w[1 2], items_attributes: {"0" => {name: "x"}}}})
+      expect(form.tag_ids).to eq(%w[1 2])
+      expect(form.items_attributes).to eq("0" => {"name" => "x"})
     end
   end
 
