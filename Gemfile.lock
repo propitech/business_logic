@@ -310,7 +310,6 @@ GEM
     simplecov-cobertura (4.0.0)
       rexml
       simplecov (~> 1.0)
-    simplecov_json_formatter (0.1.4)
     sqlite3 (2.9.6-arm64-darwin)
     sqlite3 (2.9.6-x86_64-linux-gnu)
     thor (1.5.0)
@@ -353,7 +352,6 @@ DEPENDENCIES
   rubocop-thread_safety (~> 0.8.0)
   simplecov
   simplecov-cobertura
-  simplecov_json_formatter
   sqlite3 (~> 2.9)
 
 BUNDLED WITH
