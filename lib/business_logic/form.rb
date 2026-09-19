@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_model"
+require "active_support/core_ext/object/try"
 
 module BusinessLogic
   # Base class for form objects that bridge command results to
@@ -123,7 +124,7 @@ module BusinessLogic
     # so a form keeps only the attributes it declares while those shapes survive.
     def self.extract_attributes(params, key)
       raw = params.fetch(key, {})
-      raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw
+      raw.try(:to_unsafe_h) || raw
     end
     private_class_method :extract_attributes
 
