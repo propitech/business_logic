@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- `config.business_logic.test_dir` now moves the generated specs. The
+  generators read `tests_dir`, a key nothing set, so the documented setting
+  fell through to the default `spec/business_logic`.
+
+- `business_logic:install` no longer writes
+  `app/business_logic/application_operation.rb` and no longer adds
+  `dry-operation` to the Gemfile. The command is the shape the Propitech Rails
+  baseline mandates for every state-changing operation, and the installer now
+  sets up that shape alone: `ApplicationCommand`, `ApplicationContract`,
+  `ApplicationForm` and the generators helper. The `business_logic:operation`
+  generator stays as an opt-in for a project that adds `dry-operation` and its
+  own `ApplicationOperation < Dry::Operation`; the README says how. A project
+  that ran the installer before this change keeps what it has, since the
+  installer copies files and appends gems rather than removing either.
+
 - Add `BusinessLogic::Command::RescueFrom` and
   `BusinessLogic::Command::ContractValidation`, both pre-mixed into
   `BusinessLogic::Command`. `.rescue_from(exception_class, with:)` maps an

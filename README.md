@@ -14,18 +14,22 @@ Three app-side base classes generated into your project so you can
 add project-wide concerns freely. The form bridge logic ships in the
 gem so bug fixes propagate via `bundle update`.
 
-| File                                          | Inherits from                                                        | Use for                                                                                                                                       |
-| --------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app/business_logic/application_operation.rb` | `Dry::Operation`                                                     | Multi-step pipelines. Step methods return `Success` / `Failure`, with shared data flowing through arguments.                                  |
-| `app/business_logic/application_command.rb`   | `BusinessLogic::Command`                                             | OOP service objects for the same use cases. Collaborators/input captured in `#initialize`; `#call` is no-arg and single-shot.                 |
-| `app/business_logic/application_contract.rb`  | `Dry::Validation::Contract`                                          | Input validation rules — what is allowed to enter the operation.                                                                              |
-| `app/business_logic/application_form.rb`      | `BusinessLogic::Form` (an `ActiveModel::Model` + `Attributes` mixin) | Bridge between Rails form helpers (`simple_form_for @form`) and operation results. Holds submitted attributes; carries `ActiveModel::Errors`. |
+| File                                         | Inherits from                                                        | Use for                                                                                                                                     |
+| -------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/business_logic/application_command.rb`  | `BusinessLogic::Command`                                             | Every state-changing operation. Collaborators/input captured in `#initialize`; `#call` is no-arg and single-shot and returns a `Result`.    |
+| `app/business_logic/application_contract.rb` | `Dry::Validation::Contract`                                          | Input validation rules — what is allowed to enter the command.                                                                              |
+| `app/business_logic/application_form.rb`     | `BusinessLogic::Form` (an `ActiveModel::Model` + `Attributes` mixin) | Bridge between Rails form helpers (`simple_form_for @form`) and command results. Holds submitted attributes; carries `ActiveModel::Errors`. |
 
-Plus four matching generators (`business_logic:operation`,
-`business_logic:command`, `business_logic:contract`,
-`business_logic:form`) that scaffold a class + its RSpec file in
-the right directory, and one that scaffolds the view layer's
-counterpart — [`business_logic:view_component`](#business_logicview_component--a-sidecar-viewcomponent).
+Plus three matching generators (`business_logic:command`,
+`business_logic:contract`, `business_logic:form`) that scaffold a
+class + its RSpec file in the right directory, and one that scaffolds
+the view layer's counterpart —
+[`business_logic:view_component`](#business_logicview_component--a-sidecar-viewcomponent).
+
+The command is the shape the Propitech Rails baseline mandates
+(`AGENTS.md#commands-over-services`). A `Dry::Operation` pipeline is
+still supported as an opt-in, with its own generator; see
+[`business_logic:operation`](#business_logicoperation--an-opt-in-pipeline).
 
 ## Installation
 
@@ -55,77 +59,25 @@ bin/rails generate business_logic:install
 
 This copies:
 
-- `app/business_logic/application_operation.rb`
 - `app/business_logic/application_command.rb`
 - `app/business_logic/application_contract.rb`
 - `app/business_logic/application_form.rb`
-- `spec/generators_helper.rb`
+- `spec/business_logic/generators_helper.rb`
 
 …and adds these gems to your `Gemfile`:
 
 ```ruby
 gem "ammeter", "~> 1.1", group: :test
 gem "dry-initializer", "~> 3.1"
-gem "dry-operation", "~> 1.0"
 gem "dry-validation", "~> 1.10"
 ```
 
-Run `bundle install` to pull them in.
+Run `bundle install` to pull them in. The `business_logic` gem itself
+belongs outside the `development` and `test` groups: `ApplicationCommand`
+subclasses `BusinessLogic::Command`, so eager loading raises `NameError`
+in any environment the gem is missing from.
 
 ## Usage
-
-### `business_logic:operation` — a domain verb
-
-```shell
-bin/rails generate business_logic:operation CreateUser
-```
-
-Creates:
-
-- `app/business_logic/operations/create_user.rb`
-- `spec/business_logic/operations/create_user_spec.rb`
-
-A typical operation pipelines steps and returns a monad. Inject the
-form, contract, and any side-effect adapters via `option`:
-
-```ruby
-module Operations
-  class CreateUser < ApplicationOperation
-    option :contract, default: -> { Contracts::CreateUser.new }
-    option :mailer,   default: -> { UserMailer }
-
-    def call(form:)
-      attrs = step validate(form)
-      user  = step persist(form, attrs)
-      step notify(user)
-      Success(user)
-    end
-
-    private
-
-    def validate(form)
-      result = contract.call(form.attributes.symbolize_keys)
-      return Success(result.to_h) if result.success?
-
-      form.assign_errors(result.errors.to_h)
-      Failure(form)
-    end
-
-    def persist(form, attrs)
-      user = User.new(attrs)
-      return Success(user) if user.save
-
-      form.assign_errors(user.errors.to_hash)
-      Failure(form)
-    end
-
-    def notify(user)
-      mailer.welcome(user).deliver_later
-      Success(user)
-    end
-  end
-end
-```
 
 ### `business_logic:command` — an OOP service object
 
@@ -138,11 +90,9 @@ Creates:
 - `app/business_logic/commands/create_user.rb`
 - `spec/business_logic/commands/create_user_spec.rb`
 
-A Command is the OOP sibling of Operation: same public interface
-(`#call` returns a `Dry::Monads::Result`), different internal
-shape. Collaborators and input live on the instance, set in
-`#initialize` via `Dry::Initializer`. Two DSLs are always
-available:
+A Command's `#call` returns a `Dry::Monads::Result`. Collaborators
+and input live on the instance, set in `#initialize` via
+`Dry::Initializer`. Two DSLs are always available:
 
 - `param :name` — positional input data.
 - `option :name` — keyword input data.
@@ -386,18 +336,93 @@ example above does.
 
 #### Command vs Operation — when to pick which
 
-Both return `Dry::Monads::Result` and can call each other as
-steps. Pick on shape:
+The command is the shape every state-changing operation takes in a
+Propitech Rails application (`AGENTS.md#commands-over-services`), and
+the one the installer sets up. Collaborators (mailer, contract,
+repository, policy) and helper methods sharing the same input live as
+instance state, which reads better and avoids the `FeatureEnvy` /
+`UtilityFunction` smells that plain step methods attract when they
+keep receiving the same arguments.
 
-- **Operation** when the use case is a linear pipeline of pure
-  transforms with data flowing through method arguments.
-  Stateless across calls.
-- **Command** when there are several collaborators (mailer,
-  contract, repository, policy) or several helper methods
-  sharing the same input. Keeping those as instance state
-  reads better and avoids the `FeatureEnvy` /
-  `UtilityFunction` smells that plain step methods attract
-  when they keep receiving the same arguments.
+A `Dry::Operation` pipeline is an opt-in for a linear run of pure
+transforms with data flowing through method arguments, stateless
+across calls. Both return `Dry::Monads::Result` and can call each
+other as steps.
+
+### `business_logic:operation` — an opt-in pipeline
+
+The installer sets up no operation base class and adds no
+`dry-operation`. A project that wants the pipeline shape adds both
+itself:
+
+```ruby
+# Gemfile
+gem "dry-operation", "~> 1.0"
+```
+
+```ruby
+# app/business_logic/application_operation.rb
+# frozen_string_literal: true
+
+# Base class for operations
+#
+# @abstract
+class ApplicationOperation < Dry::Operation
+end
+```
+
+Then:
+
+```shell
+bin/rails generate business_logic:operation CreateUser
+```
+
+Creates:
+
+- `app/business_logic/operations/create_user.rb`
+- `spec/business_logic/operations/create_user_spec.rb`
+
+A typical operation pipelines steps and returns a monad. Inject the
+form, contract, and any side-effect adapters via `option`:
+
+```ruby
+module Operations
+  class CreateUser < ApplicationOperation
+    option :contract, default: -> { Contracts::CreateUser.new }
+    option :mailer,   default: -> { UserMailer }
+
+    def call(form:)
+      attrs = step validate(form)
+      user  = step persist(form, attrs)
+      step notify(user)
+      Success(user)
+    end
+
+    private
+
+    def validate(form)
+      result = contract.call(form.attributes.symbolize_keys)
+      return Success(result.to_h) if result.success?
+
+      form.assign_errors(result.errors.to_h)
+      Failure(form)
+    end
+
+    def persist(form, attrs)
+      user = User.new(attrs)
+      return Success(user) if user.save
+
+      form.assign_errors(user.errors.to_hash)
+      Failure(form)
+    end
+
+    def notify(user)
+      mailer.welcome(user).deliver_later
+      Success(user)
+    end
+  end
+end
+```
 
 ### `business_logic:contract` — input validation rules
 
@@ -567,14 +592,14 @@ present; the engine itself is plain Ruby.
 
 ## End-to-end pattern
 
-Controllers stay dispatchers. Build the form, call the operation,
+Controllers stay dispatchers. Build the form, call the command,
 branch on the monad, re-render with the form on failure.
 
 ```ruby
 class UsersController < ApplicationController
   def create
     form   = Forms::CreateUser.from_params(params)
-    result = Operations::CreateUser.new.call(form: form)
+    result = Commands::CreateUser.call(user: User.new, form: form)
 
     if result.success?
       redirect_to result.value!, notice: t(".created")
@@ -612,12 +637,12 @@ default 200 will leave the user staring at the unchanged page.
 ## Convention-driven architecture
 
 This gem prefers **convention over configuration**. The three
-generators (`operation`, `contract`, `form`) drop classes into
+generators (`command`, `contract`, `form`) drop classes into
 matching namespaces so that any two of the three can find the third
 by name alone:
 
 ```text
-Operations::CreateUser   ── orchestrates ─▶  Contracts::CreateUser
+Commands::CreateUser     ── orchestrates ─▶  Contracts::CreateUser
                                                    │
 Forms::CreateUser        ── validated by ─────────┘
 ```
@@ -643,9 +668,9 @@ Two payoffs:
    Form, both can locate the Contract by name. No registry to
    grep, no DSL to memorise.
 
-### Sharing a Form/Contract across operations
+### Sharing a Form/Contract across commands
 
-When two operations need the same fields, lean on ordinary Ruby
+When two commands need the same fields, lean on ordinary Ruby
 inheritance — no special multi-contract dispatch is needed:
 
 ```ruby

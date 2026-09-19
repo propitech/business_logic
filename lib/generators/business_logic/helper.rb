@@ -21,7 +21,7 @@ module BusinessLogic
     end
 
     def tests_path
-      Helper.options.fetch(:tests_dir, "spec/business_logic")
+      Helper.options.fetch(:test_dir, "spec/business_logic")
     end
 
     def install_path
