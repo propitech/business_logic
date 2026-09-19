@@ -39,12 +39,15 @@ jobs:
           CI: true
         run: bundle exec rake
 
+      # The formatter's coverage.json, not .resultset.json: simplecov 1.x
+      # writes only the files a worker loaded into the resultset and lists the
+      # never-loaded ones under tracked_files, which qlty does not read.
       - name: Upload result to Quality.sh
         uses: qltysh/qlty-action/coverage@v2
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository && matrix.ruby == '3.4.5'
         with:
           token: ${{secrets.QLTY_COVERAGE_TOKEN}}
-          files: coverage/.resultset.json
+          files: coverage/coverage.json
 
   agents-check:
     name: AGENTS.md integrity
