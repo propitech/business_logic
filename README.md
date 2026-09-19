@@ -893,6 +893,7 @@ set — the entry point tests use this to stay off `$stdout`.
 ```shell
 bin/setup       # install gem deps
 rake spec       # run the tests
+rake            # tests, rubocop and reek, as CI runs them
 bin/console     # IRB with the gem preloaded
 ```
 
