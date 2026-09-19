@@ -51,11 +51,14 @@ module RuboCop
           deleted_at_assertion(node) do |receiver, verb, matcher|
             deleted = (matcher == :be_present) == (verb == :to)
             new_verb = deleted ? "to" : "not_to"
-
-            add_offense(node) do |corrector|
-              corrector.replace(node, "expect(#{receiver.source}).#{new_verb} be_deleted")
-            end
+            replace_assertion(node, "expect(#{receiver.source}).#{new_verb} be_deleted")
           end
+        end
+
+        private
+
+        def replace_assertion(node, replacement)
+          add_offense(node) { |corrector| corrector.replace(node, replacement) }
         end
       end
     end

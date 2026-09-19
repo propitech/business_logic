@@ -76,9 +76,7 @@ module BusinessLogic
     #
     # @param result [Dry::Monads::Result]
     def yield_result(result)
-      return result.value! if result.success?
-
-      throw HALT, result
+      result.value_or { throw HALT, result }
     end
 
     # Runs an ActiveModel-style write on `record` (in its own context,
@@ -119,8 +117,8 @@ module BusinessLogic
     #   end
     #
     # @return [Dry::Monads::Result]
-    def transaction(&block)
-      run_in_transaction(block)
+    def transaction(&)
+      run_in_transaction(&)
     end
 
     # Like {#transaction} but always opens a *new* nested transaction —
@@ -134,18 +132,19 @@ module BusinessLogic
     #   new_transaction { yield_model(Hold.new(attrs)) { save } }
     #
     # @return [Dry::Monads::Result]
-    def new_transaction(&block)
-      run_in_transaction(block, requires_new: true)
+    def new_transaction(&)
+      run_in_transaction(requires_new: true, &)
     end
 
     # Shared body for {#transaction} / {#new_transaction}: run the block,
     # catching an auto-yielded {HALT}, and roll the transaction back when
-    # it yields a `Failure`. Returns the block's `Result`.
-    def run_in_transaction(block, requires_new: false)
+    # it yields a `Failure`. Returns the block's `Result`. `options` are
+    # handed to `ActiveRecord::Base.transaction` as given.
+    def run_in_transaction(**options, &block)
       result = nil
-      ActiveRecord::Base.transaction(requires_new:) do
-        result = catch(HALT) { block.call }
-        raise ActiveRecord::Rollback if result.respond_to?(:failure?) && result.failure?
+      ActiveRecord::Base.transaction(**options) do
+        result = catch(HALT, &block)
+        raise ActiveRecord::Rollback if result.is_a?(Failure)
       end
       result
     end

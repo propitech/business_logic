@@ -16,6 +16,7 @@ gem "dry-validation", "~> 1.11"
 # once a Rails release ships that fix.
 gem "json", "< 3"
 gem "rails", ">= 7.0"
+gem "reek", "~> 6.5"
 gem "rspec", "~> 3.0"
 gem "rspec_junit_formatter"
 gem "rspec-rails", "~> 8.0"

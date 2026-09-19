@@ -50,6 +50,11 @@ RSpec.describe BusinessLogic::Form do
       form = form_class.from_params(params, key: :other)
       expect(form.first_name).to eq("Ada")
     end
+
+    it "accepts a plain Hash keyed by the param key" do
+      form = form_class.from_params({"test_thing" => {first_name: "Ada", age: "32"}})
+      expect(form).to have_attributes(first_name: "Ada", age: 32)
+    end
   end
 
   describe "mass assignment" do

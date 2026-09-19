@@ -159,4 +159,109 @@ RSpec.describe BusinessLogic::Command do
       expect(command_class.call(Failure(:nope))).to fail_command
     end
   end
+
+  # These commands open the real transaction, so no `:db` wrapper: inside
+  # one, a joined transaction's `Rollback` is swallowed without rolling
+  # anything back and the assertions below would not hold.
+  describe "#transaction" do
+    include Dry::Monads[:result]
+
+    after { WizardTestSubject.delete_all }
+
+    let(:command_class) do
+      Class.new(described_class) do
+        param :outcome
+        def execute
+          transaction do
+            WizardTestSubject.create!
+            outcome
+          end
+        end
+      end
+    end
+
+    it "commits the block's writes on Success" do
+      expect { command_class.call(Success(:ok)) }.to change(WizardTestSubject, :count).by(1)
+    end
+
+    it "returns the block's Success" do
+      expect(command_class.call(Success(:ok))).to succeed_command.with_value(:ok)
+    end
+
+    it "rolls back the block's writes on a Failure it returns" do
+      expect { command_class.call(Failure(:nope)) }.not_to change(WizardTestSubject, :count)
+    end
+
+    it "returns the Failure the block returns" do
+      expect(command_class.call(Failure(:nope))).to fail_command
+    end
+
+    context "when a helper auto-yields the Failure" do
+      let(:command_class) do
+        Class.new(described_class) do
+          param :outcome
+          def execute
+            transaction do
+              WizardTestSubject.create!
+              Success(yield_result(outcome))
+            end
+          end
+        end
+      end
+
+      it "rolls back the block's writes" do
+        expect { command_class.call(Failure(:nope)) }.not_to change(WizardTestSubject, :count)
+      end
+
+      it "returns the Failure" do
+        expect(command_class.call(Failure(:nope))).to fail_command
+      end
+    end
+
+    context "when the block hands back a record rather than a Result" do
+      let(:command_class) do
+        Class.new(described_class) do
+          def execute = Success(transaction { WizardTestSubject.create! })
+        end
+      end
+
+      it "commits it" do
+        expect { command_class.call }.to change(WizardTestSubject, :count).by(1)
+      end
+    end
+  end
+
+  describe "#new_transaction" do
+    include Dry::Monads[:result]
+
+    after { WizardTestSubject.delete_all }
+
+    let(:command_class) do
+      Class.new(described_class) do
+        def execute
+          transaction do
+            WizardTestSubject.create!
+            Success(failing_savepoint)
+          end
+        end
+
+        private
+
+        def failing_savepoint
+          new_transaction do
+            WizardTestSubject.create!
+            Failure(:inner)
+          end
+        end
+      end
+    end
+
+    it "rolls back only its own savepoint" do
+      expect { command_class.call }.to change(WizardTestSubject, :count).by(1)
+    end
+
+    it "hands its Failure back to the enclosing block" do
+      expect(command_class.call).to succeed_command.with_value(Failure(:inner))
+    end
+  end
 end
