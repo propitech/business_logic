@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- `Form.from_params` finds the nested attributes in a plain Hash whichever
+  key type it uses. It converts the params to indifferent access before the
+  lookup, so `Form.from_params({user: {name: "Ada"}})` from the console or a
+  spec builds the form; before, `model_name.param_key` being a String meant a
+  Symbol key missed and the form came back blank. Controller params were
+  never affected.
+
 - `config.business_logic.test_dir` now moves the generated specs. The
   generators read `tests_dir`, a key nothing set, so the documented setting
   fell through to the default `spec/business_logic`.
