@@ -216,6 +216,13 @@ Stack-specific testing rules live in your stack baseline (e.g.
 - **A ticket is finished when its pull request is open, not when the code is
   green.** Run the arc through in one pass and report the result, stopping
   only where continuing would be wrong. (`agentic-workflow:ticket-to-pr`)
+- **Review locally first, then push on the clear.** Where a peer session on
+  this machine has announced itself as the reviewer, every commit goes to it
+  before it is pushed: the first one, a fix commit, and an amended or rebased
+  SHA even when the tree is unchanged. Once the peer reviewer clears it, the
+  coder pushes and opens the pull request without asking again, because the
+  handover of the work was the go; the clear is the review, not the
+  permission. (`agentic-workflow:local-peer-review`) {#peer-review-before-push}
 - **A stack is reviewed at every rung, and the last rung discloses what it
   carries.** (`agentic-workflow:pr-cadence`)
 ## Boundaries, ask before acting {#boundaries}
@@ -230,11 +237,14 @@ The agent **must pause and confirm** before:
   environment files, deploy manifests).
 - Adding, removing, or major-bumping a dependency.
 - Anything that talks to a remote system: `git push`, opening a pull request on
-  someone's behalf, deploys, third-party API writes, Slack or Linear posts. Two
-  exceptions are pre-authorized: a routine Linear update, meaning a status flip
-  and a comment on the ticket you are actively working and never a project,
-  milestone, or initiative change (`agentic-workflow:linear-update`), and a
-  **staging** deploy on the terms below.
+  someone's behalf, deploys, third-party API writes, Slack or Linear posts.
+  Three exceptions are pre-authorized: a routine Linear update, meaning a
+  status flip and a comment on the ticket you are actively working and never a
+  project, milestone, or initiative change (`agentic-workflow:linear-update`);
+  the push and the pull request of a ticket a human handed over, since the
+  handover is that permission (`agentic-workflow:ticket-to-pr`), and, where a
+  local peer reviewer is beside you, only once it has cleared the commit
+  ([#peer-review-before-push]); and a **staging** deploy on the terms below.
 - Disabling a test or a linter or security finding.
 
 The agent **must never**, regardless of permission:
