@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.18.0 (source: agents-baseline-v2.18.0)                  -->
+<!-- Baseline: agents-baseline-v2.18.2 (source: agents-baseline-v2.18.2)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -210,12 +210,12 @@ Stack-specific testing rules live in your stack baseline (e.g.
 - **Compare against a freshly fetched `origin/main`, never a local ref.** Run
   `git fetch origin` before diffing against main, judging whether a change
   landed, or reading another repo's state ([#verify-before-asserting]).
-- **Worktrees and the run lifecycle** — drive both with the project's own
+- **Worktrees and the run lifecycle**: drive both with the project's own
   commands, read rather than recalled ([#verify-before-asserting]):
   `bin/worktree` for checkouts, `mise run start|stop|reset` for the app. Each
   checkout carries its own port and database namespace; never infer either.
   (`rails-stack:worktree`) {#worktrees}
-- **Worktree and main pre-flight** — at pickup verify the branch is fresh off
+- **Worktree and main pre-flight**: at pickup verify the branch is fresh off
   `origin/main`, and verify which database the shell targets before running
   `rails` or `rspec`. (`rails-stack:worktree`) {#worktree-preflight}
 - **A ticket is finished when its pull request is open, not when the code is
