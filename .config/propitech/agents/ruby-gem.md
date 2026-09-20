@@ -51,8 +51,8 @@ See `base.md#code-style` for the never-silence rule. Specifics:
 - Do not add `# rubocop:disable` inline comments.
 - Do not add `# :reek:` annotations, and do not scope a detector to a path or a
   file in `.reek.yml`.
-- Two checks want a comment on every top-level class and module — RuboCop's
-  `Style/Documentation` and Reek's `IrresponsibleModule`, both on by default —
+- Two checks want a comment on every top-level class and module (RuboCop's
+  `Style/Documentation` and Reek's `IrresponsibleModule`, both on by default)
   where `base.md#code-style` reserves a comment for a published surface, which
   a class internal to the gem is not. Turn the check off for the whole project
   in `.rubocop.yml` or `.reek.yml`, with the reason recorded there and the
