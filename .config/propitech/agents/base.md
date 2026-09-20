@@ -39,53 +39,33 @@ and overrides this file. Reference a rule by its `{#slug}` anchor
 
 ## Code style philosophy {#code-style}
 
-The toolchain is opinionated, so defer to it; gate commands are stack-specific
-(e.g. `rails.md#gates`). Regardless of stack:
+The toolchain is opinionated; defer to it (gate commands are stack-specific,
+e.g. `rails.md#gates`):
 
-- **Never silence a case** (the whole-project settlement below is the one
-  exception). Fix the code; never disable a linter rule for a case, append to a
-  todo file, or add an ignore comment. `rubocop:disable`, `# brakeman:ignore`,
-  `eslint-disable`, an inline `# :reek:Foo`, and an entry appended to a
-  lint-todo file are examples of the form, written here so the literal is
-  greppable. They are not the list to check against, and a silencing mechanism
-  absent from them is prohibited exactly as much. Where a rule is genuinely
-  wrong for a case, say so and open a plan.
-- **A tool's rule that contradicts this baseline project-wide is settled once,
-  in the tool's own configuration**: a check demanding a comment on every
-  class, say, where a comment is reserved for a published surface. Record the
-  reason beside it and ask first ([Boundaries](#boundaries)), since the check
-  stops everywhere. A per-case ignore and a todo file decide nothing and stay
-  barred.
-- **Code carries its own explanation.** An explanation that a better name or an
-  extracted method can carry is written as that name or that method, never as a
-  comment.
-- **The one comment that earns its place is the API doc on a published
-  surface**, something called from outside its deployable unit: a gem's public
-  API, a shared library, an interface another system calls. A class called only
-  in-process is not published, however widely it is used. Write it where the
-  name and the signature do not already say it (purpose, parameters, return,
-  and what it raises when raising is part of the contract), as YARDoc, a TSDoc
-  block, a godoc sentence, or a docstring. It says how the thing is used, never
-  what the body does.
-- **A comment a tool reads or writes is a directive, not prose**, and this rule
-  does not reach it. Test it by deletion: a directive's removal changes what
-  the code does (a shebang, `# frozen_string_literal: true`) or what a tool
-  writes next run (`<!-- prettier-ignore -->`, a generated annotation block);
-  prose's removal changes neither; and a removal that changes only what a tool
-  *reports* (`rubocop:disable`) is silencing. Leave a directive where the
-  tool expects it, and regenerate rather than hand-edit one a tool wrote
-  ([Operating principles](#operating-principles)).
-- **Everything else is deleted, not written.** No narration of the *what*, no
-  section banners, no commented-out code, and no chronology: nothing saying
-  when a line changed, what it replaced, or which incident produced it
-  ([Documentation](#documentation)). A constraint that holds now may take one
-  short comment when its cause lies outside the unit and the comment names that
-  cause (the upstream issue, the vendor bug, the protocol quirk, the lock
-  ordering another component relies on), so a reader can go and look.
-- **Durable surfaces are written in plain prose** (commits, pull request titles
-  and bodies, code comments, Linear issues, Notion pages), in ordinary
-  sentences, whatever compressed style the chat is using. The rule lives here
-  and is cited, never restated, elsewhere.
+- **Never silence a case** (the whole-project settlement is the
+  exception): never `rubocop:disable`, `# brakeman:ignore`, `eslint-disable`,
+  `# :reek:Foo`, an appended lint-todo entry, or any equivalent mechanism;
+  where a rule is genuinely wrong for a case, say so and open a plan instead.
+  Settle a project-wide contradiction once, in the tool's own configuration;
+  note why beside it and ask first ([Boundaries](#boundaries)); a per-case
+  ignore or a todo-file entry still stays barred.
+- **A comment never carries what a better name or an extracted method
+  can.** The one exception is the API doc on a published surface (called from
+  outside its deployable unit): a YARDoc, TSDoc, godoc, or docstring block
+  describing usage, never the body. (`agentic-workflow:concise-docs`)
+- **A comment a tool reads or writes is a directive, not prose**: a shebang,
+  `# frozen_string_literal: true`, `<!-- prettier-ignore -->`, a generated
+  annotation block. Leave one where the tool expects it; regenerate rather
+  than hand-edit one a tool wrote ([Operating principles](#operating-principles)).
+  A comment whose removal changes only what a tool reports (`rubocop:disable`)
+  is silencing, not a directive.
+- **Everything else is deleted, not written**: no narration, no section
+  banners, no commented-out code, no chronology
+  ([Documentation](#documentation)). An externally caused constraint may take
+  one comment naming that cause.
+- **Durable surfaces are written in plain prose** (commits, pull request
+  titles and bodies, code comments, Linear issues, Notion pages), whatever
+  compressed style the chat is using.
   (`agentic-workflow:durable-surface-prose`) {#durable-surfaces}
 - **Run every gate before reporting done**, iterating to green rather than
   reporting a partial pass, and never report done on a gate you did not run.
@@ -133,38 +113,16 @@ utterance [Silent execution](#silent-execution) permits before it.
 
 ## Plain English voice {#plain-english}
 
-Everything written for a person to read (a document, a README, a design or
-decision record, a pull request body, a Linear issue, a Notion page, a commit
-message, a code comment, user-facing copy) is written in the voice of a
-competent human writer, not in the default assistant register. A reader who
-recognises that register stops reading for content and starts reading for
-authorship, and the text then gets skimmed, discounted, or rewritten by whoever
-inherits it.
-
-- **Lead with the claim, then support it.** No restated question, no compliment,
-  no roadmap of what follows, no closing summary that repeats the opening.
-- **Let structure follow the facts.** Two things is two bullets, seven is seven.
-  Padding a list or a phrase to three is filler. An argument is written as
-  paragraphs, not as bullets.
-- **Vary sentence length, and name specifics** (the file, the version, the
-  number, the actual objection). Uniform sentence rhythm and unattributed
-  generality are what mark text as machine-produced, more than any single word.
-- **No em dash as prose, and no antithesis template** ("not just X, but Y").
-  Written here so the forms are greppable; a construction absent from this list
-  doing the same work is prohibited exactly as much. Others: stacked hedges
-  ("may potentially"), register vocabulary ("it's worth noting", "delve",
-  "leverage" as a verb, "seamless", "in today's fast-paced world"), emoji
-  headings, bold applied until nothing is emphasised, and unattributed appeal
-  ("studies show").
-- **Take a position where the reader needs one**, and state an uncertainty once
-  where it applies rather than hedging every clause.
-
-This governs voice; [Code style](#code-style) governs plain rather than
-compressed register on durable surfaces, and both apply to the same pull request
-body or Linear issue. It changes how prose reads and nothing else: the
-provenance marking the model applies to generated text and files sits below the
-authoring layer, and no rule here affects it.
-(`agentic-workflow:plain-english`)
+Everything written for a person to read (a document, a pull request body, a
+Linear issue, a Notion page, a commit message, a code comment) is written in
+the voice of a competent human writer, not the default assistant register:
+structure follows the facts, sentence length varies, specifics replace
+generality. Never an em dash as prose, the antithesis template ("not just X,
+but Y"), a stacked hedge ("may potentially"), or register vocabulary
+("delve", "leverage" as a verb, "seamless"); a construction absent from this
+list doing the same work is prohibited exactly as much. This governs voice;
+[Code style](#code-style) governs plain versus compressed register on durable
+surfaces. (`agentic-workflow:plain-english`)
 
 ## Testing {#testing}
 
@@ -303,47 +261,32 @@ The agent **must never**, regardless of permission:
 
 Write knowledge down where it will be found, never only in the chat session:
 
-- **The repository is the source of truth for how to build the thing** (stack,
-  layering, gates, run lifecycle, conventions), reachable from its README. A
-  rule holding across Propitech projects goes into the shared baseline, never
-  copied into each repo.
-- **Notion is the source of truth for the product and the durable decisions**,
-  and a shipped feature is written up there.
-  (`agentic-workflow:document-feature`)
-- **Claude Design is the source of truth for the design**, in every repository
-  and at every stage of a product's life. The repository implements the
-  direction and never becomes it, so where code and canvases disagree the
-  canvases are right. Harvest direction only, and never ship an HTML export.
-  (`agentic-workflow:design-canvas`, `agentic-workflow:tool-interfaces`)
-- **A material decision is recorded when it is made, not remembered**, and what
-  is recorded is the *why*. (`agentic-workflow:document-decision`)
-- **A document describes the system as it stands**, in the present tense: its
-  structure, its boundaries, how to run it. Git, the pull request, and Linear
-  hold the sequence of events, and the decision record holds the *why* one was
-  chosen, as a constraint that still applies rather than a log of a day.
-- **History earns a place in a document only as the justification of a
-  prohibition**: the clause that stops the next reader re-trying a dead route.
-  Never as a changelog, a "we used to do X", or a note about a past migration
-  or incident.
-- **Documentation ships with the change**, in the pull request that changes the
-  behaviour.
-- **A stale document is worse than a missing one**, because it is believed: fix
-  it or delete it.
-- **A fact that changes is corrected wherever it is stated, not only where it
-  was quoted.** The unit of edit is the whole paragraph, and every other
-  document, comment, or test describing the same thing, because correcting only
-  the sentence a reviewer pointed at leaves the clauses beside it stating the
-  old fact. Search on the enumeration rather than the symbol: prose that counts
-  callers says "both", or names the two it knew about, so a grep for the caller
-  you are adding finds nothing. The reach does not stop at the repository: a
-  pull request body, a Linear issue and a Notion page state the same facts, no
-  gate reads any of them, and they are corrected too
-  ([Durable surfaces](#durable-surfaces)). {#correction-reach}
-- **Length is not quality, and a document instructs rather than explains.**
-  Write what to do and when to do it, in the shortest text that leaves the
-  reader able to act; where the code and its API docs already say it, write
-  nothing. Every documentation edit trims the sections it touches.
-  (`agentic-workflow:concise-docs`)
+- **Each kind of knowledge has one source of truth**: the repository,
+  reachable from its README, for how to build the thing (stack, layering,
+  gates, run lifecycle, conventions);
+  Notion for the product and the durable decisions, where a shipped feature
+  is written up (`agentic-workflow:document-feature`) and a material decision
+  is recorded when made, not remembered (`agentic-workflow:document-decision`);
+  Claude Design for the design, where canvases win over code, harvesting
+  direction only and never an HTML export
+  (`agentic-workflow:design-canvas`, `agentic-workflow:tool-interfaces`). A
+  rule holding across Propitech projects goes into the shared baseline, not
+  into each repo.
+- **A document describes the system as it stands, in the present tense.** Git,
+  the pull request, and Linear hold the sequence of events; the decision
+  record holds the *why*.
+- **Documentation ships with the change**, in the pull request that changes
+  the behaviour; a stale document is worse than a missing one, so fix it or
+  delete it. History earns a place in a document only as the justification of
+  a prohibition, never as a changelog or a "we used to do X" note.
+- **A fact that changes is corrected wherever it is stated**: the whole
+  paragraph, every other document, comment, or test describing it, and any
+  pull request body, Linear issue, or Notion page stating it too
+  ([Durable surfaces](#durable-surfaces)). Search for the enumeration, not the
+  symbol: prose counting callers says "both" or names the ones it knew, so a
+  grep for the one you add finds nothing. {#correction-reach}
+- **Length is not quality; a document instructs rather than explains.** Trim
+  the sections you touch on every edit. (`agentic-workflow:concise-docs`)
 ## Review-driven changes {#review-driven-changes}
 
 When the human is walking the agent through pull request review feedback
