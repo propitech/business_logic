@@ -21,7 +21,7 @@ over heavy gem dependencies.
 
 ## Testing (Ruby gem) {#testing-ruby-gem}
 
-The universal testing rules are in `base.md#testing`. Ruby gem specifics:
+Ruby gem specifics on top of `base.md#testing`:
 
 - **Plain RSpec.** No `factory_bot`, no Capybara, no database_cleaner (there is
   no database). Use `let`, `subject`, `shared_examples`, `shared_context`.
@@ -51,16 +51,13 @@ See `base.md#code-style` for the never-silence rule. Specifics:
 - Do not add `# rubocop:disable` inline comments.
 - Do not add `# :reek:` annotations, and do not scope a detector to a path or a
   file in `.reek.yml`.
-- Two checks want a comment on every top-level class and module (RuboCop's
-  `Style/Documentation` and Reek's `IrresponsibleModule`, both on by default)
-  where `base.md#code-style` reserves a comment for a published surface, which
-  a class internal to the gem is not. Turn the check off for the whole project
-  in `.rubocop.yml` or `.reek.yml`, with the reason recorded there and the
-  human asked first: that is the rule-set decision `base.md#code-style` allows,
-  and it is a different shape from the per-case ignores barred above, which
-  scope a rule to a path, a file, or a call site. Where the gem's own top-level
-  classes are its distributed interface, leave the checks on and write the
-  comments as API docs.
+- RuboCop's `Style/Documentation` and Reek's `IrresponsibleModule` (both on
+  by default) want a comment on every top-level class or module, but
+  `base.md#code-style` reserves a comment for a published surface. Turn the
+  check off for the whole project in `.rubocop.yml` or `.reek.yml`, recording
+  why there and asking the human first, never as a per-case ignore. Where the
+  gem's own top-level classes are its distributed interface, leave the checks
+  on and write the comments as API docs.
 - A Qlty billing block ("out of minutes") is not a code issue. Confirm clean
   locally with `qlty check`; other gates stay binding.
 
