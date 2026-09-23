@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "2.21.0",
+  "baselineVersion": "2.22.0",
   "source": {
-    "ref": "agents-baseline-v2.21.0"
+    "ref": "agents-baseline-v2.22.0"
   },
   "layers": [
     "base",
@@ -31,6 +31,7 @@
       "linear-update",
       "local-peer-review",
       "memory-policy",
+      "orchestrate-landing",
       "plain-english",
       "plan-first",
       "pr-cadence",
