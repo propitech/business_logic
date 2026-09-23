@@ -1,36 +1,33 @@
 {
-  "baselineVersion": "2.21.0",
+  "baselineVersion": "2.25.0",
   "source": {
-    "ref": "agents-baseline-v2.21.0"
+    "ref": "agents-baseline-v2.25.0"
   },
   "layers": [
     "base",
     "ruby-gem"
   ],
   "layerHashes": {
-    "base": "a5b42415d132823e6d2fbb6482366807969addfe0e73e91477596a205229bee4",
+    "base": "adffe2b40565d0817366fa94c879674e0d7ea21c3e6691896f0a4ce419846ac4",
     "ruby-gem": "53976e0b978f6c4a44abde4039871d91fc53253f3823947f1d29236649812ba0"
   },
   "skills": {
     "agentic-workflow": [
       "board-hygiene",
       "claude-code-setup",
-      "concise-docs",
       "cross-review-coder",
       "cross-review-reviewer",
       "decompose-deliverables",
       "design-canvas",
       "design-methodology",
       "discovery-sync",
-      "document-decision",
-      "document-feature",
-      "durable-surface-prose",
+      "document-notion",
       "flagged-todo",
       "gates",
-      "linear-archive",
       "linear-update",
       "local-peer-review",
       "memory-policy",
+      "orchestrate-landing",
       "plain-english",
       "plan-first",
       "pr-cadence",
