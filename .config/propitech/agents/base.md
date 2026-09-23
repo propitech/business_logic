@@ -47,7 +47,7 @@ e.g. `rails.md#gates`):
 - **A comment never carries what a better name or an extracted method
   can.** The one exception is the API doc on a published surface (called from
   outside its deployable unit): a YARDoc, TSDoc, godoc, or docstring block
-  describing usage, never the body. (`agentic-workflow:concise-docs`)
+  describing usage, never the body. (`agentic-workflow:plain-english`)
 - **A comment a tool reads or writes is a directive, not prose**: a shebang,
   `# frozen_string_literal: true`, `<!-- prettier-ignore -->`, a generated
   annotation block. Leave one where the tool expects it; regenerate rather
@@ -58,10 +58,6 @@ e.g. `rails.md#gates`):
   banners, no commented-out code, no chronology
   ([Documentation](#documentation)). An externally caused constraint may take
   one comment naming that cause.
-- **Durable surfaces are written in plain prose** (commits, pull request
-  titles and bodies, code comments, Linear issues, Notion pages), whatever
-  compressed style the chat is using.
-  (`agentic-workflow:durable-surface-prose`) {#durable-surfaces}
 - **Run every gate before reporting done**, iterating to green rather than
   reporting a partial pass, and never report done on a gate you did not run.
   Which commands make up the suite is stack-specific (e.g. `rails.md#gates`).
@@ -99,7 +95,7 @@ utterance [Silent execution](#silent-execution) permits before it.
 - **The report is complete.** Name a skipped step as skipped, a check not
   run as not run, a failure as a failure.
 - **It covers the live exchange only.** Durable surfaces keep full plain
-  prose ([Code style](#code-style)).
+  prose ([Durable surfaces](#durable-surfaces)).
 
 ## Plain English voice {#plain-english}
 
@@ -111,8 +107,14 @@ generality. Never an em dash as prose, the antithesis template ("not just X,
 but Y"), a stacked hedge ("may potentially"), or register vocabulary
 ("delve", "leverage" as a verb, "seamless"); a construction absent from this
 list doing the same work is prohibited exactly as much. This governs voice;
-[Code style](#code-style) governs plain versus compressed register on durable
-surfaces. (`agentic-workflow:plain-english`)
+[Durable surfaces](#durable-surfaces) governs register.
+(`agentic-workflow:plain-english`)
+
+## Durable surfaces {#durable-surfaces}
+
+Durable surfaces are written in plain prose (commits, pull request titles and
+bodies, code comments, Linear issues, Notion pages), whatever compressed
+style the chat is using. (`agentic-workflow:plain-english`)
 
 ## Testing {#testing}
 
@@ -214,7 +216,7 @@ The agent **must never**, regardless of permission:
   issue, a Notion page, or code. Where the harness's default commit
   instruction appends that trailer, drop the trailer and keep
   `Co-Authored-By:`; this rule overrides the harness default
-  (`agentic-workflow:durable-surface-prose`). {#no-session-urls}
+  (`agentic-workflow:plain-english`). {#no-session-urls}
 ## Plans (Linear) {#plans}
 
 - **The plan lives in Linear** (Propitech workspace), never in the repo
@@ -230,7 +232,7 @@ The agent **must never**, regardless of permission:
 - **Work begins only on a human's commitment**, after a board sweep
   (`agentic-workflow:start-gate`, `agentic-workflow:board-hygiene`).
 - **Closing a project on the board is not archiving it off the board**, and
-  archiving frees the workspace issue cap (`agentic-workflow:linear-archive`).
+  archiving frees the workspace issue cap (`agentic-workflow:board-hygiene`).
 - Update the plan as the work evolves; a stale plan is worse than no plan.
 ## Documentation {#documentation}
 
@@ -261,7 +263,7 @@ Write knowledge down where it will be found, never only in the chat session:
   symbol: prose counting callers says "both" or names the ones it knew, so a
   grep for the one you add finds nothing. {#correction-reach}
 - **Length is not quality; a document instructs rather than explains.** Trim
-  the sections you touch on every edit. (`agentic-workflow:concise-docs`)
+  the sections you touch on every edit. (`agentic-workflow:plain-english`)
 ## Review-driven changes {#review-driven-changes}
 
 When the human is walking the agent through pull request review feedback
