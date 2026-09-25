@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.30.0 (source: agents-baseline-v2.30.0)                  -->
+<!-- Baseline: agents-baseline-v2.31.0 (source: agents-baseline-v2.31.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -49,20 +49,20 @@ e.g. `rails.md#gates`):
   Settle a project-wide contradiction once, in the tool's own configuration;
   note why beside it and ask first ([Boundaries](#boundaries)); a per-case
   ignore or a todo-file entry still stays barred.
-- **A comment never carries what a better name or an extracted method
-  can.** The one exception is the API doc on a published surface (called from
-  outside its deployable unit): a YARDoc, TSDoc, godoc, or docstring block
-  describing usage, never the body. (`agentic-workflow:plain-english`)
+- **A comment is a usage doc block, a directive, or a line naming an
+  externally caused constraint, nothing else, save the two
+  exceptions below.** Document only usage that name and signature
+  leave unclear: what callers get, parameters, return, errors, an
+  example only for a non-obvious call.
 - **A comment a tool reads or writes is a directive, not prose**: a shebang,
   `# frozen_string_literal: true`, `<!-- prettier-ignore -->`, a generated
   annotation block. Leave one where the tool expects it; regenerate rather
   than hand-edit one a tool wrote ([Operating principles](#operating-principles)).
   A comment whose removal changes only what a tool reports (`rubocop:disable`)
   is silencing, not a directive.
-- **Everything else is deleted, not written**: no narration, no section
-  banners, no commented-out code, no chronology
-  ([Documentation](#documentation)). An externally caused constraint may take
-  one comment naming that cause.
+- **Design rationale never lives in code**: it goes to the pull
+  request, the Linear issue, or the Notion decision record. Exceptions:
+  a tool-config settlement note and a migration's safety argument.
 - **Run every gate before reporting done**, iterating to green rather than
   reporting a partial pass, and never report done on a gate you did not run.
   Which commands make up the suite is stack-specific (e.g. `rails.md#gates`).
@@ -360,11 +360,11 @@ See `base.md#code-style` for the never-silence rule. Specifics:
   file in `.reek.yml`.
 - RuboCop's `Style/Documentation` and Reek's `IrresponsibleModule` (both on
   by default) want a comment on every top-level class or module, but
-  `base.md#code-style` reserves a comment for a published surface. Turn the
-  check off for the whole project in `.rubocop.yml` or `.reek.yml`, recording
-  why there and asking the human first, never as a per-case ignore. Where the
-  gem's own top-level classes are its distributed interface, leave the checks
-  on and write the comments as API docs.
+  `base.md#code-style` reserves one for a YARDoc block where usage is
+  unclear. Turn the check off for the whole project in `.rubocop.yml` or
+  `.reek.yml`, recording why there and asking the human first, never as a
+  per-case ignore. Where the top-level classes are the gem's distributed
+  interface, leave the checks on: document every one.
 - A Qlty billing block ("out of minutes") is not a code issue. Confirm clean
   locally with `qlty check`; other gates stay binding.
 
