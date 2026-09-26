@@ -34,30 +34,30 @@ and overrides this file. Reference a rule by its `{#slug}` anchor
 
 ## Code style philosophy {#code-style}
 
-The toolchain is opinionated; defer to it (gate commands are stack-specific,
-e.g. `rails.md#gates`):
-
 - **Never silence a case** (the whole-project settlement is the
   exception): never `rubocop:disable`, `# brakeman:ignore`, `eslint-disable`,
-  `# :reek:Foo`, an appended lint-todo entry, or any equivalent mechanism;
+  `# :reek:Foo`, an appended lint-todo entry, or any equivalent;
   where a rule is genuinely wrong for a case, say so and open a plan instead.
   Settle a project-wide contradiction once, in the tool's own configuration;
   note why beside it and ask first ([Boundaries](#boundaries)); a per-case
   ignore or a todo-file entry still stays barred.
-- **A comment never carries what a better name or an extracted method
-  can.** The one exception is the API doc on a published surface (called from
-  outside its deployable unit): a YARDoc, TSDoc, godoc, or docstring block
-  describing usage, never the body. (`agentic-workflow:plain-english`)
+- **A comment is a usage doc block where name and signature fall
+  short, a directive, or a line naming an outside cause (vendor,
+  library, browser, protocol), save two exceptions below; it
+  never narrates** callers, history, plans, or what a migration or
+  reviewer did. An in-repo reason (caller, merged migration,
+  invariant) goes in a test's failure message or `docs/`; a test
+  pins any shape it forces.
 - **A comment a tool reads or writes is a directive, not prose**: a shebang,
   `# frozen_string_literal: true`, `<!-- prettier-ignore -->`, a generated
   annotation block. Leave one where the tool expects it; regenerate rather
   than hand-edit one a tool wrote ([Operating principles](#operating-principles)).
-  A comment whose removal changes only what a tool reports (`rubocop:disable`)
+  A comment whose removal changes only what a tool reports
   is silencing, not a directive.
-- **Everything else is deleted, not written**: no narration, no section
-  banners, no commented-out code, no chronology
-  ([Documentation](#documentation)). An externally caused constraint may take
-  one comment naming that cause.
+- **Design rationale never lives in code** (a test's failure message
+  is not rationale): it goes to the pull request, Linear issue, or
+  Notion decision record. Exceptions: a tool-config settlement note
+  and a migration's safety argument.
 - **Run every gate before reporting done**, iterating to green rather than
   reporting a partial pass, and never report done on a gate you did not run.
   Which commands make up the suite is stack-specific (e.g. `rails.md#gates`).

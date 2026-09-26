@@ -53,11 +53,11 @@ See `base.md#code-style` for the never-silence rule. Specifics:
   file in `.reek.yml`.
 - RuboCop's `Style/Documentation` and Reek's `IrresponsibleModule` (both on
   by default) want a comment on every top-level class or module, but
-  `base.md#code-style` reserves a comment for a published surface. Turn the
-  check off for the whole project in `.rubocop.yml` or `.reek.yml`, recording
-  why there and asking the human first, never as a per-case ignore. Where the
-  gem's own top-level classes are its distributed interface, leave the checks
-  on and write the comments as API docs.
+  `base.md#code-style` reserves one for a YARDoc block where usage is
+  unclear. Turn the check off for the whole project in `.rubocop.yml` or
+  `.reek.yml`, recording why there and asking the human first, never as a
+  per-case ignore. Where the top-level classes are the gem's distributed
+  interface, leave the checks on: document every one.
 - A Qlty billing block ("out of minutes") is not a code issue. Confirm clean
   locally with `qlty check`; other gates stay binding.
 
