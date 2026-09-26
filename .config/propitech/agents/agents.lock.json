@@ -1,15 +1,15 @@
 {
-  "baselineVersion": "2.30.0",
+  "baselineVersion": "2.32.0",
   "source": {
-    "ref": "agents-baseline-v2.30.0"
+    "ref": "agents-baseline-v2.32.0"
   },
   "layers": [
     "base",
     "ruby-gem"
   ],
   "layerHashes": {
-    "base": "e110eedda484c9ff7c9c2ee1b832c5fec7b9009cc062e947f2547a0e0974b797",
-    "ruby-gem": "53976e0b978f6c4a44abde4039871d91fc53253f3823947f1d29236649812ba0"
+    "base": "de822d70bd55a12e543fc76df104b6b5848de53241397ac0bcd8adf6514075ff",
+    "ruby-gem": "f35ccfcfa0392b907c6cc5ed18d3bc049dc88177ff1f3b1e49712e7fc3390b6c"
   },
   "skills": {
     "agentic-workflow": [
