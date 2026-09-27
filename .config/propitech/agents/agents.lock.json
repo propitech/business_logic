@@ -1,14 +1,14 @@
 {
-  "baselineVersion": "2.32.0",
+  "baselineVersion": "3.0.0",
   "source": {
-    "ref": "agents-baseline-v2.32.0"
+    "ref": "agents-baseline-v3.0.0"
   },
   "layers": [
     "base",
     "ruby-gem"
   ],
   "layerHashes": {
-    "base": "de822d70bd55a12e543fc76df104b6b5848de53241397ac0bcd8adf6514075ff",
+    "base": "6a866f57f76efab6b2edfafe1e00857fc7ed99df808f06e54825a461ad5cb7c5",
     "ruby-gem": "f35ccfcfa0392b907c6cc5ed18d3bc049dc88177ff1f3b1e49712e7fc3390b6c"
   },
   "skills": {
@@ -17,7 +17,6 @@
       "cross-review-coder",
       "cross-review-reviewer",
       "decompose-deliverables",
-      "design-canvas",
       "design-methodology",
       "discovery-sync",
       "document-notion",
