@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "3.1.0",
+  "baselineVersion": "3.2.0",
   "source": {
-    "ref": "agents-baseline-v3.1.0"
+    "ref": "agents-baseline-v3.2.0"
   },
   "layers": [
     "base",
@@ -39,7 +39,6 @@
     "rails-conventions": [
       "component",
       "controller-gate",
-      "design-taste",
       "i18n",
       "library-test-matchers",
       "meaningful-tests",
