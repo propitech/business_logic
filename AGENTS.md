@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v2.32.0 (source: agents-baseline-v2.32.0)                  -->
+<!-- Baseline: agents-baseline-v2.33.0 (source: agents-baseline-v2.33.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -250,8 +250,8 @@ Write knowledge down where it will be found, never only in the chat session:
   is written up and a material decision is recorded when made, not
   remembered (`agentic-workflow:document-notion`);
   Claude Design for the design, where canvases win over code, harvesting
-  direction only and never an HTML export
-  (`agentic-workflow:design-canvas`, `agentic-workflow:tool-interfaces`). A
+  direction only, never an HTML export
+  (`agentic-workflow:design-methodology`, `agentic-workflow:tool-interfaces`). A
   rule holding across Propitech projects goes into the shared baseline, not
   into each repo.
 - **A document describes the system as it stands, in the present tense.** Git,
