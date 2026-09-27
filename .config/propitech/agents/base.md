@@ -65,6 +65,11 @@ and overrides this file. Reference a rule by its `{#slug}` anchor
 - **Run each gate as its own unpiped command.** A pipe (`… | tail -1`) reports
   its last stage, so a failure reads as green, and `&&` does not rescue it.
   (`agentic-workflow:gates`)
+- **Design is a gate, not a garnish.** Reach for the design system's token or
+  component before a raw utility class (a `Design::*` chain before a Tailwind
+  utility), never hardcode a colour, match the locked direction, and run the
+  design gates before calling a surface done.
+  (`agentic-workflow:design-methodology`) {#design-taste}
 ## Silent execution {#silent-execution}
 
 Do the work; don't perform it.
@@ -245,8 +250,8 @@ Write knowledge down where it will be found, never only in the chat session:
   is written up and a material decision is recorded when made, not
   remembered (`agentic-workflow:document-notion`);
   Claude Design for the design, where canvases win over code, harvesting
-  direction only and never an HTML export
-  (`agentic-workflow:design-canvas`, `agentic-workflow:tool-interfaces`). A
+  direction only, never an HTML export
+  (`agentic-workflow:design-methodology`, `agentic-workflow:tool-interfaces`). A
   rule holding across Propitech projects goes into the shared baseline, not
   into each repo.
 - **A document describes the system as it stands, in the present tense.** Git,
