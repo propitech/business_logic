@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v3.2.0 (source: agents-baseline-v3.2.0)                  -->
+<!-- Baseline: agents-baseline-v3.3.0 (source: agents-baseline-v3.3.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -186,7 +186,8 @@ The agent **must pause and confirm** before:
   without default).
 - Editing secrets or deploy config (credential stores, key material,
   environment files, deploy manifests).
-- Adding, removing, or major-bumping a dependency.
+- Adding, removing, or major-bumping a dependency; a hook prompts for
+  Bundler and npm-family ones.
 - Anything that talks to a remote system: `git push`, opening a pull request
   on someone's behalf, deploys, third-party API writes, Slack or Linear
   posts. Three exceptions are pre-authorized: a routine Linear update, a
@@ -198,12 +199,15 @@ The agent **must pause and confirm** before:
   below.
 - Disabling a test, a linter, or a security finding.
 
+Nothing checks the rest of this list; it is the agent's own discipline.
+
 The agent **must never**, regardless of permission:
 
-- Run a **production** deploy command. A **staging** deploy is
-  pre-authorized on disclosure, not permission: say so first, report what
-  happened. Any deploy touching a production destination is production,
-  whatever it is named; if unsure, it is production and you stop.
+- Run a **production** deploy command; a hook denies `kamal` outside
+  staging. A **staging** deploy is pre-authorized on disclosure, not
+  permission: say so first, report what happened. A deploy touching a
+  production destination is production, whatever its name; if unsure, it is
+  production and you stop.
 - Force-push to a protected branch.
 - Merge a pull request with `--admin`, bypassing branch protection, or arm
   auto-merge unasked (`agentic-workflow:pr-cadence`).
