@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v3.3.0 (source: agents-baseline-v3.3.0)                  -->
+<!-- Baseline: agents-baseline-v3.4.0 (source: agents-baseline-v3.4.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -192,11 +192,11 @@ The agent **must pause and confirm** before:
   on someone's behalf, deploys, third-party API writes, Slack or Linear
   posts. Three exceptions are pre-authorized: a routine Linear update, a
   status flip or a comment on the ticket in hand, never a project, milestone,
-  or initiative change (`agentic-workflow:linear-update`); the push and pull
-  request of a ticket a human handed over (`agentic-workflow:ticket-to-pr`),
-  and, where a local peer reviewer is present, only once it has cleared the
-  commit ([#peer-review-before-push]); and a **staging** deploy on the terms
-  below.
+  or initiative change (`agentic-workflow:linear-update`); pushing your own
+  `ai/*` branch (`--force-with-lease` included) and opening its pull request
+  once gates pass and any local peer clears it, on disclosure, never a bare
+  `--force` or another's branch (`agentic-workflow:pr-cadence`); and a
+  **staging** deploy on the terms below.
 - Disabling a test, a linter, or a security finding.
 
 Nothing checks the rest of this list; it is the agent's own discipline.
@@ -206,8 +206,7 @@ The agent **must never**, regardless of permission:
 - Run a **production** deploy command; a hook denies `kamal` outside
   staging. A **staging** deploy is pre-authorized on disclosure, not
   permission: say so first, report what happened. A deploy touching a
-  production destination is production, whatever its name; if unsure, it is
-  production and you stop.
+  production destination is production, whatever its name; if unsure, stop.
 - Force-push to a protected branch.
 - Merge a pull request with `--admin`, bypassing branch protection, or arm
   auto-merge unasked (`agentic-workflow:pr-cadence`).
