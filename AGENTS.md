@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v3.4.0 (source: agents-baseline-v3.4.0)                  -->
+<!-- Baseline: agents-baseline-v3.5.0 (source: agents-baseline-v3.5.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -117,7 +117,9 @@ generality. Never an em dash as prose, the antithesis template ("not just X,
 but Y"), a stacked hedge ("may potentially"), or register vocabulary
 ("delve", "leverage" as a verb, "seamless"); a construction absent from this
 list doing the same work is prohibited exactly as much. This governs voice;
-[Durable surfaces](#durable-surfaces) governs register.
+[Durable surfaces](#durable-surfaces) governs register. A planning or product
+document opens with a short **In plain terms** section for an adult reader who
+is not a specialist.
 (`agentic-workflow:plain-english`)
 
 ## Durable surfaces {#durable-surfaces}
