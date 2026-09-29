@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "3.5.0",
+  "baselineVersion": "3.6.0",
   "source": {
-    "ref": "agents-baseline-v3.5.0"
+    "ref": "agents-baseline-v3.6.0"
   },
   "layers": [
     "base",
@@ -43,6 +43,7 @@
       "library-test-matchers",
       "meaningful-tests",
       "migration",
+      "money",
       "stimulus",
       "system-specs",
       "test-prof",
