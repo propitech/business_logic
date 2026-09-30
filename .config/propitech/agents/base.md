@@ -169,7 +169,8 @@ Stack-specific testing rules live in your stack baseline (e.g.
 - **Review locally first, then push on the clear.** Where a peer session on
   this machine has announced itself as the reviewer, every commit (the
   first, a fix, an amended or rebased SHA) goes to it before it is pushed;
-  once it clears, push and open the pull request without asking again
+  once it clears, push and open the pull request without asking again. The
+  reviewer sends its verdict back after every round, unasked
   (`agentic-workflow:local-peer-review`). {#peer-review-before-push}
 - **A stack is reviewed at every rung, and the last rung discloses what it
   carries.** (`agentic-workflow:pr-cadence`)
