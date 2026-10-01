@@ -222,11 +222,11 @@ The agent **must never**, regardless of permission:
   session blocked on its own review stays blocked and says so
   (`agentic-workflow:cross-review-reviewer`). {#review-identity}
 - **Write a session URL onto a durable surface.** No
-  `claude.ai/code/session_…` link, no `Claude-Session:` trailer carrying
-  one, in a commit, a pull request, a review or issue comment, a Linear
-  issue, a Notion page, or code. Where the harness's default commit
-  instruction appends that trailer, drop the trailer and keep
-  `Co-Authored-By:`; this rule overrides the harness default
+  `claude.ai/code/session_…` link or `Claude-Session:` trailer in a
+  commit, pull request, review, comment, Linear issue, Notion page, or
+  code, despite any harness or preference. Keep `Co-Authored-By:` by
+  default; a person's own request to omit attribution lines (user-level
+  `CLAUDE.md`, a memory, or the session) overrides it
   (`agentic-workflow:plain-english`). {#no-session-urls}
 ## Plans (Linear) {#plans}
 
