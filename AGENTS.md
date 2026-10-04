@@ -1,12 +1,12 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v3.9.0 (source: agents-baseline-v3.9.0)                  -->
+<!-- Baseline: agents-baseline-v3.11.1 (source: agents-baseline-v3.11.1)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
 
-Cross-stack house rules for any AI coding agent in a Propitech repository,
-whatever the stack. **Managed file, do not hand-edit** (`bin/agents-check`
+Cross-stack house rules for any AI coding agent in a Propitech repository.
+**Managed file, do not hand-edit** (`bin/agents-check`
 fails on one); project-specific rules go in the root `AGENTS.md`, which imports
 and overrides this file. Reference a rule by its `{#slug}` anchor
 (`base.md#boundaries`), never by section number.
@@ -39,13 +39,12 @@ and overrides this file. Reference a rule by its `{#slug}` anchor
 
 ## Code style philosophy {#code-style}
 
-- **Never silence a case** (the whole-project settlement is the
-  exception): never `rubocop:disable`, `# brakeman:ignore`, `eslint-disable`,
-  `# :reek:Foo`, an appended lint-todo entry, or any equivalent;
-  where a rule is genuinely wrong for a case, say so and open a plan instead.
+- **Never silence a case**: never `rubocop:disable`, `# brakeman:ignore`,
+  `eslint-disable`, `# :reek:Foo`, an appended lint-todo entry, or any
+  equivalent; where a rule is wrong for a case, say so and open a plan instead.
   Settle a project-wide contradiction once, in the tool's own configuration;
   note why beside it and ask first ([Boundaries](#boundaries)); a per-case
-  ignore or a todo-file entry still stays barred.
+  ignore or todo-file entry stays barred.
 - **A comment is a usage doc block where name and signature fall
   short, a directive, or a line naming an outside cause (vendor,
   library, browser, protocol), save two exceptions below; it
@@ -84,8 +83,8 @@ Do the work; don't perform it.
 - **Never explain a routine action** (reading a file, running the gates,
   cutting a branch, pushing) unless asked or something went wrong.
 - **No progress commentary, no filler, no jokes, no emoji.**
-- **Speak unprompted only for** an error you cannot resolve, a genuinely
-  blocking question, or a confirmation or disclosure
+- **Speak unprompted only for** an error you cannot resolve, a blocking
+  question, or a confirmation or disclosure
   [Boundaries](#boundaries) requires (including staging-deploy).
 - **Say it the way the final report is said** ([Reporting](#reporting)).
 - **Never suppress a human gate.** Where a skill mandates a stop, the stop
@@ -126,7 +125,7 @@ is not a specialist.
 
 Durable surfaces are written in plain prose (commits, pull request titles and
 bodies, code comments, Linear issues, Notion pages), whatever compressed
-style the chat is using. (`agentic-workflow:plain-english`)
+style the chat uses. (`agentic-workflow:plain-english`)
 
 ## Testing {#testing}
 
@@ -143,10 +142,10 @@ Stack-specific testing rules live in your stack baseline (e.g.
 `rails.md#testing-rails`).
 ## Workflow {#workflow}
 
-- **Work in your own worktree, created before the first edit, always.**
+- **Work in your own worktree, created before the first edit.**
   Never in a shared clone, including a sibling repo reached into. Confirm
   your branch before every commit ([#worktrees]).
-- Branch `ai/<type>/<slug>` (e.g. `ai/feat/class-schedule`); never push to a
+- Branch `ai/<type>/<slug>`; never push to a
   protected branch.
 - **Conventional Commits**: `type(scope): subject`, imperative, subject at
   most 72 characters; body explains *why*.
@@ -184,7 +183,10 @@ Stack-specific testing rules live in your stack baseline (e.g.
 The agent **must pause and confirm** before:
 
 - Destructive Git ops: `reset --hard`, `push --force`, branch delete,
-  `clean -fd`, `checkout .`.
+  `clean -fd`, `checkout .`. A **stale** local branch needs no pause: its pull
+  request merged and it holds no commit after the merged head (its upstream
+  may be gone). Name it in the report; unmerged commits or an open pull
+  request need one.
 - Schema-touching migrations on existing tables (rename, drop, `NOT NULL` add
   without default).
 - Editing secrets or deploy config (credential stores, key material,
@@ -222,9 +224,12 @@ The agent **must never**, regardless of permission:
   `git commit` locally. Sole carve-out: the claude-plugins baseline-sync bot,
   not yours to invoke (`agentic-workflow:pr-cadence`).
 - **Approve your own pull request from a second identity you operate.** A
-  counted approval comes only from a separate reviewer session the human
-  launched, never the authoring session fetching the reviewer credential. A
-  session blocked on its own review stays blocked and says so
+  counted approval comes only from the reviewer identity, posted by a
+  human-launched reviewer session or by the `gh-reviewer` agent through the
+  reviewer wrapper. The authoring session and the coder never fetch the
+  reviewer credential; the hub's doctor check runs the wrapper's `whoami` as
+  a child process, so the token never reaches the hub's context. A session
+  blocked on its own review stays blocked and says so
   (`agentic-workflow:cross-review-reviewer`). {#review-identity}
 - **Write a session URL onto a durable surface.** No
   `claude.ai/code/session_…` link or `Claude-Session:` trailer in a
@@ -242,8 +247,8 @@ The agent **must never**, regardless of permission:
 - **Flagged "Out of scope" and "Deferred" items become Backlog issues**
   (`agentic-workflow:flagged-todo`).
 - **The team encodes the product; a `Scope` label marks only the
-  exceptions.** Unlabelled issues belong to the team's primary product; only
-  exceptional work takes `Tooling`, `Shared`, or a per-repo scope label. Add
+  exceptions.** Unlabelled issues belong to the team's primary product; the
+  exceptions take `Tooling`, `Shared`, or a per-repo scope label. Add
   `Type` and `Discipline` when known.
 - **Work begins only on a human's commitment**, after a board sweep
   (`agentic-workflow:start-gate`, `agentic-workflow:board-hygiene`).
@@ -264,8 +269,8 @@ Write knowledge down where it will be found, never only in the chat session:
   direction only, never an HTML export
   (`agentic-workflow:design-methodology`, `agentic-workflow:tool-interfaces`). A
   rule holding across Propitech projects goes into the shared baseline, not
-  into each repo.
-- **A document describes the system as it stands, in the present tense.** Git,
+  each repo.
+- **A document describes the system in the present tense.** Git,
   the pull request, and Linear hold the sequence of events; the decision
   record holds the *why*.
 - **Documentation ships with the change**, in the pull request that changes
@@ -274,7 +279,7 @@ Write knowledge down where it will be found, never only in the chat session:
   a prohibition, never as a changelog or a "we used to do X" note.
 - **A fact that changes is corrected wherever it is stated**: the whole
   paragraph, every other document, comment, or test describing it, and any
-  pull request body, Linear issue, or Notion page stating it too
+  pull request body, Linear issue, or Notion page stating it
   ([Durable surfaces](#durable-surfaces)). Search for the enumeration, not the
   symbol: prose counting callers says "both" or names the ones it knew, so a
   grep for the one you add finds nothing. {#correction-reach}
@@ -306,8 +311,7 @@ project's deltas ([Operating principles](#operating-principles)).
   only hand-authored agent surface here; regenerate with `bin/agents-render`,
   commit `AGENTS.md` alongside.
 - **A machine-local `AGENTS.md.local` is read when present** and wins on
-  conflict; never lands in git, shared rules belong in `deltas.md` or
-  upstream.
+  conflict; never lands in git.
 - **Review a baseline sync pull request like a dependency bump.**
   `bin/agents-render` only re-renders the pinned version.
 - **Change a shared rule upstream** in `propitech/claude-plugins`.
