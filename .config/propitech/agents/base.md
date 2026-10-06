@@ -11,8 +11,10 @@ and overrides this file. Reference a rule by its `{#slug}` anchor
 1. **Plan first for non-trivial work.** More than two non-test files, a
    schema change, or a new abstraction: plan in Linear first
    ([Plans](#plans)). {#plan-first}
-2. **Small diffs, single concern.** One commit, one logical change: refactor
-   and behaviour change separately.
+2. **Small diffs, single concern.** A pull request is a series of logical
+   commits built incrementally, each green on its own; refactor and
+   behaviour change separately (`agentic-workflow:pr-cadence`).
+   {#commit-series}
 3. **No speculative abstractions.** Three similar lines beat a premature DSL.
 4. **No half-finished implementations.** Can't finish: leave the tree green,
    record the gap in the plan.

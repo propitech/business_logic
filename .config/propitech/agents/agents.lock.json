@@ -1,14 +1,14 @@
 {
-  "baselineVersion": "3.11.1",
+  "baselineVersion": "3.12.0",
   "source": {
-    "ref": "agents-baseline-v3.11.1"
+    "ref": "agents-baseline-v3.12.0"
   },
   "layers": [
     "base",
     "ruby-gem"
   ],
   "layerHashes": {
-    "base": "fcc79564f0d20000ac6cadc3b4fef114d80da40e25b7d0df0f94aa38d2212128",
+    "base": "b96b12b713014c615f89e003342f82f0e391532daf0b9594f715d95f383b927a",
     "ruby-gem": "f35ccfcfa0392b907c6cc5ed18d3bc049dc88177ff1f3b1e49712e7fc3390b6c"
   },
   "skills": {
