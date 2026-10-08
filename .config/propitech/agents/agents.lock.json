@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "3.12.0",
+  "baselineVersion": "3.13.0",
   "source": {
-    "ref": "agents-baseline-v3.12.0"
+    "ref": "agents-baseline-v3.13.0"
   },
   "layers": [
     "base",
@@ -22,6 +22,7 @@
       "document-notion",
       "flagged-todo",
       "gates",
+      "landing-handover",
       "linear-update",
       "local-peer-review",
       "orchestrate-landing",
