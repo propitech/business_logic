@@ -3,8 +3,8 @@
 module RuboCop
   module Cop
     module Propitech
-      # Requires every command to declare who may run it. A class that
-      # inherits +ApplicationCommand+ must call one of the configured policy
+      # Requires every command to declare who may run it. A class declared
+      # with +< ApplicationCommand+ must call one of the configured policy
       # macros directly in its body, so a command never ships without an actor
       # decision.
       #
@@ -20,7 +20,8 @@ module RuboCop
       #
       # The check is static. It reads the class body only, so a declaration
       # inherited from a parent class or a concern is not seen and the command
-      # is flagged.
+      # is flagged. A command that inherits through an intermediate base class,
+      # or is built with +Class.new(ApplicationCommand)+, is never checked.
       #
       # @example PolicyMacros: ['option :actor', 'runs_as_system']
       #   # bad

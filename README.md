@@ -829,8 +829,8 @@ Left alone: `FactoryBot`/`FactoryGirl` builders, exact `create`/`create!`
 `CommandActorPolicy` is off by default. An app turns it on and sets
 `PolicyMacros` to the macros its own `ApplicationCommand` defines; it
 defaults to `Include: app/business_logic/commands/**/*.rb`. It requires
-every class inheriting `ApplicationCommand` to call a policy macro directly
-in its body. The macros are the `PolicyMacros` list; the gem hard-codes
+every class declared with `< ApplicationCommand` to call a policy macro
+directly in its body. The macros are the `PolicyMacros` list; the gem hard-codes
 none, so each app lists its own (the shipped list is only an example):
 
 ```yaml
@@ -847,7 +847,8 @@ An entry is a method name, or a method name plus a symbol (`option :actor`)
 that must be the call's first argument, so `option :user` does not count.
 With an empty list the cop reports nothing. The check is static: a
 declaration inherited from a parent class or a concern is not seen, and the
-command is flagged.
+command is flagged. A command that inherits through an intermediate base
+class, or is built with `Class.new(ApplicationCommand)`, is never checked.
 
 ## Seed registry
 

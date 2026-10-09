@@ -3,7 +3,8 @@
 require "rails_helper"
 
 RSpec.describe <%= class_name %> do
-  subject(:command) { described_class.new.call }
+  # The command declares `option :actor`; pass the actor under test.
+  subject(:command) { described_class.new(actor: nil).call }
 
   pending "add some scenarios (or delete) #{__FILE__}"
 end

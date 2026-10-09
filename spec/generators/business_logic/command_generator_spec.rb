@@ -19,5 +19,6 @@ RSpec.describe BusinessLogic::CommandGenerator do
     subject { file("spec/business_logic/commands/create_user_spec.rb") }
 
     it { is_expected.to contain(/describe Commands::CreateUser/) }
+    it { is_expected.to contain(/described_class.new\(actor: nil\)/) }
   end
 end
