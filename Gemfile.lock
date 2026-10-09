@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    business_logic (0.7.0)
+    business_logic (0.8.0)
       activemodel (>= 7.0)
       dry-initializer (~> 3.2)
       dry-monads (~> 1.9)

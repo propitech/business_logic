@@ -12,6 +12,7 @@ RSpec.describe BusinessLogic::CommandGenerator do
     subject { file("app/business_logic/commands/create_user.rb") }
 
     it { is_expected.to contain(/class Commands::CreateUser < ApplicationCommand/) }
+    it { is_expected.to contain(/^  option :actor$/) }
   end
 
   describe "spec file" do

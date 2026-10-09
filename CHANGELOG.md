@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+- New cop `Propitech/CommandActorPolicy` flags a class that inherits
+  `ApplicationCommand` and calls none of the configured policy macros in its
+  body. The macros are the `PolicyMacros` setting, a list of method names;
+  an entry written `option :actor` matches `option` only when its first
+  argument is `:actor`. The cop is disabled by default; an app enables it and sets
+  `PolicyMacros` in its own `.rubocop.yml`. The shipped list (`option :actor`,
+  `runs_as_system`, `runs_inside`, `runs_signed_out`) is an example, and the
+  cop applies to `app/business_logic/commands/**/*.rb`. The check is static, so a
+  declaration inherited from a parent class or a concern is not seen.
+
+- The command generator now emits `option :actor` at the top of the class, a
+  policy declaration to keep or replace with `runs_as_system`, `runs_inside`
+  or `runs_signed_out`.
+
 - `Form.from_params` finds the nested attributes in a plain Hash whichever
   key type it uses. It converts the params to indifferent access before the
   lookup, so `Form.from_params({user: {name: "Ada"}})` from the console or a
