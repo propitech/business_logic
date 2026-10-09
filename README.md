@@ -787,6 +787,7 @@ plugins:
 | `Propitech/PreferBeDeleted`         | `expect(x.deleted_at).to be_present` / `be_nil`                                      | `expect(x).to be_deleted`                   |
 | `Propitech/SeedUsesFactory`         | `Model.create!` / `Commands::….call`                                                 | `FactoryBot.create(:model)`                 |
 | `Propitech/SeedUsesContainer`       | `find`/`find_by`, `*create*`, `*update*`, `*destroy*`, `*delete*` on any AR receiver | `container.get(:key)` / `FactoryBot.create` |
+| `Propitech/CommandActorPolicy`      | an `ApplicationCommand` subclass calling none of the configured policy macros        | a policy macro such as `option :actor`      |
 
 The matcher cops default to `Include: '**/*_spec.rb'`. Asserting failure
 with the negated success matcher (`not_to succeed_validation`) passes for
@@ -824,6 +825,30 @@ Left alone: `FactoryBot`/`FactoryGirl` builders, exact `create`/`create!`
 (owned by `SeedUsesFactory`), iteration (`find_each` and the block form
 `find { … }`), and anything that is not one of those verbs (`where`,
 `exists?`, `container.get`).
+
+`CommandActorPolicy` is off by default. An app turns it on and sets
+`PolicyMacros` to the macros its own `ApplicationCommand` defines; it
+defaults to `Include: app/business_logic/commands/**/*.rb`. It requires
+every class declared with `< ApplicationCommand` to call a policy macro
+directly in its body. The macros are the `PolicyMacros` list; the gem hard-codes
+none, so each app lists its own (the shipped list is only an example):
+
+```yaml
+Propitech/CommandActorPolicy:
+  Enabled: true
+  PolicyMacros:
+    - option :actor
+    - runs_as_system
+    - runs_inside
+    - runs_signed_out
+```
+
+An entry is a method name, or a method name plus a symbol (`option :actor`)
+that must be the call's first argument, so `option :user` does not count.
+With an empty list the cop reports nothing. The check is static: a
+declaration inherited from a parent class or a concern is not seen, and the
+command is flagged. A command that inherits through an intermediate base
+class, or is built with `Class.new(ApplicationCommand)`, is never checked.
 
 ## Seed registry
 

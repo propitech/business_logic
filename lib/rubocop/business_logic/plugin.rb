@@ -9,6 +9,7 @@ require_relative "../cop/propitech/seed_uses_factory"
 require_relative "../cop/propitech/seed_uses_container"
 require_relative "../cop/propitech/no_not_implemented_error"
 require_relative "../cop/propitech/prefer_be_deleted"
+require_relative "../cop/propitech/command_actor_policy"
 
 module RuboCop
   module BusinessLogic

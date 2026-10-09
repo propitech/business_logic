@@ -42,3 +42,18 @@ Propitech/PreferBeDeleted:
   # assertion into a call on a `deleted?` predicate that does not exist — a
   # behavioural change, so `rubocop -a` reports and only `rubocop -A` applies.
   SafeAutoCorrect: false
+
+Propitech/CommandActorPolicy:
+  Description: 'Declare who may run a command: call one of the configured policy macros in every ApplicationCommand subclass.'
+  # Off by default: an app turns it on and sets PolicyMacros to the macros its
+  # own ApplicationCommand defines. The list below is an example, not a rule.
+  Enabled: false
+  Include:
+    - 'app/business_logic/commands/**/*.rb'
+  # One entry per accepted declaration: a method name, or a method name and a
+  # symbol when only that first argument counts (`option :actor`).
+  PolicyMacros:
+    - 'option :actor'
+    - 'runs_as_system'
+    - 'runs_inside'
+    - 'runs_signed_out'

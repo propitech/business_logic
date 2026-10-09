@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class <%= class_name %> < ApplicationCommand
+  option :actor
+
   # option     :user
   # option     :form
   # dependency :contract, default: -> { Contracts::<%= class_name.sub(/^Commands::/, "") %>Contract.new }
