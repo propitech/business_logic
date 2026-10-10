@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "3.13.0",
+  "baselineVersion": "3.15.0",
   "source": {
-    "ref": "agents-baseline-v3.13.0"
+    "ref": "agents-baseline-v3.15.0"
   },
   "layers": [
     "base",
@@ -55,6 +55,7 @@
       "command",
       "component-library-sync",
       "design-system",
+      "domain-event",
       "seeds",
       "service-object",
       "worktree"
