@@ -280,6 +280,9 @@ Write knowledge down where it will be found, never only in the chat session:
   ([Durable surfaces](#durable-surfaces)). Search for the enumeration, not the
   symbol: prose counting callers says "both" or names the ones it knew, so a
   grep for the one you add finds nothing. {#correction-reach}
+- **A document names what it describes rather than counting it** (files,
+  commands, flows); a count goes stale with the next change and belongs in the
+  pull request body as evidence.
 - **Length is not quality; a document instructs rather than explains.** Trim
   the sections you touch on every edit. (`agentic-workflow:plain-english`)
 ## Review-driven changes {#review-driven-changes}
