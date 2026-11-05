@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "3.16.1",
+  "baselineVersion": "3.17.0",
   "source": {
-    "ref": "agents-baseline-v3.16.1"
+    "ref": "agents-baseline-v3.17.0"
   },
   "layers": [
     "base",
@@ -23,6 +23,7 @@
       "flagged-todo",
       "gates",
       "landing-handover",
+      "lane-protocol",
       "linear-update",
       "local-peer-review",
       "orchestrate-landing",
