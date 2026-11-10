@@ -22,8 +22,8 @@ jobs:
     strategy:
       matrix:
         ruby:
-          - 3.3.7
-          - 3.4.5
+          - 3.3.13
+          - 3.4.12
 
     steps:
       - uses: actions/checkout@v7
@@ -44,7 +44,7 @@ jobs:
       # never-loaded ones under tracked_files, which qlty does not read.
       - name: Upload result to Quality.sh
         uses: qltysh/qlty-action/coverage@v2
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository && matrix.ruby == '3.4.5'
+        if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && matrix.ruby == '3.4.12'
         with:
           token: ${{secrets.QLTY_COVERAGE_TOKEN}}
           files: coverage/coverage.json
