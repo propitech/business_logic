@@ -24,6 +24,7 @@ jobs:
         ruby:
           - 3.3.13
           - 3.4.12
+          - 4.0.10
 
     steps:
       - uses: actions/checkout@v7
@@ -44,7 +45,7 @@ jobs:
       # never-loaded ones under tracked_files, which qlty does not read.
       - name: Upload result to Quality.sh
         uses: qltysh/qlty-action/coverage@v2
-        if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && matrix.ruby == '3.4.12'
+        if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && matrix.ruby == '4.0.10'
         with:
           token: ${{secrets.QLTY_COVERAGE_TOKEN}}
           files: coverage/coverage.json
@@ -58,6 +59,6 @@ jobs:
           persist-credentials: false
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4"
+          ruby-version: "4.0"
           bundler: none
       - run: ruby bin/agents-check
