@@ -1,6 +1,6 @@
 <!-- AGENTS.md — generated. Do not hand-edit this file.                      -->
 <!-- Run `bin/agents-render` to regenerate from cache + deltas.              -->
-<!-- Baseline: agents-baseline-v3.17.0 (source: agents-baseline-v3.17.0)                  -->
+<!-- Baseline: agents-baseline-v3.18.0 (source: agents-baseline-v3.18.0)                  -->
 <!-- Project rules: .config/propitech/agents/deltas.md                       -->
 
 # Propitech agent baseline: org-base
@@ -335,7 +335,7 @@ rules by `{#slug}`, never by section number.
 
 | Concern     | Choice                                                          |
 | ----------- | --------------------------------------------------------------- |
-| Language    | Ruby 3.4 (pinned in `.ruby-version` + `mise.toml`)              |
+| Language    | Ruby 4.0 (pinned in `.ruby-version` + `mise.toml`)              |
 | Structure   | Standard gem layout: `lib/`, `spec/`, gemspec, `Gemfile`        |
 | Testing     | RSpec                                                           |
 | Linting     | RuboCop + `rubocop-rspec`                                       |
