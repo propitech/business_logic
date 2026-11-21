@@ -8,7 +8,7 @@ rules by `{#slug}`, never by section number.
 
 | Concern     | Choice                                                          |
 | ----------- | --------------------------------------------------------------- |
-| Language    | Ruby 3.4 (pinned in `.ruby-version` + `mise.toml`)              |
+| Language    | Ruby 4.0 (pinned in `.ruby-version` + `mise.toml`)              |
 | Structure   | Standard gem layout: `lib/`, `spec/`, gemspec, `Gemfile`        |
 | Testing     | RSpec                                                           |
 | Linting     | RuboCop + `rubocop-rspec`                                       |

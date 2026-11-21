@@ -1,7 +1,7 @@
 {
-  "baselineVersion": "3.17.0",
+  "baselineVersion": "3.18.0",
   "source": {
-    "ref": "agents-baseline-v3.17.0"
+    "ref": "agents-baseline-v3.18.0"
   },
   "layers": [
     "base",
@@ -9,7 +9,7 @@
   ],
   "layerHashes": {
     "base": "037c8852da764f79029c9b6082549d0404fca3c7ca752b06bbc83892366f6c39",
-    "ruby-gem": "f35ccfcfa0392b907c6cc5ed18d3bc049dc88177ff1f3b1e49712e7fc3390b6c"
+    "ruby-gem": "13b3b34e414ba5f49a3cf58ec9b8be998c17202f5c630f5cbe00892bcbf2c81d"
   },
   "skills": {
     "agentic-workflow": [
