@@ -9,7 +9,7 @@ gem "rake", "~> 13.4"
 
 gem "ammeter", "~> 1.1"
 gem "dry-monads", "~> 1.11"
-gem "dry-operation", "~> 1.1"
+gem "dry-operation", "~> 1.2"
 gem "dry-validation", "~> 1.11"
 gem "rails", ">= 7.0"
 gem "reek", "~> 6.6"
